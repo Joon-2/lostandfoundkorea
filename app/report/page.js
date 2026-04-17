@@ -489,10 +489,10 @@ function SubmittedScreen({ email }) {
           </svg>
         </div>
         <h1 className="font-serif text-4xl tracking-tight sm:text-5xl">
-          Report submitted
+          Report Submitted &mdash; We&rsquo;re On It
         </h1>
         <p className="mt-4 max-w-md text-lg text-muted">
-          We&rsquo;ll contact you within 24 hours via email
+          Our team will search for your item and notify you
           {email ? (
             <>
               {" "}
@@ -500,6 +500,14 @@ function SubmittedScreen({ email }) {
             </>
           ) : null}
           .
+        </p>
+        <p className="mt-4 max-w-md text-base text-muted">
+          If we find it, you can unlock the full details for just{" "}
+          <span className="text-foreground">$39</span>.
+        </p>
+        <p className="mt-3 font-serif text-xl tracking-tight">
+          No item found?{" "}
+          <span className="text-accent">You pay nothing.</span>
         </p>
         <Link
           href="/"
