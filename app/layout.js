@@ -1,0 +1,32 @@
+import { Inter, DM_Serif_Display } from "next/font/google";
+import "./globals.css";
+
+const inter = Inter({
+  variable: "--font-inter",
+  subsets: ["latin"],
+});
+
+const dmSerif = DM_Serif_Display({
+  variable: "--font-dm-serif",
+  weight: "400",
+  subsets: ["latin"],
+});
+
+export const metadata = {
+  title: "Lost and Found Korea - We Find Your Lost Items",
+  description:
+    "Lost something while traveling in Korea? Report it in 4 simple steps and our local team will help recover it. Fast, trustworthy, English-speaking support.",
+};
+
+export default function RootLayout({ children }) {
+  return (
+    <html
+      lang="en"
+      className={`${inter.variable} ${dmSerif.variable} h-full antialiased`}
+    >
+      <body className="min-h-full flex flex-col bg-background text-foreground">
+        {children}
+      </body>
+    </html>
+  );
+}
