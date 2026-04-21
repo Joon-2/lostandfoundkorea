@@ -1,26 +1,25 @@
 import Link from "next/link";
-import { WhatsAppBanner } from "@/components/WhatsApp";
 
 const STEPS = [
   {
     n: "01",
-    title: "Submit a Report",
-    body: "Fill out a quick 30-second form with what you lost and where.",
+    title: "Tell us what you lost",
+    body: "Fill out a quick 30-second form with what you lost and where. It's free.",
   },
   {
     n: "02",
-    title: "We Search in Korean",
-    body: "Our team contacts Lost112 (Korea's national database), local police stations, subway operators, bus companies, and taxi services — all in Korean, so you don't have to.",
+    title: "We search in Korean",
+    body: "Our team contacts Lost112, police stations, subway operators, bus companies, and taxi services — all in Korean so you don't have to.",
   },
   {
     n: "03",
-    title: "Get Notified",
+    title: "Get notified",
     body: "We email you as soon as your item is located, usually within 24-48 hours.",
   },
   {
     n: "04",
-    title: "Unlock & Retrieve",
-    body: "Pay $39 to get the exact location, contact info, and step-by-step English pickup instructions. Need delivery? We handle that too.",
+    title: "Unlock & retrieve",
+    body: "Pay $39 to get the exact location, contact info, and English pickup instructions. Need delivery? We handle that too.",
   },
 ];
 
@@ -221,8 +220,6 @@ export default function Home() {
           </div>
         </section>
 
-        <WhatsAppBanner />
-
         <section className="border-y border-border bg-alt">
           <div className="mx-auto w-full max-w-6xl px-5 py-12 sm:px-8">
             <p className="mb-5 text-xs font-medium uppercase tracking-widest text-muted">
@@ -273,22 +270,34 @@ export default function Home() {
               Real stories from people who got their belongings back.
             </p>
             <div className="mt-12 grid gap-5 sm:grid-cols-2">
-              {TESTIMONIALS.map((t) => (
+              {TESTIMONIALS.map((t, i) => (
                 <figure
                   key={t.name}
-                  className="flex h-full flex-col rounded-2xl border border-border bg-card p-6 shadow-sm sm:p-7"
+                  className={`relative flex h-full flex-col overflow-hidden rounded-2xl border border-border p-6 shadow-sm sm:p-7 ${
+                    i % 2 === 0 ? "bg-card" : "bg-[#f0fdf4]"
+                  }`}
                 >
-                  <StarRow />
-                  <blockquote className="mt-4 flex-1 text-[17px] leading-relaxed text-foreground">
-                    &ldquo;{t.quote}&rdquo;
-                  </blockquote>
-                  <figcaption className="mt-5 text-sm text-muted">
-                    <span className="font-medium text-foreground">
-                      {t.name}
-                    </span>
-                    <span className="mx-2 text-muted/60">&middot;</span>
-                    {t.country}
-                  </figcaption>
+                  <svg
+                    aria-hidden="true"
+                    className="pointer-events-none absolute -left-2 -top-4 h-24 w-24 text-[#d1fae5]"
+                    viewBox="0 0 100 100"
+                    fill="currentColor"
+                  >
+                    <path d="M30 25c-11 0-20 9-20 20v30h30V45H20c0-5.5 4.5-10 10-10V25zm45 0c-11 0-20 9-20 20v30h30V45H65c0-5.5 4.5-10 10-10V25z" />
+                  </svg>
+                  <div className="relative">
+                    <StarRow />
+                    <blockquote className="mt-4 flex-1 text-[17px] leading-relaxed text-foreground">
+                      &ldquo;{t.quote}&rdquo;
+                    </blockquote>
+                    <figcaption className="mt-5 text-sm text-muted">
+                      <span className="font-medium text-foreground">
+                        {t.name}
+                      </span>
+                      <span className="mx-2 text-muted/60">&middot;</span>
+                      {t.country}
+                    </figcaption>
+                  </div>
                 </figure>
               ))}
             </div>
