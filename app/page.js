@@ -415,17 +415,17 @@ export default function Home() {
 
         <section className="bg-alt">
           <div className="mx-auto w-full max-w-6xl px-5 py-16 sm:px-8 sm:py-20">
-            <div className="rounded-3xl border border-border bg-card p-8 shadow-sm sm:p-12">
-              <h2 className="font-serif text-3xl tracking-tight sm:text-4xl">
+            <div className="rounded-3xl bg-accent p-8 shadow-lg shadow-accent/20 sm:p-12">
+              <h2 className="font-serif text-3xl tracking-tight text-white sm:text-4xl">
                 Ready to get your item back?
               </h2>
-              <p className="mt-3 max-w-xl text-body">
+              <p className="mt-3 max-w-xl text-base text-emerald-50/90">
                 Submit a report in about 2 minutes. We&rsquo;ll reach out within
                 24 hours.
               </p>
               <Link
                 href="/report"
-                className="mt-6 inline-flex items-center justify-center rounded-full bg-accent px-7 py-3.5 text-base font-medium text-white shadow-sm transition-colors hover:bg-accent-hover"
+                className="mt-6 inline-flex items-center justify-center rounded-full bg-white px-7 py-3.5 text-base font-semibold text-accent shadow-sm transition-colors hover:bg-emerald-50"
               >
                 Start a report &rarr;
               </Link>
