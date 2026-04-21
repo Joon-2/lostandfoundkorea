@@ -1,23 +1,29 @@
 @import "tailwindcss";
 
 :root {
-  --background: #0a0f1a;
-  --foreground: #e6edf7;
-  --muted: #94a3b8;
-  --card: #111827;
-  --border: #1f2937;
-  --accent: #3b82f6;
-  --accent-hover: #2563eb;
+  --background: #ffffff;
+  --foreground: #1a202c;
+  --body: #4a5568;
+  --muted: #718096;
+  --card: #ffffff;
+  --alt: #f8fafb;
+  --border: #e2e8f0;
+  --accent: #059669;
+  --accent-hover: #047857;
+  --navy: #1e3a5f;
 }
 
 @theme inline {
   --color-background: var(--background);
   --color-foreground: var(--foreground);
+  --color-body: var(--body);
   --color-muted: var(--muted);
   --color-card: var(--card);
+  --color-alt: var(--alt);
   --color-border: var(--border);
   --color-accent: var(--accent);
   --color-accent-hover: var(--accent-hover);
+  --color-navy: var(--navy);
   --font-sans: var(--font-inter);
   --font-serif: var(--font-dm-serif);
 }
@@ -25,12 +31,15 @@
 html,
 body {
   background: var(--background);
-  color: var(--foreground);
+  color: var(--body);
   font-family: var(--font-inter), system-ui, sans-serif;
 }
 
-input,
-select,
-textarea {
-  color-scheme: dark;
+h1,
+h2,
+h3,
+h4,
+h5,
+h6 {
+  color: var(--foreground);
 }

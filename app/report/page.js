@@ -54,8 +54,8 @@ const initialData = {
 
 const labelCls = "block text-sm font-medium text-foreground mb-1.5";
 const inputCls =
-  "w-full rounded-xl border border-border bg-card px-4 py-3 text-base text-foreground placeholder:text-muted/70 focus:border-accent focus:outline-none focus:ring-2 focus:ring-accent/30 transition-colors";
-const errorCls = "mt-1.5 text-xs text-red-400";
+  "w-full rounded-xl border border-border bg-card px-4 py-3 text-base text-foreground placeholder:text-muted focus:border-accent focus:outline-none focus:ring-2 focus:ring-accent/30 transition-colors";
+const errorCls = "mt-1.5 text-xs text-red-600";
 const requiredMark = <span className="text-accent">*</span>;
 
 function Field({ label, required, error, children }) {
@@ -168,12 +168,18 @@ export default function ReportPage() {
 
   return (
     <div className="flex flex-1 flex-col">
-      <header className="border-b border-border/60">
+      <header className="bg-navy text-white">
         <div className="mx-auto flex w-full max-w-3xl items-center justify-between px-5 py-5 sm:px-8">
-          <Link href="/" className="font-serif text-xl tracking-tight">
+          <Link
+            href="/"
+            className="font-serif text-xl tracking-tight text-white"
+          >
             Lost & Found Korea
           </Link>
-          <Link href="/" className="text-sm text-muted hover:text-foreground">
+          <Link
+            href="/"
+            className="text-sm text-slate-300 transition-colors hover:text-white"
+          >
             Cancel
           </Link>
         </div>
@@ -187,7 +193,7 @@ export default function ReportPage() {
             </span>
             <span className="text-muted">{STEP_LABELS[step]}</span>
           </div>
-          <div className="h-1.5 w-full overflow-hidden rounded-full bg-card">
+          <div className="h-1.5 w-full overflow-hidden rounded-full bg-border">
             <div
               className="h-full bg-accent transition-all duration-300 ease-out"
               style={{ width: `${progress}%` }}
@@ -195,7 +201,7 @@ export default function ReportPage() {
           </div>
         </div>
 
-        <div className="rounded-2xl border border-border bg-card/40 p-6 sm:p-8">
+        <div className="rounded-2xl border border-border bg-card p-6 shadow-sm sm:p-8">
           {step === 1 && (
             <Step1 data={data} update={update} errors={errors} />
           )}
@@ -207,14 +213,14 @@ export default function ReportPage() {
         {step === TOTAL_STEPS && <Summary data={data} />}
 
         {submitError && step === TOTAL_STEPS && (
-          <div className="mt-4 rounded-xl border border-red-500/40 bg-red-500/10 px-4 py-3 text-sm text-red-200">
-            <p className="font-medium">Submission failed</p>
-            <p className="mt-1 text-red-200/90">{submitError}</p>
+          <div className="mt-4 rounded-xl border border-red-300 bg-red-50 px-4 py-3 text-sm text-red-800">
+            <p className="font-semibold">Submission failed</p>
+            <p className="mt-1 text-red-700">{submitError}</p>
             <button
               type="button"
               onClick={submit}
               disabled={submitting}
-              className="mt-3 inline-flex items-center rounded-full border border-red-400/40 px-4 py-2 text-xs font-medium text-red-100 transition-colors hover:bg-red-500/20 disabled:opacity-60"
+              className="mt-3 inline-flex items-center rounded-full border border-red-300 bg-white px-4 py-2 text-xs font-medium text-red-700 transition-colors hover:bg-red-100 disabled:opacity-60"
             >
               Try again
             </button>
@@ -226,7 +232,7 @@ export default function ReportPage() {
             type="button"
             onClick={back}
             disabled={step === 1 || submitting}
-            className="rounded-full border border-border px-6 py-3 text-sm font-medium text-foreground transition-colors hover:bg-card disabled:cursor-not-allowed disabled:opacity-40"
+            className="rounded-full border border-border bg-card px-6 py-3 text-sm font-medium text-foreground transition-colors hover:bg-alt disabled:cursor-not-allowed disabled:opacity-40"
           >
             Back
           </button>
@@ -382,11 +388,11 @@ function Summary({ data }) {
     ["Additional info", data.notes],
   ];
   return (
-    <div className="mt-4 rounded-2xl border border-border/60 bg-background/40 p-5 sm:p-6">
+    <div className="mt-4 rounded-2xl border border-border bg-alt p-5 sm:p-6">
       <h3 className="mb-3 text-xs font-semibold uppercase tracking-widest text-muted">
         Review before submitting
       </h3>
-      <dl className="divide-y divide-border/60">
+      <dl className="divide-y divide-border">
         {rows.map(([k, v]) => (
           <div
             key={k}
@@ -434,15 +440,18 @@ function SubmittedScreen({ email }) {
 
   return (
     <div className="flex flex-1 flex-col">
-      <header className="border-b border-border/60">
+      <header className="bg-navy text-white">
         <div className="mx-auto flex w-full max-w-3xl items-center justify-between px-5 py-5 sm:px-8">
-          <Link href="/" className="font-serif text-xl tracking-tight">
+          <Link
+            href="/"
+            className="font-serif text-xl tracking-tight text-white"
+          >
             Lost & Found Korea
           </Link>
         </div>
       </header>
       <main className="mx-auto flex w-full max-w-2xl flex-1 flex-col items-center justify-center px-5 py-16 text-center sm:px-8">
-        <div className="mb-6 flex h-20 w-20 items-center justify-center rounded-full bg-emerald-500/15 text-emerald-400 ring-4 ring-emerald-500/20">
+        <div className="mb-6 flex h-20 w-20 items-center justify-center rounded-full bg-emerald-50 text-accent ring-4 ring-emerald-100">
           <svg
             xmlns="http://www.w3.org/2000/svg"
             className="h-10 w-10"
@@ -459,7 +468,7 @@ function SubmittedScreen({ email }) {
         <h1 className="font-serif text-4xl tracking-tight sm:text-5xl">
           Report Submitted &mdash; We&rsquo;re On It
         </h1>
-        <p className="mt-4 max-w-md text-lg text-muted">
+        <p className="mt-4 max-w-md text-lg text-body">
           Our team will search for your item and notify you
           {email ? (
             <>
@@ -469,16 +478,16 @@ function SubmittedScreen({ email }) {
           ) : null}
           .
         </p>
-        <p className="mt-4 max-w-md text-base text-muted">
+        <p className="mt-4 max-w-md text-base text-body">
           If we find it, you can unlock the full details for just{" "}
-          <span className="text-foreground">$39</span>.
+          <span className="font-semibold text-foreground">$39</span>.
         </p>
         <p className="mt-3 font-serif text-xl tracking-tight">
           No item found?{" "}
           <span className="text-accent">You pay nothing.</span>
         </p>
 
-        <div className="mt-8 w-full max-w-sm rounded-2xl border border-border bg-card/60 px-6 py-5">
+        <div className="mt-8 w-full max-w-sm rounded-2xl border border-border bg-alt px-6 py-5 shadow-sm">
           <p className="text-xs font-medium uppercase tracking-widest text-muted">
             Case reference
           </p>
@@ -495,7 +504,7 @@ function SubmittedScreen({ email }) {
             href={WHATSAPP_URL}
             target="_blank"
             rel="noopener noreferrer"
-            className="inline-flex w-full items-center justify-center gap-2 rounded-full bg-[#25D366] px-7 py-3.5 text-sm font-medium text-white transition-colors hover:bg-[#1ebe57] sm:w-auto"
+            className="inline-flex w-full items-center justify-center gap-2 rounded-full bg-[#25D366] px-7 py-3.5 text-sm font-medium text-white shadow-sm transition-colors hover:bg-[#1ebe57] sm:w-auto"
           >
             <svg
               className="h-4 w-4"
@@ -509,7 +518,7 @@ function SubmittedScreen({ email }) {
           </a>
           <Link
             href="/"
-            className="inline-flex w-full items-center justify-center rounded-full border border-border px-7 py-3.5 text-sm font-medium text-foreground transition-colors hover:bg-card sm:w-auto"
+            className="inline-flex w-full items-center justify-center rounded-full border border-border bg-card px-7 py-3.5 text-sm font-medium text-foreground transition-colors hover:bg-alt sm:w-auto"
           >
             Back to Home
           </Link>
