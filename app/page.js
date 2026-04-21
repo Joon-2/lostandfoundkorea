@@ -140,7 +140,20 @@ export default function Home() {
               and Jeju. Our local team navigates the language barrier and
               recovery process for you.
             </p>
-            <div className="mt-8 flex flex-col gap-3 sm:flex-row">
+            <p className="mt-8 flex flex-wrap items-center gap-x-3 gap-y-1 text-[15px] text-muted">
+              <span className="inline-flex items-center gap-1.5">
+                <span className="text-emerald-500">&#10003;</span>
+                Free to report
+              </span>
+              <span aria-hidden="true" className="text-muted/50">
+                &middot;
+              </span>
+              <span className="inline-flex items-center gap-1.5">
+                <span className="text-emerald-500">&#10003;</span>
+                Pay only when we find it
+              </span>
+            </p>
+            <div className="mt-4 flex flex-col gap-3 sm:flex-row">
               <Link
                 href="/report"
                 className="inline-flex items-center justify-center rounded-full bg-accent px-7 py-3.5 text-base font-medium text-white transition-colors hover:bg-accent-hover"
