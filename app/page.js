@@ -1,4 +1,5 @@
 import Link from "next/link";
+import { WhatsAppBanner } from "@/components/WhatsApp";
 
 const STEPS = [
   {
@@ -219,6 +220,8 @@ export default function Home() {
             </div>
           </div>
         </section>
+
+        <WhatsAppBanner />
 
         <section className="border-t border-border/60 bg-card/30">
           <div className="mx-auto w-full max-w-6xl px-5 py-12 sm:px-8">

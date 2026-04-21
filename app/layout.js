@@ -1,5 +1,6 @@
 import { Inter, DM_Serif_Display } from "next/font/google";
 import { Analytics } from "@vercel/analytics/react";
+import { FloatingWhatsApp } from "@/components/WhatsApp";
 import "./globals.css";
 
 const inter = Inter({
@@ -27,6 +28,7 @@ export default function RootLayout({ children }) {
     >
       <body className="min-h-full flex flex-col bg-background text-foreground">
         {children}
+        <FloatingWhatsApp />
         <Analytics />
       </body>
     </html>
