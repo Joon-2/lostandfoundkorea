@@ -45,10 +45,14 @@ const initialData = {
   fullName: "",
   email: "",
   itemCategory: "",
+  brandModel: "",
+  color: "",
   itemDescription: "",
+  distinguishingFeatures: "",
   locationType: "",
   locationDetails: "",
   date: "",
+  time: "",
   notes: "",
 };
 
@@ -94,6 +98,7 @@ export default function ReportPage() {
   const [submitted, setSubmitted] = useState(false);
   const [submitting, setSubmitting] = useState(false);
   const [submitError, setSubmitError] = useState(null);
+  const [caseNumber, setCaseNumber] = useState(null);
 
   const update = (key) => (e) => {
     setData((d) => ({ ...d, [key]: e.target.value }));
@@ -133,15 +138,22 @@ export default function ReportPage() {
       return;
     }
 
+    const newCaseNumber = generateCaseNumber();
+
     const payload = {
       name: data.fullName.trim(),
       email: data.email.trim(),
       category: data.itemCategory,
+      brand_model: data.brandModel.trim() || null,
+      color: data.color.trim() || null,
       item_description: data.itemDescription.trim(),
       location: data.locationType,
       location_detail: data.locationDetails.trim() || null,
       date_lost: data.date,
+      time_lost: data.time || null,
+      distinguishing_features: data.distinguishingFeatures.trim() || null,
       additional_info: data.notes.trim() || null,
+      case_number: newCaseNumber,
     };
 
     const { error: dbError } = await supabase
@@ -155,11 +167,13 @@ export default function ReportPage() {
       return;
     }
 
+    setCaseNumber(newCaseNumber);
     setSubmitting(false);
     setSubmitted(true);
   };
 
-  if (submitted) return <SubmittedScreen email={data.email} />;
+  if (submitted)
+    return <SubmittedScreen email={data.email} caseNumber={caseNumber} />;
 
   const progress = (step / TOTAL_STEPS) * 100;
 
@@ -305,6 +319,26 @@ function Step1({ data, update, errors }) {
           ))}
         </select>
       </Field>
+      <div className="grid gap-5 sm:grid-cols-2">
+        <Field label="Brand / Model (optional)">
+          <input
+            type="text"
+            className={inputCls}
+            value={data.brandModel}
+            onChange={update("brandModel")}
+            placeholder="e.g. iPhone 15 Pro, Louis Vuitton"
+          />
+        </Field>
+        <Field label="Color (optional)">
+          <input
+            type="text"
+            className={inputCls}
+            value={data.color}
+            onChange={update("color")}
+            placeholder="e.g. Black"
+          />
+        </Field>
+      </div>
       <Field
         label="Brief item description"
         required
@@ -314,7 +348,15 @@ function Step1({ data, update, errors }) {
           className={`${inputCls} min-h-28 resize-y`}
           value={data.itemDescription}
           onChange={update("itemDescription")}
-          placeholder="Distinguishing features, brand, what's inside, etc."
+          placeholder="What it looks like, what's inside, model number, etc."
+        />
+      </Field>
+      <Field label="Distinguishing features (optional)">
+        <textarea
+          className={`${inputCls} min-h-24 resize-y`}
+          value={data.distinguishingFeatures}
+          onChange={update("distinguishingFeatures")}
+          placeholder="Any unique marks, stickers, engravings, or contents that would help identify it"
         />
       </Field>
     </div>
@@ -353,20 +395,30 @@ function Step2({ data, update, errors }) {
           placeholder="e.g. Line 2, Hongik Univ Station, exit 9"
         />
       </Field>
-      <Field label="Date lost" required error={errors.date}>
-        <input
-          type="date"
-          className={inputCls}
-          value={data.date}
-          onChange={update("date")}
-        />
-      </Field>
-      <Field label="Additional information (optional)">
+      <div className="grid gap-5 sm:grid-cols-2">
+        <Field label="Date lost" required error={errors.date}>
+          <input
+            type="date"
+            className={inputCls}
+            value={data.date}
+            onChange={update("date")}
+          />
+        </Field>
+        <Field label="Time (optional)">
+          <input
+            type="time"
+            className={inputCls}
+            value={data.time}
+            onChange={update("time")}
+          />
+        </Field>
+      </div>
+      <Field label="Additional info (optional)">
         <textarea
           className={`${inputCls} min-h-24 resize-y`}
           value={data.notes}
           onChange={update("notes")}
-          placeholder="Anything else that might help us locate it."
+          placeholder="Anything else — were you with someone? Did you contact any staff?"
         />
       </Field>
     </div>
@@ -378,10 +430,14 @@ function Summary({ data }) {
     ["Name", data.fullName],
     ["Email", data.email],
     ["Category", data.itemCategory],
+    ["Brand / Model", data.brandModel],
+    ["Color", data.color],
     ["Description", data.itemDescription],
+    ["Distinguishing features", data.distinguishingFeatures],
     ["Location type", data.locationType],
     ["Specific location", data.locationDetails],
     ["Date lost", data.date],
+    ["Time", data.time],
     ["Additional info", data.notes],
   ];
   return (
@@ -432,9 +488,7 @@ function Spinner() {
   );
 }
 
-function SubmittedScreen({ email }) {
-  const [caseNumber] = useState(generateCaseNumber);
-
+function SubmittedScreen({ email, caseNumber }) {
   return (
     <div className="flex flex-1 flex-col">
       <header className="bg-navy text-white">
