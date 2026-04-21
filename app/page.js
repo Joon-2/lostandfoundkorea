@@ -3,18 +3,23 @@ import Link from "next/link";
 const STEPS = [
   {
     n: "01",
-    title: "Tell us what you lost",
-    body: "Share contact info, item details, and where you last had it — takes about 2 minutes.",
+    title: "Submit a Report",
+    body: "Fill out a quick 30-second form with what you lost and where.",
   },
   {
     n: "02",
-    title: "Our team starts looking",
-    body: "Local Korean-speaking staff contact transit lost-and-found offices, businesses, and police stations on your behalf.",
+    title: "We Search in Korean",
+    body: "Our team contacts Lost112 (Korea's national database), local police stations, subway operators, bus companies, and taxi services — all in Korean, so you don't have to.",
   },
   {
     n: "03",
-    title: "We get it back to you",
-    body: "Once recovered, we coordinate pickup or international shipping to wherever you are.",
+    title: "Get Notified",
+    body: "We email you as soon as your item is located, usually within 24-48 hours.",
+  },
+  {
+    n: "04",
+    title: "Unlock & Retrieve",
+    body: "Pay $39 to get the exact location, contact info, and step-by-step English pickup instructions. Need delivery? We handle that too.",
   },
 ];
 
@@ -240,7 +245,7 @@ export default function Home() {
           <h2 className="font-serif text-3xl tracking-tight sm:text-4xl">
             How it works
           </h2>
-          <div className="mt-10 grid gap-5 sm:grid-cols-3">
+          <div className="mt-10 grid gap-5 sm:grid-cols-2 lg:grid-cols-4">
             {STEPS.map((s) => (
               <div
                 key={s.n}
