@@ -2,6 +2,7 @@
 
 import Link from "next/link";
 import { useState } from "react";
+import { supabase } from "@/lib/supabase";
 
 const TOTAL_STEPS = 4;
 
@@ -103,6 +104,8 @@ export default function ReportPage() {
   const [data, setData] = useState(initialData);
   const [errors, setErrors] = useState({});
   const [submitted, setSubmitted] = useState(false);
+  const [submitting, setSubmitting] = useState(false);
+  const [submitError, setSubmitError] = useState(null);
 
   const update = (key) => (e) => {
     setData((d) => ({ ...d, [key]: e.target.value }));
@@ -124,8 +127,48 @@ export default function ReportPage() {
     setStep((s) => Math.max(s - 1, 1));
   };
 
-  const submit = () => {
-    console.log("Lost and Found Korea — Report submitted:", data);
+  const submit = async () => {
+    if (submitting) return;
+    setSubmitting(true);
+    setSubmitError(null);
+
+    if (!supabase) {
+      setSubmitError(
+        "Submissions are temporarily unavailable. Please try again later or email hello@lostandfoundkorea.com."
+      );
+      setSubmitting(false);
+      return;
+    }
+
+    const payload = {
+      name: data.fullName.trim(),
+      email: data.email.trim(),
+      phone: data.phone.trim() || null,
+      category: data.itemCategory,
+      item_description: data.itemDescription.trim(),
+      color: data.itemColor.trim() || null,
+      location: data.locationType,
+      location_detail: data.locationDetails.trim() || null,
+      date_lost: data.date,
+      time_lost: data.time || null,
+      additional_info: data.notes.trim() || null,
+    };
+
+    const { error: dbError } = await supabase
+      .from("reports")
+      .insert(payload);
+
+    if (dbError) {
+      console.error("Supabase insert failed:", dbError);
+      setSubmitError(
+        dbError.message ||
+          "Something went wrong submitting your report. Please try again."
+      );
+      setSubmitting(false);
+      return;
+    }
+
+    setSubmitting(false);
     setSubmitted(true);
   };
 
@@ -180,11 +223,26 @@ export default function ReportPage() {
           {step === 4 && <Step4 data={data} />}
         </div>
 
+        {submitError && step === TOTAL_STEPS && (
+          <div className="mt-4 rounded-xl border border-red-500/40 bg-red-500/10 px-4 py-3 text-sm text-red-200">
+            <p className="font-medium">Submission failed</p>
+            <p className="mt-1 text-red-200/90">{submitError}</p>
+            <button
+              type="button"
+              onClick={submit}
+              disabled={submitting}
+              className="mt-3 inline-flex items-center rounded-full border border-red-400/40 px-4 py-2 text-xs font-medium text-red-100 transition-colors hover:bg-red-500/20 disabled:opacity-60"
+            >
+              Try again
+            </button>
+          </div>
+        )}
+
         <div className="mt-6 flex items-center justify-between gap-3">
           <button
             type="button"
             onClick={back}
-            disabled={step === 1}
+            disabled={step === 1 || submitting}
             className="rounded-full border border-border px-6 py-3 text-sm font-medium text-foreground transition-colors hover:bg-card disabled:cursor-not-allowed disabled:opacity-40"
           >
             Back
@@ -201,9 +259,17 @@ export default function ReportPage() {
             <button
               type="button"
               onClick={submit}
-              className="rounded-full bg-accent px-8 py-3 text-sm font-medium text-white transition-colors hover:bg-accent-hover"
+              disabled={submitting}
+              className="inline-flex min-w-40 items-center justify-center gap-2 rounded-full bg-accent px-8 py-3 text-sm font-medium text-white transition-colors hover:bg-accent-hover disabled:cursor-not-allowed disabled:opacity-70"
             >
-              Submit report
+              {submitting ? (
+                <>
+                  <Spinner />
+                  <span>Submitting…</span>
+                </>
+              ) : (
+                <span>Submit report</span>
+              )}
             </button>
           )}
         </div>
@@ -460,6 +526,32 @@ function Step4({ data }) {
         </div>
       ))}
     </div>
+  );
+}
+
+function Spinner() {
+  return (
+    <svg
+      className="h-4 w-4 animate-spin"
+      viewBox="0 0 24 24"
+      fill="none"
+      aria-hidden="true"
+    >
+      <circle
+        cx="12"
+        cy="12"
+        r="10"
+        stroke="currentColor"
+        strokeOpacity="0.3"
+        strokeWidth="3"
+      />
+      <path
+        d="M22 12a10 10 0 0 1-10 10"
+        stroke="currentColor"
+        strokeWidth="3"
+        strokeLinecap="round"
+      />
+    </svg>
   );
 }
 
