@@ -150,10 +150,7 @@ export default function ReportPage() {
 
     if (dbError) {
       console.error("Supabase insert failed:", dbError);
-      setSubmitError(
-        dbError.message ||
-          "Something went wrong submitting your report. Please try again."
-      );
+      setSubmitError("Something went wrong, please try again.");
       setSubmitting(false);
       return;
     }
