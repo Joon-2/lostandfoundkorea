@@ -361,6 +361,21 @@ export default function Home() {
               No item found?{" "}
               <span className="text-accent">You pay nothing.</span>
             </p>
+
+            <div className="mt-6 text-center text-[13px] text-muted">
+              <p>We accept PayPal, Visa, Mastercard, and Apple Pay</p>
+              <p className="mt-2 flex flex-wrap items-center justify-center gap-x-3 gap-y-1">
+                <span>💳 Visa / Mastercard</span>
+                <span aria-hidden="true" className="text-muted/50">
+                  &middot;
+                </span>
+                <span>🅿️ PayPal</span>
+                <span aria-hidden="true" className="text-muted/50">
+                  &middot;
+                </span>
+                <span>🍎 Apple Pay</span>
+              </p>
+            </div>
           </div>
         </section>
 
