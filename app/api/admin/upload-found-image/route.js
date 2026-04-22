@@ -184,13 +184,15 @@ export async function POST(request) {
       ") — new array length:",
       nextImages.length
     );
-    const { error: updateError } = await supabaseAdmin
+    const { data: updated, error: updateError } = await supabaseAdmin
       .from("reports")
       .update({
         found_images: nextImages,
         activity_log: nextLog,
       })
-      .eq("id", report.id);
+      .eq("id", report.id)
+      .select("id, found_images")
+      .single();
     if (updateError) {
       const plain = errorToPlain(updateError);
       console.error(
@@ -202,9 +204,26 @@ export async function POST(request) {
         500
       );
     }
-    console.log("[upload-found-image] DB update OK");
+    console.log(
+      "[upload-found-image] DB update OK, verified found_images length:",
+      Array.isArray(updated?.found_images) ? updated.found_images.length : "NOT ARRAY",
+      "contains new url:",
+      Array.isArray(updated?.found_images) &&
+        updated.found_images.includes(publicUrl)
+    );
 
-    return ok({ ok: true, url: publicUrl, images: nextImages });
+    const persisted = Array.isArray(updated?.found_images)
+      ? updated.found_images
+      : nextImages;
+
+    if (!persisted.includes(publicUrl)) {
+      console.error(
+        "[upload-found-image] WARNING: DB round-trip did not include the new URL.",
+        { expected: publicUrl, got: persisted }
+      );
+    }
+
+    return ok({ ok: true, url: publicUrl, images: persisted });
   } catch (err) {
     const plain = errorToPlain(err);
     console.error(

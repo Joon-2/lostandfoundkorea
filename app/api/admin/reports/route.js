@@ -20,9 +20,14 @@ export async function GET(request) {
     .select("*")
     .order("created_at", { ascending: false });
 
+  const headers = { "Cache-Control": "no-store, max-age=0, must-revalidate" };
+
   if (error) {
-    return Response.json({ ok: false, error: error.message }, { status: 500 });
+    return Response.json(
+      { ok: false, error: error.message },
+      { status: 500, headers }
+    );
   }
 
-  return Response.json({ ok: true, reports: data || [] });
+  return Response.json({ ok: true, reports: data || [] }, { headers });
 }

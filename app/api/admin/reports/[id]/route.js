@@ -90,9 +90,14 @@ export async function PATCH(request, { params }) {
     .select()
     .single();
 
+  const headers = { "Cache-Control": "no-store, max-age=0, must-revalidate" };
+
   if (error) {
-    return Response.json({ ok: false, error: error.message }, { status: 500 });
+    return Response.json(
+      { ok: false, error: error.message },
+      { status: 500, headers }
+    );
   }
 
-  return Response.json({ ok: true, report: data });
+  return Response.json({ ok: true, report: data }, { headers });
 }
