@@ -35,6 +35,12 @@ export async function POST(request) {
     const legalName = (formData.get("legalName") || "").toString().trim();
     const idNumber = (formData.get("idNumber") || "").toString().trim();
     const authorized = formData.get("authorized") === "true";
+    const shippingStreet = (formData.get("shippingStreet") || "").toString().trim();
+    const shippingCity = (formData.get("shippingCity") || "").toString().trim();
+    const shippingCountry = (formData.get("shippingCountry") || "").toString().trim();
+    const shippingPostalCode = (formData.get("shippingPostalCode") || "")
+      .toString()
+      .trim();
 
     if (!file || typeof file === "string" || !caseNumber) {
       return Response.json(
@@ -51,6 +57,17 @@ export async function POST(request) {
     if (!authorized) {
       return Response.json(
         { ok: false, error: "Authorization checkbox must be accepted" },
+        { status: 400 }
+      );
+    }
+    if (
+      !shippingStreet ||
+      !shippingCity ||
+      !shippingCountry ||
+      !shippingPostalCode
+    ) {
+      return Response.json(
+        { ok: false, error: "Missing shipping address fields" },
         { status: 400 }
       );
     }
@@ -112,17 +129,22 @@ export async function POST(request) {
       .getPublicUrl(uploaded.path);
     const publicUrl = publicData?.publicUrl || null;
 
-    if (publicUrl) {
-      await supabaseAdmin
-        .from("reports")
-        .update({ authorization_url: publicUrl })
-        .eq("id", report.id);
-    }
+    const shippingAddress = [
+      shippingStreet,
+      `${shippingCity} ${shippingPostalCode}`.trim(),
+      shippingCountry,
+    ]
+      .filter(Boolean)
+      .join("\n");
+
+    const updatePayload = { shipping_address: shippingAddress };
+    if (publicUrl) updatePayload.authorization_url = publicUrl;
+    await supabaseAdmin.from("reports").update(updatePayload).eq("id", report.id);
 
     await logToCaseByCaseNumber(caseNumber, {
       action: `Authorization submitted — name: ${legalName}, ID: ${maskIdNumber(
         idNumber
-      )}`,
+      )}, shipping to ${shippingCity}, ${shippingCountry}`,
       user: "customer",
     });
 

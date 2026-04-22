@@ -144,12 +144,16 @@ export default function PayPage({ params }) {
   );
 }
 
-function AuthorizationUpload({ caseNumber, authorizationUrl, onUploaded }) {
+function AuthorizationUpload({ caseNumber, authorizationUrl, shippingAddress, onUploaded }) {
   const fileInputRef = useRef(null);
   const [legalName, setLegalName] = useState("");
   const [idNumber, setIdNumber] = useState("");
   const [authorized, setAuthorized] = useState(false);
   const [file, setFile] = useState(null);
+  const [street, setStreet] = useState("");
+  const [city, setCity] = useState("");
+  const [country, setCountry] = useState("");
+  const [postal, setPostal] = useState("");
   const [uploading, setUploading] = useState(false);
   const [msg, setMsg] = useState(null);
 
@@ -158,6 +162,10 @@ function AuthorizationUpload({ caseNumber, authorizationUrl, onUploaded }) {
     idNumber.trim().length > 0 &&
     Boolean(file) &&
     authorized &&
+    street.trim().length > 0 &&
+    city.trim().length > 0 &&
+    country.trim().length > 0 &&
+    postal.trim().length > 0 &&
     !uploading;
 
   const handleSubmit = async (e) => {
@@ -172,6 +180,10 @@ function AuthorizationUpload({ caseNumber, authorizationUrl, onUploaded }) {
       fd.append("legalName", legalName.trim());
       fd.append("idNumber", idNumber.trim());
       fd.append("authorized", "true");
+      fd.append("shippingStreet", street.trim());
+      fd.append("shippingCity", city.trim());
+      fd.append("shippingCountry", country.trim());
+      fd.append("shippingPostalCode", postal.trim());
       const res = await fetch("/api/upload-authorization", {
         method: "POST",
         body: fd,
@@ -186,6 +198,10 @@ function AuthorizationUpload({ caseNumber, authorizationUrl, onUploaded }) {
       setLegalName("");
       setIdNumber("");
       setAuthorized(false);
+      setStreet("");
+      setCity("");
+      setCountry("");
+      setPostal("");
       onUploaded?.();
     } catch (err) {
       setMsg({ kind: "err", text: err.message });
@@ -219,6 +235,16 @@ function AuthorizationUpload({ caseNumber, authorizationUrl, onUploaded }) {
             View
           </a>
         </p>
+      )}
+      {shippingAddress && (
+        <div className="mt-3 rounded-lg bg-alt px-3 py-2 text-sm text-body">
+          <span className="text-xs font-semibold uppercase tracking-widest text-muted">
+            Shipping to
+          </span>
+          <p className="mt-1 whitespace-pre-wrap text-foreground">
+            {shippingAddress}
+          </p>
+        </div>
       )}
 
       <form onSubmit={handleSubmit} className="mt-5 space-y-4">
@@ -300,6 +326,89 @@ function AuthorizationUpload({ caseNumber, authorizationUrl, onUploaded }) {
             ) : (
               <span className="text-sm text-muted">No file selected</span>
             )}
+          </div>
+        </div>
+
+        <div className="rounded-xl border border-border bg-alt p-4">
+          <span className="text-xs font-semibold uppercase tracking-widest text-muted">
+            Shipping address
+          </span>
+          <p className="mt-1 text-sm text-body">
+            Where should we ship your item once we collect it?
+          </p>
+          <div className="mt-3 grid gap-3 sm:grid-cols-2">
+            <div className="sm:col-span-2">
+              <label
+                htmlFor="ship-street"
+                className="mb-1 block text-sm font-medium text-foreground"
+              >
+                Street address
+              </label>
+              <input
+                id="ship-street"
+                type="text"
+                required
+                autoComplete="street-address"
+                value={street}
+                onChange={(e) => setStreet(e.target.value)}
+                placeholder="e.g. 123 Main Street, Apt 4B"
+                className={fieldCls}
+              />
+            </div>
+            <div>
+              <label
+                htmlFor="ship-city"
+                className="mb-1 block text-sm font-medium text-foreground"
+              >
+                City
+              </label>
+              <input
+                id="ship-city"
+                type="text"
+                required
+                autoComplete="address-level2"
+                value={city}
+                onChange={(e) => setCity(e.target.value)}
+                placeholder="e.g. Tokyo"
+                className={fieldCls}
+              />
+            </div>
+            <div>
+              <label
+                htmlFor="ship-postal"
+                className="mb-1 block text-sm font-medium text-foreground"
+              >
+                Postal code
+              </label>
+              <input
+                id="ship-postal"
+                type="text"
+                required
+                autoComplete="postal-code"
+                value={postal}
+                onChange={(e) => setPostal(e.target.value)}
+                placeholder="e.g. 100-0001"
+                className={fieldCls}
+              />
+            </div>
+            <div className="sm:col-span-2">
+              <label
+                htmlFor="ship-country"
+                className="mb-1 block text-sm font-medium text-foreground"
+              >
+                Country
+              </label>
+              <input
+                id="ship-country"
+                type="text"
+                required
+                autoComplete="country-name"
+                value={country}
+                onChange={(e) => setCountry(e.target.value)}
+                placeholder="e.g. Japan"
+                className={fieldCls}
+              />
+            </div>
           </div>
         </div>
 
@@ -679,12 +788,11 @@ function PaidState({ report, onRefresh, receipt }) {
       )}`
     : null;
   const photos = Array.isArray(report.found_images) ? report.found_images : [];
-  const upsellWhatsApp = `https://wa.me/821044921349?text=${encodeURIComponent(
-    `Hi, I'd like to add Pickup & Delivery (+$49) for case ${report.case_number}.`
-  )}`;
   const helpWhatsApp = `https://wa.me/821044921349?text=${encodeURIComponent(
     `Hi, I have a question about picking up my item. Case ${report.case_number}.`
   )}`;
+  const addonPaid = Boolean(report.pickup_addon_transaction_id);
+  const needsAuth = report.plan === "all_in_one" || addonPaid;
 
   const transactionId = receipt?.transactionId || report.paypal_transaction_id;
   const receiptAmount =
@@ -837,30 +945,28 @@ function PaidState({ report, onRefresh, receipt }) {
         </div>
       )}
 
-      <AuthorizationUpload
-        caseNumber={report.case_number}
-        authorizationUrl={report.authorization_url}
-        onUploaded={onRefresh}
-      />
-
-      <div className="mt-6 rounded-2xl border border-accent/30 bg-emerald-50 p-5 sm:p-6">
-        <h3 className="font-serif text-lg tracking-tight text-foreground">
-          Need help picking it up?
-        </h3>
-        <p className="mt-2 text-sm text-body">
-          Add <strong className="text-foreground">Pickup &amp; Delivery</strong>{" "}
-          for just <strong className="text-foreground">+$49</strong> more and
-          we&rsquo;ll bring it straight to your hotel or address.
-        </p>
-        <a
-          href={upsellWhatsApp}
-          target="_blank"
-          rel="noopener noreferrer"
-          className="mt-4 inline-flex items-center gap-2 rounded-full bg-accent px-5 py-2.5 text-sm font-medium text-white transition-colors hover:bg-accent-hover"
-        >
-          Add Pickup — $49
-        </a>
-      </div>
+      {needsAuth ? (
+        <>
+          {addonPaid && (
+            <div className="mt-6 rounded-2xl border border-accent/30 bg-emerald-50 px-5 py-3 text-sm text-accent">
+              <strong className="font-semibold">Pickup add-on paid.</strong>{" "}
+              Complete the authorization below so we can collect and ship your
+              item.
+            </div>
+          )}
+          <AuthorizationUpload
+            caseNumber={report.case_number}
+            authorizationUrl={report.authorization_url}
+            shippingAddress={report.shipping_address}
+            onUploaded={onRefresh}
+          />
+        </>
+      ) : (
+        <PickupUpsell
+          caseNumber={report.case_number}
+          onPaid={onRefresh}
+        />
+      )}
 
       <p className="mt-6 text-sm text-muted">
         Questions?{" "}
@@ -875,5 +981,115 @@ function PaidState({ report, onRefresh, receipt }) {
         .
       </p>
     </Panel>
+  );
+}
+
+function PickupUpsell({ caseNumber, onPaid }) {
+  const paypalConfigured = Boolean(PAYPAL_CLIENT_ID);
+  const [paying, setPaying] = useState(false);
+  const [err, setErr] = useState(null);
+
+  const createOrder = useCallback(async () => {
+    setErr(null);
+    setPaying(true);
+    try {
+      const res = await fetch("/api/paypal/pickup-addon/create-order", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ caseNumber }),
+      });
+      const json = await res.json().catch(() => ({}));
+      if (!res.ok || !json.ok || !json.id) {
+        throw new Error(json.error || "Failed to start pickup checkout");
+      }
+      return json.id;
+    } catch (e) {
+      setErr(e.message);
+      setPaying(false);
+      throw e;
+    }
+  }, [caseNumber]);
+
+  const onApprove = useCallback(
+    async (paypalData) => {
+      try {
+        const res = await fetch("/api/paypal/pickup-addon/capture-order", {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({
+            orderId: paypalData.orderID,
+            caseNumber,
+          }),
+        });
+        const json = await res.json().catch(() => ({}));
+        if (!res.ok || !json.ok) {
+          throw new Error(json.error || "Pickup capture failed");
+        }
+        onPaid?.();
+      } catch (e) {
+        setErr(e.message);
+      } finally {
+        setPaying(false);
+      }
+    },
+    [caseNumber, onPaid]
+  );
+
+  return (
+    <div className="mt-6 rounded-2xl border border-accent/30 bg-emerald-50 p-5 sm:p-6">
+      <h3 className="font-serif text-lg tracking-tight text-foreground">
+        Need help picking it up?
+      </h3>
+      <p className="mt-2 text-sm text-body">
+        Add <strong className="text-foreground">Pickup &amp; Delivery</strong>{" "}
+        for just <strong className="text-foreground">+$49</strong> more. We&rsquo;ll
+        collect the item on your behalf and ship it straight to you.
+      </p>
+      <p className="mt-2 text-xs text-muted">
+        Charged only if you agree &mdash; no impact on your $39 recovery
+        payment.
+      </p>
+      <div className="mt-4">
+        {paypalConfigured ? (
+          <PayPalScriptProvider
+            options={{
+              "client-id": PAYPAL_CLIENT_ID,
+              currency: "USD",
+              intent: "capture",
+              locale: "en_US",
+            }}
+          >
+            <PayPalButtons
+              disabled={paying}
+              style={{
+                layout: "horizontal",
+                color: "gold",
+                shape: "pill",
+                label: "pay",
+                tagline: false,
+              }}
+              createOrder={createOrder}
+              onApprove={onApprove}
+              onError={(e) => {
+                console.error("PayPal pickup error:", e);
+                setErr("PayPal error. Please try again.");
+                setPaying(false);
+              }}
+              onCancel={() => setPaying(false)}
+            />
+          </PayPalScriptProvider>
+        ) : (
+          <p className="rounded-xl border border-amber-200 bg-amber-50 px-4 py-3 text-sm text-amber-800">
+            Pickup checkout is temporarily unavailable. Please contact us on
+            WhatsApp.
+          </p>
+        )}
+        {err && (
+          <p className="mt-3 rounded-xl border border-red-200 bg-red-50 px-4 py-3 text-sm text-red-700">
+            {err}
+          </p>
+        )}
+      </div>
+    </div>
   );
 }
