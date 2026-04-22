@@ -56,7 +56,7 @@ export async function POST(request) {
 
     console.log("Sending email to:", email);
     const info = await transporter.sendMail({
-      from: `Lost and Found Korea <${user}>`,
+      from: '"Lost and Found Korea" <support@lostandfoundkorea.com>',
       to: email,
       subject,
       text,
