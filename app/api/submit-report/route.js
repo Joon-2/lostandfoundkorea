@@ -1,5 +1,4 @@
 import { supabase } from "@/lib/supabase";
-import { sendConfirmationEmail } from "@/lib/email";
 
 export const runtime = "nodejs";
 
@@ -140,10 +139,6 @@ export async function POST(request) {
         { status: 500 }
       );
     }
-
-    sendConfirmationEmail({ name, email, caseNumber }).catch((err) => {
-      console.error("Confirmation email failed:", err);
-    });
 
     return Response.json({ ok: true, caseNumber });
   } catch (err) {
