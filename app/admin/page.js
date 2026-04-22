@@ -1,7 +1,7 @@
 "use client";
 
 import Link from "next/link";
-import { useCallback, useEffect, useState } from "react";
+import { useCallback, useEffect, useMemo, useState } from "react";
 
 const ENV_LABELS = [
   "NEXT_PUBLIC_SUPABASE_URL",
@@ -14,7 +14,23 @@ const ENV_LABELS = [
   "ADMIN_PASSWORD",
 ];
 
+const STATUS_OPTIONS = ["pending", "found", "paid"];
+const STATUS_LABELS = {
+  pending: "Pending",
+  found: "Found",
+  paid: "Paid",
+};
+const STATUS_BADGE = {
+  pending: "bg-amber-50 text-amber-700 border-amber-200",
+  found: "bg-emerald-50 text-accent border-emerald-200",
+  paid: "bg-sky-50 text-sky-700 border-sky-200",
+};
+
 const SESSION_KEY = "lfk_admin_password";
+const PRICE = 39;
+
+const inputCls =
+  "w-full rounded-xl border border-border bg-card px-4 py-3 text-base text-foreground placeholder:text-muted focus:border-accent focus:outline-none focus:ring-2 focus:ring-accent/30";
 
 export default function AdminPage() {
   const [password, setPassword] = useState("");
@@ -53,26 +69,16 @@ export default function AdminPage() {
     setAuthed(true);
   };
 
-  const logout = () => {
+  const logout = useCallback(() => {
     sessionStorage.removeItem(SESSION_KEY);
     setPassword("");
     setAuthed(false);
-  };
+  }, []);
 
   if (!authed) {
     return (
       <div className="flex flex-1 flex-col">
-        <header className="bg-navy text-white">
-          <div className="mx-auto flex w-full max-w-3xl items-center justify-between px-5 py-5 sm:px-8">
-            <Link
-              href="/"
-              className="font-serif text-xl tracking-tight text-white"
-            >
-              Lost & Found Korea
-            </Link>
-            <span className="text-sm text-slate-300">Admin</span>
-          </div>
-        </header>
+        <AdminHeader />
         <main className="mx-auto flex w-full max-w-md flex-1 flex-col justify-center px-5 py-12 sm:px-8">
           <div className="rounded-2xl border border-border bg-card p-7 shadow-sm">
             <h1 className="font-serif text-2xl tracking-tight">Admin sign-in</h1>
@@ -86,7 +92,7 @@ export default function AdminPage() {
                 value={password}
                 onChange={(e) => setPassword(e.target.value)}
                 placeholder="Password"
-                className="w-full rounded-xl border border-border bg-card px-4 py-3 text-base text-foreground placeholder:text-muted focus:border-accent focus:outline-none focus:ring-2 focus:ring-accent/30"
+                className={inputCls}
               />
               {authError && (
                 <p className="text-sm text-red-600">{authError}</p>
@@ -106,32 +112,535 @@ export default function AdminPage() {
 
   return (
     <div className="flex flex-1 flex-col">
-      <header className="bg-navy text-white">
-        <div className="mx-auto flex w-full max-w-5xl items-center justify-between px-5 py-5 sm:px-8">
-          <Link
-            href="/"
-            className="font-serif text-xl tracking-tight text-white"
-          >
-            Lost & Found Korea
-          </Link>
+      <AdminHeader onLogout={logout} />
+      <main className="mx-auto w-full max-w-6xl flex-1 px-5 py-8 sm:px-8 sm:py-10">
+        <Dashboard password={password} onUnauthorized={logout} />
+      </main>
+    </div>
+  );
+}
+
+function AdminHeader({ onLogout }) {
+  return (
+    <header className="bg-navy text-white">
+      <div className="mx-auto flex w-full max-w-6xl items-center justify-between px-5 py-5 sm:px-8">
+        <Link
+          href="/"
+          className="font-serif text-xl tracking-tight text-white"
+        >
+          Lost & Found Korea
+        </Link>
+        {onLogout ? (
           <button
-            onClick={logout}
+            onClick={onLogout}
             className="text-sm text-slate-300 transition-colors hover:text-white"
           >
             Sign out
           </button>
-        </div>
-      </header>
-      <main className="mx-auto w-full max-w-5xl flex-1 px-5 py-10 sm:px-8 sm:py-12">
+        ) : (
+          <span className="text-sm text-slate-300">Admin</span>
+        )}
+      </div>
+    </header>
+  );
+}
+
+function Dashboard({ password, onUnauthorized }) {
+  const [reports, setReports] = useState([]);
+  const [loading, setLoading] = useState(false);
+  const [loadError, setLoadError] = useState(null);
+  const [search, setSearch] = useState("");
+  const [statusFilter, setStatusFilter] = useState("all");
+  const [expandedId, setExpandedId] = useState(null);
+
+  const fetchReports = useCallback(async () => {
+    setLoading(true);
+    setLoadError(null);
+    try {
+      const res = await fetch("/api/admin/reports", {
+        headers: { "x-admin-password": password },
+        cache: "no-store",
+      });
+      if (res.status === 401) {
+        onUnauthorized?.();
+        return;
+      }
+      if (!res.ok) {
+        const json = await res.json().catch(() => ({}));
+        throw new Error(json.error || "Failed to load reports");
+      }
+      const json = await res.json();
+      setReports(json.reports || []);
+    } catch (err) {
+      setLoadError(err.message);
+    } finally {
+      setLoading(false);
+    }
+  }, [password, onUnauthorized]);
+
+  useEffect(() => {
+    fetchReports();
+  }, [fetchReports]);
+
+  const stats = useMemo(() => {
+    const counts = { total: reports.length, pending: 0, found: 0, paid: 0 };
+    for (const r of reports) {
+      const s = r.status || "pending";
+      if (counts[s] !== undefined) counts[s] += 1;
+    }
+    return { ...counts, revenue: counts.paid * PRICE };
+  }, [reports]);
+
+  const filtered = useMemo(() => {
+    let arr = reports;
+    if (statusFilter !== "all") {
+      arr = arr.filter((r) => (r.status || "pending") === statusFilter);
+    }
+    if (search.trim()) {
+      const q = search.trim().toLowerCase();
+      arr = arr.filter(
+        (r) =>
+          (r.case_number || "").toLowerCase().includes(q) ||
+          (r.name || "").toLowerCase().includes(q) ||
+          (r.email || "").toLowerCase().includes(q)
+      );
+    }
+    return arr;
+  }, [reports, search, statusFilter]);
+
+  const updateReport = useCallback(
+    (updated) => {
+      setReports((prev) =>
+        prev.map((r) => (r.id === updated.id ? updated : r))
+      );
+    },
+    []
+  );
+
+  return (
+    <>
+      <div className="flex flex-wrap items-end justify-between gap-3">
         <h1 className="font-serif text-3xl tracking-tight sm:text-4xl">
-          Admin
+          Reports
         </h1>
-        <p className="mt-2 text-body">
-          Dashboard scaffold. Reports table, recovery editor, and payment-link
-          tools land here once the full admin spec lands.
+        <button
+          onClick={fetchReports}
+          disabled={loading}
+          className="inline-flex items-center gap-2 rounded-full border border-border bg-card px-4 py-2 text-sm font-medium text-foreground transition-colors hover:bg-alt disabled:opacity-60"
+        >
+          {loading ? "Refreshing…" : "Refresh"}
+        </button>
+      </div>
+
+      <StatsRow stats={stats} />
+
+      <SearchBar
+        search={search}
+        onSearch={setSearch}
+        statusFilter={statusFilter}
+        onStatusChange={setStatusFilter}
+      />
+
+      {loadError && (
+        <p className="mt-4 rounded-xl border border-red-300 bg-red-50 px-4 py-3 text-sm text-red-700">
+          {loadError}
         </p>
-        <SystemStatus password={password} onUnauthorized={logout} />
-      </main>
+      )}
+
+      <div className="mt-6 space-y-3">
+        {filtered.length === 0 && !loading && (
+          <p className="rounded-2xl border border-border bg-card px-5 py-10 text-center text-sm text-muted">
+            No reports match the current filter.
+          </p>
+        )}
+        {filtered.map((r) => (
+          <ReportCard
+            key={r.id}
+            report={r}
+            expanded={expandedId === r.id}
+            onToggle={() =>
+              setExpandedId(expandedId === r.id ? null : r.id)
+            }
+            password={password}
+            onUnauthorized={onUnauthorized}
+            onUpdate={updateReport}
+          />
+        ))}
+      </div>
+
+      <SystemStatus password={password} onUnauthorized={onUnauthorized} />
+    </>
+  );
+}
+
+function StatsRow({ stats }) {
+  const items = [
+    { label: "Total cases", value: stats.total },
+    { label: "Pending", value: stats.pending, tone: "amber" },
+    { label: "Found", value: stats.found, tone: "emerald" },
+    { label: "Paid", value: stats.paid, tone: "sky" },
+    { label: "Revenue", value: `$${stats.revenue.toLocaleString()}`, tone: "emerald" },
+  ];
+  const toneColor = {
+    amber: "text-amber-700",
+    emerald: "text-accent",
+    sky: "text-sky-700",
+  };
+  return (
+    <div className="mt-6 grid grid-cols-2 gap-3 sm:grid-cols-3 lg:grid-cols-5">
+      {items.map((it) => (
+        <div
+          key={it.label}
+          className="rounded-2xl border border-border bg-card px-4 py-4 shadow-sm"
+        >
+          <div className="text-xs font-medium uppercase tracking-widest text-muted">
+            {it.label}
+          </div>
+          <div
+            className={`mt-1 font-serif text-2xl tracking-tight ${
+              toneColor[it.tone] || "text-foreground"
+            }`}
+          >
+            {it.value}
+          </div>
+        </div>
+      ))}
+    </div>
+  );
+}
+
+function SearchBar({ search, onSearch, statusFilter, onStatusChange }) {
+  return (
+    <div className="mt-6 flex flex-col gap-3 sm:flex-row sm:items-center">
+      <input
+        type="search"
+        value={search}
+        onChange={(e) => onSearch(e.target.value)}
+        placeholder="Search by case number, name, or email"
+        className={inputCls + " sm:flex-1"}
+      />
+      <select
+        value={statusFilter}
+        onChange={(e) => onStatusChange(e.target.value)}
+        className={inputCls + " sm:w-48"}
+      >
+        <option value="all">All statuses</option>
+        {STATUS_OPTIONS.map((s) => (
+          <option key={s} value={s}>
+            {STATUS_LABELS[s]}
+          </option>
+        ))}
+      </select>
+    </div>
+  );
+}
+
+function ReportCard({
+  report,
+  expanded,
+  onToggle,
+  password,
+  onUnauthorized,
+  onUpdate,
+}) {
+  const status = report.status || "pending";
+  return (
+    <article className="rounded-2xl border border-border bg-card shadow-sm">
+      <button
+        onClick={onToggle}
+        className="flex w-full flex-wrap items-center justify-between gap-3 px-5 py-4 text-left"
+      >
+        <div className="flex flex-wrap items-center gap-x-4 gap-y-1">
+          <span className="font-mono text-sm font-semibold text-foreground">
+            {report.case_number || "—"}
+          </span>
+          <span className="text-sm text-foreground">{report.name}</span>
+          <span className="text-sm text-muted">{report.email}</span>
+        </div>
+        <div className="flex items-center gap-3">
+          <span
+            className={`rounded-full border px-2.5 py-0.5 text-xs font-medium ${STATUS_BADGE[status]}`}
+          >
+            {STATUS_LABELS[status]}
+          </span>
+          <span className="hidden text-xs text-muted sm:inline">
+            {report.date_lost || "—"}
+          </span>
+          <svg
+            className={`h-4 w-4 text-muted transition-transform ${
+              expanded ? "rotate-180" : ""
+            }`}
+            viewBox="0 0 24 24"
+            fill="none"
+            stroke="currentColor"
+            strokeWidth="2"
+            strokeLinecap="round"
+            strokeLinejoin="round"
+            aria-hidden="true"
+          >
+            <polyline points="6 9 12 15 18 9" />
+          </svg>
+        </div>
+      </button>
+      {expanded && (
+        <ReportEditor
+          report={report}
+          password={password}
+          onUnauthorized={onUnauthorized}
+          onUpdate={onUpdate}
+        />
+      )}
+    </article>
+  );
+}
+
+function ReportEditor({ report, password, onUnauthorized, onUpdate }) {
+  const [status, setStatus] = useState(report.status || "pending");
+  const [recoveryLocation, setRecoveryLocation] = useState(
+    report.recovery_location || ""
+  );
+  const [recoveryContact, setRecoveryContact] = useState(
+    report.recovery_contact || ""
+  );
+  const [recoveryHours, setRecoveryHours] = useState(
+    report.recovery_hours || ""
+  );
+  const [recoveryInstructions, setRecoveryInstructions] = useState(
+    report.recovery_instructions || ""
+  );
+  const [saving, setSaving] = useState(false);
+  const [saveMsg, setSaveMsg] = useState(null);
+  const [emailMsg, setEmailMsg] = useState(null);
+  const [linkCopied, setLinkCopied] = useState(false);
+
+  const paymentLink = `https://lostandfoundkorea.com/pay/${report.case_number || ""}`;
+
+  const handleSave = async () => {
+    setSaving(true);
+    setSaveMsg(null);
+    try {
+      const res = await fetch(`/api/admin/reports/${report.id}`, {
+        method: "PATCH",
+        headers: {
+          "Content-Type": "application/json",
+          "x-admin-password": password,
+        },
+        body: JSON.stringify({
+          status,
+          recovery_location: recoveryLocation,
+          recovery_contact: recoveryContact,
+          recovery_hours: recoveryHours,
+          recovery_instructions: recoveryInstructions,
+        }),
+      });
+      if (res.status === 401) {
+        onUnauthorized?.();
+        return;
+      }
+      const json = await res.json();
+      if (!res.ok || !json.ok) {
+        throw new Error(json.error || "Save failed");
+      }
+      onUpdate(json.report);
+      setSaveMsg({ kind: "ok", text: "Saved." });
+    } catch (err) {
+      setSaveMsg({ kind: "err", text: err.message });
+    } finally {
+      setSaving(false);
+    }
+  };
+
+  const handleCopyLink = async () => {
+    try {
+      await navigator.clipboard.writeText(paymentLink);
+      setLinkCopied(true);
+      setTimeout(() => setLinkCopied(false), 2000);
+    } catch (err) {
+      console.error("Clipboard write failed:", err);
+    }
+  };
+
+  const handleSendPayment = async () => {
+    setEmailMsg(null);
+    try {
+      const res = await fetch("/api/admin/send-payment", {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+          "x-admin-password": password,
+        },
+        body: JSON.stringify({
+          name: report.name,
+          email: report.email,
+          caseNumber: report.case_number,
+        }),
+      });
+      if (res.status === 401) {
+        onUnauthorized?.();
+        return;
+      }
+      const json = await res.json();
+      if (!res.ok || !json.ok) {
+        throw new Error(json.error || "Send failed");
+      }
+      setEmailMsg({ kind: "ok", text: `Email sent to ${report.email}.` });
+    } catch (err) {
+      setEmailMsg({ kind: "err", text: err.message });
+    }
+  };
+
+  return (
+    <div className="border-t border-border px-5 py-5 sm:px-6 sm:py-6">
+      <DetailsBlock report={report} />
+
+      <div className="mt-6">
+        <h3 className="text-xs font-semibold uppercase tracking-widest text-muted">
+          Recovery details
+        </h3>
+        <div className="mt-3 grid gap-4 sm:grid-cols-2">
+          <Field label="Status">
+            <select
+              value={status}
+              onChange={(e) => setStatus(e.target.value)}
+              className={inputCls}
+            >
+              {STATUS_OPTIONS.map((s) => (
+                <option key={s} value={s}>
+                  {STATUS_LABELS[s]}
+                </option>
+              ))}
+            </select>
+          </Field>
+          <Field label="Recovery location">
+            <input
+              type="text"
+              className={inputCls}
+              value={recoveryLocation}
+              onChange={(e) => setRecoveryLocation(e.target.value)}
+              placeholder="e.g. Hongdae Police Station, Lost Items Desk"
+            />
+          </Field>
+          <Field label="Contact phone">
+            <input
+              type="text"
+              className={inputCls}
+              value={recoveryContact}
+              onChange={(e) => setRecoveryContact(e.target.value)}
+              placeholder="e.g. +82 2 1234 5678"
+            />
+          </Field>
+          <Field label="Operating hours">
+            <input
+              type="text"
+              className={inputCls}
+              value={recoveryHours}
+              onChange={(e) => setRecoveryHours(e.target.value)}
+              placeholder="e.g. Mon–Fri 09:00–18:00"
+            />
+          </Field>
+        </div>
+        <div className="mt-4">
+          <Field label="English pickup instructions">
+            <textarea
+              className={`${inputCls} min-h-32 resize-y`}
+              value={recoveryInstructions}
+              onChange={(e) => setRecoveryInstructions(e.target.value)}
+              placeholder="Step-by-step English instructions for the user…"
+            />
+          </Field>
+        </div>
+      </div>
+
+      <div className="mt-6 flex flex-wrap items-center gap-3">
+        <button
+          onClick={handleSave}
+          disabled={saving}
+          className="inline-flex items-center rounded-full bg-accent px-5 py-2.5 text-sm font-medium text-white transition-colors hover:bg-accent-hover disabled:opacity-60"
+        >
+          {saving ? "Saving…" : "Save"}
+        </button>
+        <button
+          onClick={handleCopyLink}
+          className="inline-flex items-center rounded-full border border-border bg-card px-5 py-2.5 text-sm font-medium text-foreground transition-colors hover:bg-alt"
+        >
+          {linkCopied ? "Copied!" : "Copy payment link"}
+        </button>
+        <button
+          onClick={handleSendPayment}
+          className="inline-flex items-center rounded-full border border-border bg-card px-5 py-2.5 text-sm font-medium text-foreground transition-colors hover:bg-alt"
+        >
+          Send payment email
+        </button>
+      </div>
+
+      <div className="mt-3 space-y-1 text-sm">
+        <p className="font-mono text-xs text-muted">{paymentLink}</p>
+        {saveMsg && (
+          <p
+            className={
+              saveMsg.kind === "ok" ? "text-accent" : "text-red-600"
+            }
+          >
+            {saveMsg.text}
+          </p>
+        )}
+        {emailMsg && (
+          <p
+            className={
+              emailMsg.kind === "ok" ? "text-accent" : "text-red-600"
+            }
+          >
+            {emailMsg.text}
+          </p>
+        )}
+      </div>
+    </div>
+  );
+}
+
+function DetailsBlock({ report }) {
+  const rows = [
+    ["Category", report.category],
+    ["Brand / Model", report.brand_model],
+    ["Color", report.color],
+    ["Description", report.item_description],
+    ["Distinguishing features", report.distinguishing_features],
+    ["Location", report.location],
+    ["Specific location", report.location_detail],
+    ["Date lost", report.date_lost],
+    ["Time", report.time_lost],
+    ["Additional info", report.additional_info],
+    ["Submitted", report.created_at],
+  ];
+  return (
+    <div>
+      <h3 className="text-xs font-semibold uppercase tracking-widest text-muted">
+        Submission
+      </h3>
+      <dl className="mt-3 divide-y divide-border rounded-xl border border-border bg-alt">
+        {rows.map(([k, v]) => (
+          <div
+            key={k}
+            className="grid grid-cols-3 gap-3 px-4 py-2.5 text-sm sm:grid-cols-4"
+          >
+            <dt className="text-muted">{k}</dt>
+            <dd className="col-span-2 break-words text-foreground sm:col-span-3">
+              {v || <span className="text-muted/60">—</span>}
+            </dd>
+          </div>
+        ))}
+      </dl>
+    </div>
+  );
+}
+
+function Field({ label, children }) {
+  return (
+    <div>
+      <label className="mb-1.5 block text-sm font-medium text-foreground">
+        {label}
+      </label>
+      {children}
     </div>
   );
 }
@@ -170,7 +679,7 @@ function SystemStatus({ password, onUnauthorized }) {
   }, [run]);
 
   return (
-    <section className="mt-10 rounded-2xl border border-border bg-card p-6 shadow-sm sm:p-8">
+    <section className="mt-12 rounded-2xl border border-border bg-card p-6 shadow-sm sm:p-8">
       <div className="flex items-center justify-between gap-3">
         <div>
           <h2 className="font-serif text-2xl tracking-tight">System status</h2>

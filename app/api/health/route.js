@@ -1,4 +1,5 @@
 import { supabase } from "@/lib/supabase";
+import { checkAdminAuth } from "@/lib/admin-auth";
 
 export const runtime = "nodejs";
 export const dynamic = "force-dynamic";
@@ -14,16 +15,9 @@ const ENV_VARS = [
   "ADMIN_PASSWORD",
 ];
 
-function unauthorized() {
-  return Response.json({ ok: false, error: "Unauthorized" }, { status: 401 });
-}
-
 export async function GET(request) {
-  const expected = process.env.ADMIN_PASSWORD;
-  const provided = request.headers.get("x-admin-password");
-  if (!expected || !provided || provided !== expected) {
-    return unauthorized();
-  }
+  const denied = checkAdminAuth(request);
+  if (denied) return denied;
 
   const env = {};
   for (const key of ENV_VARS) {
