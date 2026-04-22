@@ -940,19 +940,18 @@ function FoundImagesEditor({
   onChange,
 }) {
   const list = Array.isArray(images) ? images : [];
-  const [file, setFile] = useState(null);
   const [uploading, setUploading] = useState(false);
   const [deletingUrl, setDeletingUrl] = useState(null);
   const [msg, setMsg] = useState(null);
 
-  const handleUpload = async (e) => {
-    e.preventDefault();
-    if (!file || uploading) return;
+  const handleFileChange = async (e) => {
+    const selected = e.target.files?.[0];
+    if (!selected || uploading) return;
     setUploading(true);
     setMsg(null);
     try {
       const fd = new FormData();
-      fd.append("file", file);
+      fd.append("file", selected);
       fd.append("caseNumber", caseNumber);
       const res = await fetch("/api/admin/upload-found-image", {
         method: "POST",
@@ -968,12 +967,12 @@ function FoundImagesEditor({
         throw new Error(json.error || json.hint || "Upload failed");
       }
       onChange(json.images);
-      setFile(null);
       setMsg({ kind: "ok", text: "Photo uploaded." });
     } catch (err) {
       setMsg({ kind: "err", text: err.message });
     } finally {
       setUploading(false);
+      e.target.value = "";
     }
   };
 
@@ -1067,24 +1066,21 @@ function FoundImagesEditor({
           Photo limit reached (5 / 5). Delete a photo to upload a new one.
         </p>
       ) : (
-        <form
-          onSubmit={handleUpload}
-          className="mt-4 flex flex-col gap-3 sm:flex-row sm:items-center"
-        >
+        <div className="mt-4 flex flex-wrap items-center gap-3">
           <input
             type="file"
             accept="image/jpeg,image/png,image/webp"
-            onChange={(e) => setFile(e.target.files?.[0] || null)}
-            className="block w-full text-sm text-foreground file:mr-4 file:rounded-full file:border file:border-border file:bg-alt file:px-4 file:py-2 file:text-sm file:font-medium file:text-foreground hover:file:bg-card"
+            onChange={handleFileChange}
+            disabled={uploading}
+            className="block text-sm text-foreground file:mr-4 file:rounded-full file:border file:border-border file:bg-alt file:px-4 file:py-2 file:text-sm file:font-medium file:text-foreground hover:file:bg-card disabled:opacity-60 disabled:file:opacity-60"
           />
-          <button
-            type="submit"
-            disabled={!file || uploading}
-            className="inline-flex items-center justify-center rounded-full bg-accent px-5 py-2.5 text-sm font-medium text-white transition-colors hover:bg-accent-hover disabled:opacity-60 sm:w-auto"
-          >
-            {uploading ? "Uploading…" : "Upload photo"}
-          </button>
-        </form>
+          {uploading && (
+            <span className="inline-flex items-center gap-2 text-sm text-muted">
+              <span className="h-3 w-3 animate-spin rounded-full border-2 border-accent/30 border-t-accent" />
+              Uploading…
+            </span>
+          )}
+        </div>
       )}
 
       {msg && (
