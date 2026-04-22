@@ -367,52 +367,56 @@ export default function Home() {
 
             <div className="mt-10 grid gap-5 lg:grid-cols-3">
               <PricingCard
-                tone="free"
-                badge="Start here"
-                name="Submit a report"
-                price="Free"
-                priceNote="No credit card"
+                tone="muted"
+                badge="Pay if found"
+                name="Recovery"
+                price="$39"
+                priceNote="Free to start. Pay only when we find it."
                 features={[
-                  "Tell us about your lost item in 2 min",
-                  "Our team begins the search immediately",
-                  "Email status updates",
-                  "Pay nothing if we don't find it",
+                  "Submit a 30-second report",
+                  "Our team searches in Korean on your behalf",
+                  "Email update within 24-48 hours",
+                  "Pay $39 to unlock pickup details — only if found",
                 ]}
-                cta={{ label: "Start a report", href: "/report" }}
+                cta={{ label: "Submit a free report", href: "/report" }}
               />
               <PricingCard
                 tone="popular"
-                badge="Most Popular"
-                name="Recovery"
-                price="$39"
-                priceNote="One-time, only if found"
-                features={[
-                  "Everything in Submit a report",
-                  "Unlock full details once located",
-                  "Coordinated pickup or domestic shipping",
-                  "Direct line to your case handler",
-                ]}
-                cta={{ label: "Start a report", href: "/report" }}
-              />
-              <PricingCard
-                tone="muted"
-                badge="Concierge"
-                name="Priority"
-                price="$89"
-                priceNote="For urgent or high-value items"
+                badge="Recommended"
+                name="All-in-One"
+                price="$79"
+                priceNote="Search + delivery to your address"
                 features={[
                   "Everything in Recovery",
-                  "Priority search within 12 hours",
-                  "On-the-ground search in the area",
-                  "International shipping included",
+                  "We coordinate pickup with the venue / authorities",
+                  "Domestic or international shipping included",
+                  "Single price upfront — no add-on fees",
                 ]}
-                cta={{ label: "Contact us", href: "mailto:support@lostandfoundkorea.com" }}
+                cta={{ label: "Start All-in-One — $79", href: "/pay/all-in-one" }}
+              />
+              <PricingCard
+                tone="free"
+                badge="Already located"
+                name="Delivery Only"
+                price="$49"
+                priceNote="When you already know where the item is"
+                features={[
+                  "You tell us where the item is being held",
+                  "We pick it up and ship it to your address",
+                  "Korean-language coordination on your behalf",
+                  "Tracking number emailed once it ships",
+                ]}
+                cta={{ label: "Start Delivery — $49", href: "/pay/delivery-only" }}
               />
             </div>
 
             <p className="mt-10 text-center font-serif text-2xl tracking-tight sm:text-3xl">
               No item found?{" "}
               <span className="text-accent">You pay nothing.</span>
+            </p>
+
+            <p className="mx-auto mt-8 max-w-3xl text-center text-xs leading-relaxed text-muted">
+              Shipping estimates &mdash; Domestic: $10-20 &middot; International: $30-60 depending on destination &middot; Customs duties and taxes are the recipient&rsquo;s responsibility &middot; Oversized or special items may incur additional fees &middot; All prices in USD.
             </p>
 
             <div className="mt-6 text-center text-[13px] text-muted">
