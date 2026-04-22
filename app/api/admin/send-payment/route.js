@@ -1,5 +1,7 @@
 import { sendPaymentEmail } from "@/lib/email";
 import { checkAdminAuth } from "@/lib/admin-auth";
+import { supabaseAdmin } from "@/lib/supabase-admin";
+import { REPORT_PLAN_LABELS, getReportPlanPrice } from "@/lib/report-plans";
 
 export const runtime = "nodejs";
 
@@ -16,7 +18,21 @@ export async function POST(request) {
         { status: 400 }
       );
     }
-    await sendPaymentEmail({ name, email, caseNumber });
+
+    let plan = "recovery";
+    if (supabaseAdmin) {
+      const { data } = await supabaseAdmin
+        .from("reports")
+        .select("plan")
+        .eq("case_number", caseNumber)
+        .maybeSingle();
+      if (data?.plan === "all_in_one") plan = "all_in_one";
+    }
+
+    const amount = getReportPlanPrice(plan).replace(/\.00$/, "");
+    const planLabel = REPORT_PLAN_LABELS[plan];
+
+    await sendPaymentEmail({ name, email, caseNumber, amount, planLabel });
     return Response.json({ ok: true });
   } catch (err) {
     console.error("send-payment error:", err);

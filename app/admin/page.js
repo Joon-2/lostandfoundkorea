@@ -819,6 +819,7 @@ function DetailsBlock({ report }) {
     ["Distinguishing features", report.distinguishing_features],
     ["Location", report.location],
     ["Specific location", report.location_detail],
+    ["Plan", report.plan === "all_in_one" ? "All-in-One ($79)" : "Recovery ($39)"],
     ["Date lost", formatDate(report.date_lost)],
     ["Date confidence", report.date_confidence],
     ["Time of day", report.time_lost],

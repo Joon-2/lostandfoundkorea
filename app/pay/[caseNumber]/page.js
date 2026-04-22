@@ -293,14 +293,30 @@ function FoundState({
           <h2 className="font-serif text-2xl tracking-tight">
             Your item has been found
           </h2>
-          <p className="mt-3 text-body">
-            Pay <strong className="text-foreground">$39</strong> to unlock the
-            exact recovery location, contact info, and step-by-step English
-            pickup instructions.
-          </p>
-          <p className="mt-2 text-sm text-muted">
-            If this turns out not to be your item, we refund in full.
-          </p>
+          {report.plan === "all_in_one" ? (
+            <>
+              <p className="mt-3 text-body">
+                Pay <strong className="text-foreground">$79</strong> to unlock
+                the recovery details and have your item picked up and shipped
+                to your address.
+              </p>
+              <p className="mt-2 text-sm text-muted">
+                Pickup &amp; delivery included. If this turns out not to be
+                your item, we refund in full.
+              </p>
+            </>
+          ) : (
+            <>
+              <p className="mt-3 text-body">
+                Pay <strong className="text-foreground">$39</strong> to unlock
+                the exact recovery location, contact info, and step-by-step
+                English pickup instructions.
+              </p>
+              <p className="mt-2 text-sm text-muted">
+                If this turns out not to be your item, we refund in full.
+              </p>
+            </>
+          )}
         </div>
       </div>
 

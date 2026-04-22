@@ -415,7 +415,7 @@ export default function Home() {
                   "Single price upfront — no add-on fees",
                 ]}
                 bottomNote="Outside Seoul/Gyeonggi +$20"
-                cta={{ label: "Start All-in-One", href: "/pay/all-in-one" }}
+                cta={{ label: "Start All-in-One", href: "/report?plan=all_in_one" }}
               />
               <PricingCard
                 tone="muted"

@@ -1,9 +1,23 @@
 "use client";
 
 import Link from "next/link";
-import { useState } from "react";
+import { Suspense, useState } from "react";
+import { useSearchParams } from "next/navigation";
 import { WHATSAPP_URL } from "@/components/WhatsApp";
 import { formatDate } from "@/lib/format";
+
+const PLAN_OPTIONS = [
+  {
+    value: "recovery",
+    title: "Recovery",
+    tagline: "FREE to start, $39 when found",
+  },
+  {
+    value: "all_in_one",
+    title: "All-in-One",
+    tagline: "FREE to start, $79 when found (includes pickup & delivery)",
+  },
+];
 
 const TOTAL_STEPS = 2;
 
@@ -53,6 +67,7 @@ const STEP_LABELS = {
 };
 
 const initialData = {
+  plan: "recovery",
   fullName: "",
   email: "",
   itemCategory: "",
@@ -104,8 +119,20 @@ function validateStep(step, data) {
 }
 
 export default function ReportPage() {
+  return (
+    <Suspense fallback={null}>
+      <ReportPageInner />
+    </Suspense>
+  );
+}
+
+function ReportPageInner() {
+  const searchParams = useSearchParams();
+  const initialPlan =
+    searchParams.get("plan") === "all_in_one" ? "all_in_one" : "recovery";
+
   const [step, setStep] = useState(1);
-  const [data, setData] = useState(initialData);
+  const [data, setData] = useState({ ...initialData, plan: initialPlan });
   const [errors, setErrors] = useState({});
   const [submitted, setSubmitted] = useState(false);
   const [submitting, setSubmitting] = useState(false);
@@ -115,6 +142,10 @@ export default function ReportPage() {
   const update = (key) => (e) => {
     setData((d) => ({ ...d, [key]: e.target.value }));
     if (errors[key]) setErrors((er) => ({ ...er, [key]: undefined }));
+  };
+
+  const setPlan = (value) => {
+    setData((d) => ({ ...d, plan: value }));
   };
 
   const next = () => {
@@ -247,7 +278,12 @@ export default function ReportPage() {
 
         <div className="rounded-2xl border border-border bg-card p-6 shadow-sm sm:p-8">
           {step === 1 && (
-            <Step1 data={data} update={update} errors={errors} />
+            <Step1
+              data={data}
+              update={update}
+              errors={errors}
+              setPlan={setPlan}
+            />
           )}
           {step === 2 && (
             <Step2 data={data} update={update} errors={errors} />
@@ -311,7 +347,49 @@ export default function ReportPage() {
   );
 }
 
-function Step1({ data, update, errors }) {
+function PlanPicker({ plan, setPlan }) {
+  return (
+    <fieldset>
+      <legend className="mb-2 block text-sm font-medium text-foreground">
+        Choose your plan
+      </legend>
+      <div className="grid gap-3 sm:grid-cols-2">
+        {PLAN_OPTIONS.map((opt) => {
+          const selected = plan === opt.value;
+          return (
+            <label
+              key={opt.value}
+              className={`flex cursor-pointer items-start gap-3 rounded-xl border p-4 transition-colors ${
+                selected
+                  ? "border-accent bg-emerald-50 ring-2 ring-accent/30"
+                  : "border-border bg-card hover:bg-alt"
+              }`}
+            >
+              <input
+                type="radio"
+                name="plan"
+                value={opt.value}
+                checked={selected}
+                onChange={() => setPlan(opt.value)}
+                className="mt-1 h-4 w-4 flex-none accent-[color:var(--accent)]"
+              />
+              <span className="block">
+                <span className="block text-sm font-semibold text-foreground">
+                  {opt.title}
+                </span>
+                <span className="mt-0.5 block text-xs text-muted">
+                  {opt.tagline}
+                </span>
+              </span>
+            </label>
+          );
+        })}
+      </div>
+    </fieldset>
+  );
+}
+
+function Step1({ data, update, errors, setPlan }) {
   return (
     <div className="space-y-5">
       <div>
@@ -320,6 +398,7 @@ function Step1({ data, update, errors }) {
           Tell us how to reach you and what you lost.
         </p>
       </div>
+      <PlanPicker plan={data.plan} setPlan={setPlan} />
       <Field label="Name" required error={errors.fullName}>
         <input
           type="text"

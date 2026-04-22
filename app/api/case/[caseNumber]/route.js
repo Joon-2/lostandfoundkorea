@@ -43,6 +43,7 @@ export async function GET(_request, { params }) {
     location_detail: data.location_detail,
     date_lost: data.date_lost,
     status,
+    plan: data.plan === "all_in_one" ? "all_in_one" : "recovery",
   };
 
   const recovery =

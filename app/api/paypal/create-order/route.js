@@ -1,9 +1,8 @@
 import { createPayPalOrder } from "@/lib/paypal";
 import { supabaseAdmin } from "@/lib/supabase-admin";
+import { getReportPlanPrice } from "@/lib/report-plans";
 
 export const runtime = "nodejs";
-
-const PRICE = "39.00";
 
 export async function POST(request) {
   try {
@@ -25,7 +24,7 @@ export async function POST(request) {
 
     const { data: report, error } = await supabaseAdmin
       .from("reports")
-      .select("status")
+      .select("status, plan")
       .eq("case_number", caseNumber)
       .maybeSingle();
     if (error) {
@@ -45,8 +44,10 @@ export async function POST(request) {
       );
     }
 
+    const amount = getReportPlanPrice(report.plan);
+
     const order = await createPayPalOrder({
-      amount: PRICE,
+      amount,
       caseNumber,
     });
     return Response.json({ ok: true, id: order.id });
