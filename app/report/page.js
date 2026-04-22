@@ -15,6 +15,13 @@ const ITEM_CATEGORIES = [
   "Other",
 ];
 
+const DATE_CONFIDENCE_OPTIONS = [
+  "Exact date",
+  "± 1 day",
+  "± 2-3 days",
+  "Not sure, around this date",
+];
+
 const LOCATION_TYPES = [
   "Subway / Train",
   "Bus",
@@ -44,6 +51,7 @@ const initialData = {
   locationType: "",
   locationDetails: "",
   date: "",
+  dateConfidence: "Exact date",
   time: "",
   notes: "",
 };
@@ -144,14 +152,14 @@ export default function ReportPage() {
       return;
     }
 
-    if (!res.ok) {
-      setSubmitError("Something went wrong, please try again.");
-      setSubmitting(false);
-      return;
-    }
-
     const result = await res.json().catch(() => ({}));
-    if (!result.ok || !result.caseNumber) {
+
+    if (!res.ok || !result.ok || !result.caseNumber) {
+      console.error("Submit failed:", {
+        status: res.status,
+        error: result.error,
+        debug: result.debug,
+      });
       setSubmitError("Something went wrong, please try again.");
       setSubmitting(false);
       return;
@@ -403,6 +411,19 @@ function Step2({ data, update, errors }) {
           />
         </Field>
       </div>
+      <Field label="How sure are you about this date?">
+        <select
+          className={inputCls}
+          value={data.dateConfidence}
+          onChange={update("dateConfidence")}
+        >
+          {DATE_CONFIDENCE_OPTIONS.map((opt) => (
+            <option key={opt} value={opt}>
+              {opt}
+            </option>
+          ))}
+        </select>
+      </Field>
       <Field label="Additional info (optional)">
         <textarea
           className={`${inputCls} min-h-24 resize-y`}
@@ -427,6 +448,7 @@ function Summary({ data }) {
     ["Location type", data.locationType],
     ["Specific location", data.locationDetails],
     ["Date lost", data.date],
+    ["Date confidence", data.dateConfidence],
     ["Time", data.time],
     ["Additional info", data.notes],
   ];

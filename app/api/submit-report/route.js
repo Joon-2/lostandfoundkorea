@@ -79,6 +79,7 @@ export async function POST(request) {
     const location = body.locationType;
     const dateLost = body.date;
     const timeLost = body.time || null;
+    const dateConfidence = body.dateConfidence || "Exact date";
 
     if (
       !name ||
@@ -115,14 +116,27 @@ export async function POST(request) {
       time_lost: timeLost,
       distinguishing_features: distinguishingFeatures,
       additional_info: additionalInfo,
+      date_confidence: dateConfidence,
       case_number: caseNumber,
     };
 
     const { error: dbError } = await supabase.from("reports").insert(payload);
     if (dbError) {
-      console.error("Supabase insert failed:", dbError);
+      console.error("Supabase insert failed:", {
+        message: dbError.message,
+        details: dbError.details,
+        hint: dbError.hint,
+        code: dbError.code,
+        payloadKeys: Object.keys(payload),
+      });
       return Response.json(
-        { ok: false, error: "Failed to save report" },
+        {
+          ok: false,
+          error: "Failed to save report",
+          debug: dbError.message,
+          code: dbError.code,
+          hint: dbError.hint,
+        },
         { status: 500 }
       );
     }
