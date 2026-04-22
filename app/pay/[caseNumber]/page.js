@@ -5,6 +5,7 @@ import { use, useCallback, useEffect, useState } from "react";
 import { PayPalScriptProvider, PayPalButtons } from "@paypal/react-paypal-js";
 import { formatDate } from "@/lib/format";
 import { WHATSAPP_URL } from "@/components/WhatsApp";
+import Header from "@/components/Header";
 
 const PAYPAL_CLIENT_ID = process.env.NEXT_PUBLIC_PAYPAL_CLIENT_ID || "";
 
@@ -46,24 +47,19 @@ export default function PayPage({ params }) {
 
   return (
     <div className="flex flex-1 flex-col">
-      <header className="bg-navy text-white">
-        <div className="mx-auto flex w-full max-w-3xl items-center justify-between px-5 py-5 sm:px-8">
-          <Link
-            href="/"
-            className="font-serif text-xl tracking-tight text-white"
-          >
-            Lost & Found Korea
-          </Link>
+      <Header
+        variant="simple"
+        action={
           <a
             href={WHATSAPP_URL}
             target="_blank"
             rel="noopener noreferrer"
-            className="text-sm text-slate-300 transition-colors hover:text-white"
+            className="text-sm text-[#4a5568] transition-colors hover:text-black"
           >
             Need help?
           </a>
-        </div>
-      </header>
+        }
+      />
 
       <main className="mx-auto w-full max-w-2xl flex-1 px-5 py-10 sm:px-8 sm:py-14">
         <p className="text-xs font-semibold uppercase tracking-widest text-muted">

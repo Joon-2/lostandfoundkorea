@@ -1,4 +1,5 @@
 import Link from "next/link";
+import Header from "@/components/Header";
 
 const STEPS = [
   {
@@ -192,27 +193,7 @@ export default function Home() {
         type="application/ld+json"
         dangerouslySetInnerHTML={{ __html: JSON.stringify(jsonLd) }}
       />
-      <header className="bg-navy text-white">
-        <div className="mx-auto flex w-full max-w-6xl items-center justify-between px-5 py-5 sm:px-8">
-          <Link href="/" className="font-serif text-xl tracking-tight text-white">
-            Lost &amp; Found Korea
-          </Link>
-          <nav className="flex items-center gap-5">
-            <a
-              href="#pricing"
-              className="hidden text-sm text-slate-300 transition-colors hover:text-white sm:inline"
-            >
-              Pricing
-            </a>
-            <Link
-              href="/report"
-              className="rounded-full bg-accent px-4 py-2 text-sm font-medium text-white transition-colors hover:bg-accent-hover"
-            >
-              Report
-            </Link>
-          </nav>
-        </div>
-      </header>
+      <Header />
 
       <main className="flex-1">
         <section className="mx-auto w-full max-w-6xl px-5 pb-20 pt-16 sm:px-8 sm:pt-24">

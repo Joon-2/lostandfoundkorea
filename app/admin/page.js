@@ -5,6 +5,7 @@ import { useCallback, useEffect, useMemo, useState } from "react";
 import { formatDate, formatDateTime } from "@/lib/format";
 import { PROCESS_STAGES } from "@/lib/process-stages";
 import { processImage } from "@/lib/image-processing";
+import Header from "@/components/Header";
 
 const STATUS_OPTIONS = ["pending", "found", "paid", "closed"];
 const STATUS_LABELS = {
@@ -116,26 +117,21 @@ export default function AdminPage() {
 
 function AdminHeader({ onLogout }) {
   return (
-    <header className="bg-navy text-white">
-      <div className="mx-auto flex w-full max-w-6xl items-center justify-between px-5 py-5 sm:px-8">
-        <Link
-          href="/"
-          className="font-serif text-xl tracking-tight text-white"
-        >
-          Lost & Found Korea
-        </Link>
-        {onLogout ? (
+    <Header
+      variant="simple"
+      action={
+        onLogout ? (
           <button
             onClick={onLogout}
-            className="text-sm text-slate-300 transition-colors hover:text-white"
+            className="text-sm text-[#4a5568] transition-colors hover:text-black"
           >
             Sign out
           </button>
         ) : (
-          <span className="text-sm text-slate-300">Admin</span>
-        )}
-      </div>
-    </header>
+          <span className="text-sm text-[#4a5568]">Admin</span>
+        )
+      }
+    />
   );
 }
 

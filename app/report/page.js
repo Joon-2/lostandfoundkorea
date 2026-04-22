@@ -4,6 +4,7 @@ import Link from "next/link";
 import { Suspense, useState } from "react";
 import { useSearchParams } from "next/navigation";
 import { WHATSAPP_URL } from "@/components/WhatsApp";
+import Header from "@/components/Header";
 import { formatDate } from "@/lib/format";
 
 const PLAN_OPTIONS = [
@@ -243,22 +244,17 @@ function ReportPageInner() {
 
   return (
     <div className="flex flex-1 flex-col">
-      <header className="bg-navy text-white">
-        <div className="mx-auto flex w-full max-w-3xl items-center justify-between px-5 py-5 sm:px-8">
+      <Header
+        variant="simple"
+        action={
           <Link
             href="/"
-            className="font-serif text-xl tracking-tight text-white"
-          >
-            Lost & Found Korea
-          </Link>
-          <Link
-            href="/"
-            className="text-sm text-slate-300 transition-colors hover:text-white"
+            className="text-sm text-[#4a5568] transition-colors hover:text-black"
           >
             Cancel
           </Link>
-        </div>
-      </header>
+        }
+      />
 
       <main className="mx-auto w-full max-w-3xl flex-1 px-5 py-8 sm:px-8 sm:py-12">
         <div className="mb-8">
@@ -620,16 +616,7 @@ function Spinner() {
 function SubmittedScreen({ email, caseNumber }) {
   return (
     <div className="flex flex-1 flex-col">
-      <header className="bg-navy text-white">
-        <div className="mx-auto flex w-full max-w-3xl items-center justify-between px-5 py-5 sm:px-8">
-          <Link
-            href="/"
-            className="font-serif text-xl tracking-tight text-white"
-          >
-            Lost & Found Korea
-          </Link>
-        </div>
-      </header>
+      <Header variant="simple" />
       <main className="mx-auto flex w-full max-w-2xl flex-1 flex-col items-center justify-center px-5 py-16 text-center sm:px-8">
         <div className="mb-6 flex h-20 w-20 items-center justify-center rounded-full bg-emerald-50 text-accent ring-4 ring-emerald-100">
           <svg
