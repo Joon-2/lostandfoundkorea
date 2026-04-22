@@ -15,6 +15,9 @@ const EDITABLE = [
   "tracking_number",
   "shipping_method",
   "estimated_delivery",
+  "pickup_scheduled_at",
+  "shipping_quote_amount",
+  "shipping_quote_notes",
 ];
 
 const RECOVERY_FIELDS = [

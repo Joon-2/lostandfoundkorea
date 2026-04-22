@@ -3,7 +3,14 @@
 import Link from "next/link";
 import { useCallback, useEffect, useMemo, useState } from "react";
 import { formatDate, formatDateTime } from "@/lib/format";
-import { PROCESS_STAGES } from "@/lib/process-stages";
+import {
+  PROCESS_STAGES,
+  PHASE1_STAGES,
+  PHASE2_STAGES,
+  getStagePhase,
+  isDeliveryRequired,
+  normalizeStageKey,
+} from "@/lib/process-stages";
 import { processImage } from "@/lib/image-processing";
 import Header from "@/components/Header";
 
@@ -1140,7 +1147,14 @@ function StagePaymentSent({
   );
 }
 
-function StagePaid({ report, plan, onAdvance, stageMoving, stageMsg }) {
+function StagePaid({
+  report,
+  deliveryRequired,
+  onAdvanceToPhase2,
+  onComplete,
+  stageMoving,
+  stageMsg,
+}) {
   return (
     <div className="space-y-6">
       <StageBanner tone="emerald">
@@ -1184,58 +1198,40 @@ function StagePaid({ report, plan, onAdvance, stageMoving, stageMsg }) {
           </div>
         </div>
       )}
-      <div className="rounded-2xl border border-border bg-alt p-4 sm:p-5">
-        <h3 className="text-xs font-semibold uppercase tracking-widest text-muted">
-          Customer authorization
-        </h3>
-        <div className="mt-2 flex flex-wrap items-center justify-between gap-2 text-sm">
-          <span className="text-muted">ID / signed authorization:</span>
-          {report.authorization_url ? (
-            <a
-              href={report.authorization_url}
-              target="_blank"
-              rel="noopener noreferrer"
-              className="font-medium text-accent underline"
-            >
-              Uploaded — View
-            </a>
-          ) : (
-            <span className="font-medium text-amber-700">
-              Not uploaded yet
-            </span>
-          )}
-        </div>
-      </div>
-      {plan === "all_in_one" ? (
+      {deliveryRequired ? (
         <div className="rounded-2xl border border-border bg-card p-5 sm:p-6">
-          <h3 className="text-xs font-semibold uppercase tracking-widest text-muted">
-            Shipping address
+          <h3 className="font-serif text-lg tracking-tight">
+            Delivery required
           </h3>
-          <p className="mt-2 whitespace-pre-wrap text-sm text-foreground">
-            {report.shipping_address || (
-              <span className="text-amber-700">
-                Not provided yet — ask the customer on WhatsApp.
-              </span>
-            )}
+          <p className="mt-2 text-sm text-body">
+            {report.plan === "all_in_one"
+              ? "All-in-One plan — we pick up and deliver."
+              : report.pickup_addon_transaction_id
+              ? "Pickup add-on purchased (+$49)."
+              : "Delivery Only case."}{" "}
+            Advance to Phase 2 to coordinate pickup.
           </p>
-          <div className="mt-4 flex flex-wrap items-center justify-between gap-3 border-t border-border pt-4">
-            <p className="text-sm text-body">
-              All-in-One plan. Arrange pickup with the holder, then advance
-              this case to the Pickup stage.
-            </p>
-            <button
-              onClick={onAdvance}
-              disabled={stageMoving}
-              className="inline-flex items-center rounded-full bg-accent px-5 py-2.5 text-sm font-semibold text-white transition-colors hover:bg-accent-hover disabled:opacity-60"
-            >
-              {stageMoving ? "Advancing…" : "Arrange pickup →"}
-            </button>
-          </div>
+          <button
+            onClick={onAdvanceToPhase2}
+            disabled={stageMoving}
+            className="mt-4 inline-flex items-center rounded-full bg-accent px-5 py-2.5 text-sm font-semibold text-white transition-colors hover:bg-accent-hover disabled:opacity-60"
+          >
+            {stageMoving ? "Advancing…" : "Advance to Phase 2 →"}
+          </button>
         </div>
       ) : (
         <div className="rounded-2xl border border-border bg-alt p-5 text-sm text-body">
-          Pickup instructions have been sent to the customer via the recovery
-          email. They will collect the item themselves.
+          Recovery plan — the customer collects the item themselves. Close
+          the case when they&rsquo;ve picked it up.
+          <div className="mt-4">
+            <button
+              onClick={onComplete}
+              disabled={stageMoving}
+              className="inline-flex items-center rounded-full bg-accent px-5 py-2.5 text-sm font-semibold text-white transition-colors hover:bg-accent-hover disabled:opacity-60"
+            >
+              {stageMoving ? "Marking…" : "Mark as Completed"}
+            </button>
+          </div>
         </div>
       )}
       <StatusPill msg={stageMsg} />
@@ -1243,8 +1239,339 @@ function StagePaid({ report, plan, onAdvance, stageMoving, stageMsg }) {
   );
 }
 
-function StagePickup({
+function AuthorizationStatus({ report }) {
+  return (
+    <div className="rounded-2xl border border-border bg-alt p-4 sm:p-5">
+      <h3 className="text-xs font-semibold uppercase tracking-widest text-muted">
+        Customer authorization
+      </h3>
+      <div className="mt-2 flex flex-wrap items-center justify-between gap-2 text-sm">
+        <span className="text-muted">ID / signed authorization:</span>
+        {report.authorization_url ? (
+          <a
+            href={report.authorization_url}
+            target="_blank"
+            rel="noopener noreferrer"
+            className="font-medium text-accent underline"
+          >
+            Uploaded — View
+          </a>
+        ) : (
+          <span className="font-medium text-amber-700">
+            Not uploaded yet
+          </span>
+        )}
+      </div>
+      {report.shipping_address && (
+        <div className="mt-3 border-t border-border pt-3 text-sm">
+          <div className="text-xs font-semibold uppercase tracking-widest text-muted">
+            Shipping to
+          </div>
+          <p className="mt-1 whitespace-pre-wrap text-foreground">
+            {report.shipping_address}
+          </p>
+        </div>
+      )}
+    </div>
+  );
+}
+
+function StagePickupScheduled({
   report,
+  pickupScheduledAt,
+  setPickupScheduledAt,
+  onSave,
+  saving,
+  saveMsg,
+  onAdvance,
+  stageMoving,
+  stageMsg,
+}) {
+  return (
+    <div className="space-y-6">
+      <StageBanner tone="muted">
+        <strong className="font-semibold">Pickup scheduled.</strong> Confirm
+        the pickup window with the holder, then collect the item.
+      </StageBanner>
+      <SummaryLine report={report} />
+      <AuthorizationStatus report={report} />
+      <div>
+        <h3 className="text-xs font-semibold uppercase tracking-widest text-muted">
+          Pickup facility
+        </h3>
+        <dl className="mt-3 divide-y divide-border rounded-xl border border-border bg-alt text-sm">
+          {[
+            ["Location", report.recovery_location],
+            ["Contact phone", report.recovery_contact],
+            ["Operating hours", report.recovery_hours],
+          ].map(([k, v]) => (
+            <div
+              key={k}
+              className="grid grid-cols-3 gap-3 px-4 py-2.5 sm:grid-cols-4"
+            >
+              <dt className="text-muted">{k}</dt>
+              <dd className="col-span-2 break-words text-foreground sm:col-span-3">
+                {v || <span className="text-muted/60">—</span>}
+              </dd>
+            </div>
+          ))}
+        </dl>
+      </div>
+      <div>
+        <Field label="Pickup date / time">
+          <input
+            type="text"
+            className={inputCls}
+            value={pickupScheduledAt}
+            onChange={(e) => setPickupScheduledAt(e.target.value)}
+            placeholder="e.g. Tue 2026-04-23, 14:00 KST"
+          />
+        </Field>
+      </div>
+      <div className="flex flex-wrap items-center gap-3 border-t border-border pt-5">
+        <button
+          onClick={onSave}
+          disabled={saving}
+          className="inline-flex items-center rounded-full border border-border bg-card px-5 py-2.5 text-sm font-medium text-foreground transition-colors hover:bg-alt disabled:opacity-60"
+        >
+          {saving ? "Saving…" : "Save pickup details"}
+        </button>
+        <button
+          onClick={onAdvance}
+          disabled={stageMoving}
+          className="inline-flex items-center rounded-full bg-accent px-5 py-2.5 text-sm font-semibold text-white transition-colors hover:bg-accent-hover disabled:opacity-60"
+        >
+          {stageMoving ? "Advancing…" : "Item picked up →"}
+        </button>
+      </div>
+      <StatusPill msg={saveMsg} />
+      <StatusPill msg={stageMsg} />
+    </div>
+  );
+}
+
+function StagePickedUp({
+  report,
+  password,
+  onUnauthorized,
+  onUpdate,
+  onAdvance,
+  stageMoving,
+  stageMsg,
+}) {
+  return (
+    <div className="space-y-6">
+      <StageBanner tone="emerald">
+        <strong className="font-semibold">Item picked up.</strong> Upload an
+        in-hand photo for the customer, then prepare a shipping quote.
+      </StageBanner>
+      <SummaryLine report={report} />
+      <FoundImagesEditor
+        caseNumber={report.case_number}
+        images={report.found_images}
+        password={password}
+        onUnauthorized={onUnauthorized}
+        onChange={(next) => onUpdate({ ...report, found_images: next })}
+      />
+      <div className="flex flex-wrap items-center gap-3 border-t border-border pt-5">
+        <button
+          onClick={onAdvance}
+          disabled={stageMoving}
+          className="inline-flex items-center rounded-full bg-accent px-5 py-2.5 text-sm font-semibold text-white transition-colors hover:bg-accent-hover disabled:opacity-60"
+        >
+          {stageMoving ? "Advancing…" : "Prepare shipping quote →"}
+        </button>
+      </div>
+      <StatusPill msg={stageMsg} />
+    </div>
+  );
+}
+
+function StageShippingQuote({
+  report,
+  password,
+  onUnauthorized,
+  onUpdate,
+  shippingQuoteAmount,
+  setShippingQuoteAmount,
+  shippingQuoteNotes,
+  setShippingQuoteNotes,
+  onSave,
+  saving,
+  saveMsg,
+  onAdvance,
+  stageMoving,
+  stageMsg,
+}) {
+  const [sending, setSending] = useState(false);
+  const [emailMsg, setEmailMsg] = useState(null);
+
+  const handleSendQuote = async () => {
+    if (sending) return;
+    const trimmedAmount = (shippingQuoteAmount || "").trim();
+    if (!trimmedAmount) {
+      setEmailMsg({ kind: "err", text: "Enter a quote amount first." });
+      return;
+    }
+    setSending(true);
+    setEmailMsg(null);
+    try {
+      const res = await fetch("/api/admin/send-shipping-quote", {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+          "x-admin-password": password,
+        },
+        body: JSON.stringify({
+          name: report.name,
+          email: report.email,
+          caseNumber: report.case_number,
+          amount: trimmedAmount,
+          notes: shippingQuoteNotes,
+          shippingAddress: report.shipping_address,
+        }),
+      });
+      if (res.status === 401) {
+        onUnauthorized?.();
+        return;
+      }
+      const json = await res.json().catch(() => ({}));
+      if (!res.ok || !json.ok) throw new Error(json.error || "Send failed");
+      onUpdate({
+        ...report,
+        shipping_quote_amount: trimmedAmount,
+        shipping_quote_notes: shippingQuoteNotes,
+      });
+      setEmailMsg({ kind: "ok", text: `Quote sent to ${report.email}.` });
+    } catch (err) {
+      setEmailMsg({ kind: "err", text: err.message });
+    } finally {
+      setSending(false);
+    }
+  };
+
+  return (
+    <div className="space-y-6">
+      <StageBanner tone="muted">
+        <strong className="font-semibold">Shipping quote.</strong> Calculate
+        the cost, email the breakdown to the customer, and wait for their
+        approval.
+      </StageBanner>
+      <SummaryLine report={report} />
+      {report.shipping_address && (
+        <div className="rounded-2xl border border-border bg-alt p-4 sm:p-5">
+          <h3 className="text-xs font-semibold uppercase tracking-widest text-muted">
+            Shipping to
+          </h3>
+          <p className="mt-2 whitespace-pre-wrap text-sm text-foreground">
+            {report.shipping_address}
+          </p>
+        </div>
+      )}
+      <div className="grid gap-4 sm:grid-cols-[200px_1fr]">
+        <Field label="Quote amount (USD)">
+          <input
+            type="text"
+            inputMode="decimal"
+            className={inputCls}
+            value={shippingQuoteAmount}
+            onChange={(e) => setShippingQuoteAmount(e.target.value)}
+            placeholder="e.g. 45"
+          />
+        </Field>
+        <Field label="Breakdown / notes">
+          <textarea
+            className={`${inputCls} min-h-24 resize-y`}
+            value={shippingQuoteNotes}
+            onChange={(e) => setShippingQuoteNotes(e.target.value)}
+            placeholder="e.g. EMS, 0.5 kg, small box, 5-7 business days to Tokyo."
+          />
+        </Field>
+      </div>
+      <div className="flex flex-wrap items-center gap-3 border-t border-border pt-5">
+        <button
+          onClick={onSave}
+          disabled={saving}
+          className="inline-flex items-center rounded-full border border-border bg-card px-5 py-2.5 text-sm font-medium text-foreground transition-colors hover:bg-alt disabled:opacity-60"
+        >
+          {saving ? "Saving…" : "Save quote draft"}
+        </button>
+        <button
+          onClick={handleSendQuote}
+          disabled={sending}
+          className="inline-flex items-center rounded-full bg-accent px-5 py-2.5 text-sm font-semibold text-white transition-colors hover:bg-accent-hover disabled:opacity-60"
+        >
+          {sending ? "Sending…" : "Send quote email"}
+        </button>
+        <button
+          onClick={onAdvance}
+          disabled={stageMoving}
+          className="inline-flex items-center rounded-full border border-border bg-card px-5 py-2.5 text-sm font-medium text-foreground transition-colors hover:bg-alt disabled:opacity-60"
+        >
+          {stageMoving ? "Advancing…" : "Quote accepted →"}
+        </button>
+      </div>
+      <StatusPill msg={saveMsg} />
+      <StatusPill msg={emailMsg} />
+      <StatusPill msg={stageMsg} />
+    </div>
+  );
+}
+
+function StageQuoteAccepted({
+  report,
+  onAdvance,
+  stageMoving,
+  stageMsg,
+}) {
+  return (
+    <div className="space-y-6">
+      <StageBanner tone="emerald">
+        <strong className="font-semibold">Quote accepted.</strong> Ship the
+        item and enter the tracking details.
+      </StageBanner>
+      <SummaryLine report={report} />
+      <div className="rounded-2xl border border-border bg-alt p-4 sm:p-5 text-sm">
+        <div className="grid gap-3 sm:grid-cols-2">
+          <div>
+            <div className="text-xs font-semibold uppercase tracking-widest text-muted">
+              Agreed amount
+            </div>
+            <div className="mt-1 font-medium text-foreground">
+              {report.shipping_quote_amount
+                ? `$${report.shipping_quote_amount}`
+                : "—"}
+            </div>
+          </div>
+          <div>
+            <div className="text-xs font-semibold uppercase tracking-widest text-muted">
+              Shipping to
+            </div>
+            <div className="mt-1 whitespace-pre-wrap text-foreground">
+              {report.shipping_address || "—"}
+            </div>
+          </div>
+        </div>
+      </div>
+      <div className="flex flex-wrap items-center gap-3 border-t border-border pt-5">
+        <button
+          onClick={onAdvance}
+          disabled={stageMoving}
+          className="inline-flex items-center rounded-full bg-accent px-5 py-2.5 text-sm font-semibold text-white transition-colors hover:bg-accent-hover disabled:opacity-60"
+        >
+          {stageMoving ? "Advancing…" : "Item shipped →"}
+        </button>
+      </div>
+      <StatusPill msg={stageMsg} />
+    </div>
+  );
+}
+
+function StageShipped({
+  report,
+  password,
+  onUnauthorized,
+  onUpdate,
   trackingNumber,
   setTrackingNumber,
   shippingMethod,
@@ -1260,17 +1587,66 @@ function StagePickup({
   stageMoving,
   stageMsg,
 }) {
+  const [sendingTracking, setSendingTracking] = useState(false);
+  const [trackingMsg, setTrackingMsg] = useState(null);
+
+  const handleSendTracking = async () => {
+    if (sendingTracking) return;
+    if (!trackingNumber.trim()) {
+      setTrackingMsg({ kind: "err", text: "Enter a tracking number first." });
+      return;
+    }
+    setSendingTracking(true);
+    setTrackingMsg(null);
+    try {
+      const res = await fetch("/api/admin/send-tracking", {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+          "x-admin-password": password,
+        },
+        body: JSON.stringify({
+          name: report.name,
+          email: report.email,
+          caseNumber: report.case_number,
+          trackingNumber: trackingNumber.trim(),
+          shippingMethod: shippingMethod.trim(),
+          estimatedDelivery,
+        }),
+      });
+      if (res.status === 401) {
+        onUnauthorized?.();
+        return;
+      }
+      const json = await res.json().catch(() => ({}));
+      if (!res.ok || !json.ok) throw new Error(json.error || "Send failed");
+      onUpdate({
+        ...report,
+        tracking_number: trackingNumber.trim(),
+        shipping_method: shippingMethod.trim(),
+        estimated_delivery: estimatedDelivery,
+      });
+      setTrackingMsg({
+        kind: "ok",
+        text: `Tracking email sent to ${report.email}.`,
+      });
+    } catch (err) {
+      setTrackingMsg({ kind: "err", text: err.message });
+    } finally {
+      setSendingTracking(false);
+    }
+  };
+
   return (
     <div className="space-y-6">
       <StageBanner tone="muted">
-        <strong className="font-semibold">Pickup &amp; shipping.</strong> Enter
-        tracking details, mark as shipped, and complete the case on delivery.
+        <strong className="font-semibold">Shipped.</strong> Log tracking info
+        and email it to the customer.
       </StageBanner>
       <SummaryLine report={report} />
-      <RecoveryReadonly report={report} />
       <div>
         <h3 className="text-xs font-semibold uppercase tracking-widest text-muted">
-          Shipping details
+          Tracking details
         </h3>
         <div className="mt-3 grid gap-4 sm:grid-cols-2">
           <Field label="Tracking number">
@@ -1307,25 +1683,99 @@ function StagePickup({
           disabled={saving}
           className="inline-flex items-center rounded-full border border-border bg-card px-5 py-2.5 text-sm font-medium text-foreground transition-colors hover:bg-alt disabled:opacity-60"
         >
-          {saving ? "Saving…" : "Save shipping details"}
+          {saving ? "Saving…" : "Save tracking"}
         </button>
         <button
           onClick={onMarkShipped}
           disabled={shipping}
           className="inline-flex items-center rounded-full border border-border bg-card px-5 py-2.5 text-sm font-medium text-foreground transition-colors hover:bg-alt disabled:opacity-60"
         >
-          {shipping ? "Logging…" : "Mark as shipped"}
+          {shipping ? "Logging…" : "Log 'shipped' to activity"}
         </button>
+        <button
+          onClick={handleSendTracking}
+          disabled={sendingTracking}
+          className="inline-flex items-center rounded-full bg-accent px-5 py-2.5 text-sm font-semibold text-white transition-colors hover:bg-accent-hover disabled:opacity-60"
+        >
+          {sendingTracking ? "Sending…" : "Send tracking email"}
+        </button>
+        <button
+          onClick={onAdvance}
+          disabled={stageMoving}
+          className="inline-flex items-center rounded-full border border-border bg-card px-5 py-2.5 text-sm font-medium text-foreground transition-colors hover:bg-alt disabled:opacity-60"
+        >
+          {stageMoving ? "Advancing…" : "Mark delivered →"}
+        </button>
+      </div>
+      <StatusPill msg={saveMsg} />
+      <StatusPill msg={trackingMsg} />
+      <StatusPill msg={stageMsg} />
+    </div>
+  );
+}
+
+function StageDelivered({
+  report,
+  onAdvance,
+  stageMoving,
+  stageMsg,
+}) {
+  return (
+    <div className="space-y-6">
+      <StageBanner tone="emerald">
+        <strong className="font-semibold">Delivered.</strong> Close the case
+        once the customer confirms receipt.
+      </StageBanner>
+      <SummaryLine report={report} />
+      <div className="rounded-2xl border border-border bg-alt p-4 sm:p-5 text-sm">
+        <dl className="divide-y divide-border">
+          {[
+            ["Tracking number", report.tracking_number],
+            ["Shipping method", report.shipping_method],
+            [
+              "Estimated delivery",
+              formatDate(report.estimated_delivery) ||
+                report.estimated_delivery,
+            ],
+          ].map(([k, v]) => (
+            <div
+              key={k}
+              className="grid grid-cols-3 gap-3 py-2.5 sm:grid-cols-4"
+            >
+              <dt className="text-muted">{k}</dt>
+              <dd className="col-span-2 break-words text-foreground sm:col-span-3">
+                {v || <span className="text-muted/60">—</span>}
+              </dd>
+            </div>
+          ))}
+        </dl>
+      </div>
+      <div className="flex flex-wrap items-center gap-3 border-t border-border pt-5">
         <button
           onClick={onAdvance}
           disabled={stageMoving}
           className="inline-flex items-center rounded-full bg-accent px-5 py-2.5 text-sm font-semibold text-white transition-colors hover:bg-accent-hover disabled:opacity-60"
         >
-          {stageMoving ? "Advancing…" : "Mark as completed →"}
+          {stageMoving ? "Completing…" : "Mark as Completed →"}
         </button>
       </div>
-      <StatusPill msg={saveMsg} />
       <StatusPill msg={stageMsg} />
+    </div>
+  );
+}
+
+function StageClosed({ report }) {
+  return (
+    <div className="space-y-6">
+      <div className="inline-flex items-center gap-2 rounded-full border border-slate-300 bg-slate-100 px-4 py-1.5 text-sm font-semibold text-slate-700">
+        Not Found — Case closed
+      </div>
+      <SummaryLine report={report} />
+      <DetailsBlock report={report} />
+      <p className="rounded-xl border border-border bg-alt px-4 py-3 text-sm text-body">
+        The &ldquo;no item found&rdquo; email has been sent to the customer.
+        No charge was made.
+      </p>
     </div>
   );
 }
@@ -1421,6 +1871,15 @@ function ReportEditor({ report, password, onUnauthorized, onUpdate }) {
   const [estimatedDelivery, setEstimatedDelivery] = useState(
     report.estimated_delivery || ""
   );
+  const [pickupScheduledAt, setPickupScheduledAt] = useState(
+    report.pickup_scheduled_at || ""
+  );
+  const [shippingQuoteAmount, setShippingQuoteAmount] = useState(
+    report.shipping_quote_amount || ""
+  );
+  const [shippingQuoteNotes, setShippingQuoteNotes] = useState(
+    report.shipping_quote_notes || ""
+  );
 
   const [saving, setSaving] = useState(false);
   const [saveMsg, setSaveMsg] = useState(null);
@@ -1432,10 +1891,12 @@ function ReportEditor({ report, password, onUnauthorized, onUpdate }) {
   const [stageMsg, setStageMsg] = useState(null);
   const [shipping, setShipping] = useState(false);
 
-  const currentStage = report.process_stage || "received";
+  const currentStage = normalizeStageKey(report.process_stage);
   const plan = report.plan === "all_in_one" ? "all_in_one" : "recovery";
   const amount = plan === "all_in_one" ? 79 : 39;
   const paymentLink = `https://lostandfoundkorea.com/pay/${report.case_number || ""}`;
+  const deliveryRequired = isDeliveryRequired(report);
+  const closed = (report.status || "") === "closed";
 
   const flashEmail = (msg) => {
     setEmailMsg(msg);
@@ -1509,6 +1970,9 @@ function ReportEditor({ report, password, onUnauthorized, onUpdate }) {
           tracking_number: trackingNumber,
           shipping_method: shippingMethod,
           estimated_delivery: estimatedDelivery,
+          pickup_scheduled_at: pickupScheduledAt,
+          shipping_quote_amount: shippingQuoteAmount,
+          shipping_quote_notes: shippingQuoteNotes,
         }),
       });
       if (res.status === 401) {
@@ -1659,14 +2123,14 @@ function ReportEditor({ report, password, onUnauthorized, onUpdate }) {
 
   return (
     <div className="border-t border-border px-5 py-5 sm:px-6 sm:py-6">
-      <StageTracker
+      <DualPhaseTracker
         report={report}
         password={password}
         onUnauthorized={onUnauthorized}
         onUpdate={onUpdate}
       />
 
-      {currentStage === "received" && (
+      {!closed && currentStage === "received" && (
         <StageReceived
           report={report}
           password={password}
@@ -1681,7 +2145,7 @@ function ReportEditor({ report, password, onUnauthorized, onUpdate }) {
         />
       )}
 
-      {currentStage === "searching" && (
+      {!closed && currentStage === "searching" && (
         <StageSearching
           report={report}
           password={password}
@@ -1694,7 +2158,7 @@ function ReportEditor({ report, password, onUnauthorized, onUpdate }) {
         />
       )}
 
-      {currentStage === "found" && (
+      {!closed && currentStage === "found" && (
         <StageFound
           report={report}
           password={password}
@@ -1714,7 +2178,7 @@ function ReportEditor({ report, password, onUnauthorized, onUpdate }) {
         />
       )}
 
-      {currentStage === "payment_sent" && (
+      {!closed && currentStage === "payment_sent" && (
         <StagePaymentSent
           report={report}
           paymentLink={paymentLink}
@@ -1727,19 +2191,77 @@ function ReportEditor({ report, password, onUnauthorized, onUpdate }) {
         />
       )}
 
-      {currentStage === "paid" && (
+      {!closed && currentStage === "paid" && (
         <StagePaid
           report={report}
-          plan={plan}
-          onAdvance={() => advanceToStage("pickup")}
+          deliveryRequired={deliveryRequired}
+          onAdvanceToPhase2={() => advanceToStage("pickup_scheduled")}
+          onComplete={() => advanceToStage("completed")}
           stageMoving={stageMoving}
           stageMsg={stageMsg}
         />
       )}
 
-      {currentStage === "pickup" && (
-        <StagePickup
+      {!closed && currentStage === "pickup_scheduled" && (
+        <StagePickupScheduled
           report={report}
+          pickupScheduledAt={pickupScheduledAt}
+          setPickupScheduledAt={setPickupScheduledAt}
+          onSave={handleSave}
+          saving={saving}
+          saveMsg={saveMsg}
+          onAdvance={() => advanceToStage("picked_up")}
+          stageMoving={stageMoving}
+          stageMsg={stageMsg}
+        />
+      )}
+
+      {!closed && currentStage === "picked_up" && (
+        <StagePickedUp
+          report={report}
+          password={password}
+          onUnauthorized={onUnauthorized}
+          onUpdate={onUpdate}
+          onAdvance={() => advanceToStage("shipping_quote")}
+          stageMoving={stageMoving}
+          stageMsg={stageMsg}
+        />
+      )}
+
+      {!closed && currentStage === "shipping_quote" && (
+        <StageShippingQuote
+          report={report}
+          password={password}
+          onUnauthorized={onUnauthorized}
+          onUpdate={onUpdate}
+          shippingQuoteAmount={shippingQuoteAmount}
+          setShippingQuoteAmount={setShippingQuoteAmount}
+          shippingQuoteNotes={shippingQuoteNotes}
+          setShippingQuoteNotes={setShippingQuoteNotes}
+          onSave={handleSave}
+          saving={saving}
+          saveMsg={saveMsg}
+          onAdvance={() => advanceToStage("quote_accepted")}
+          stageMoving={stageMoving}
+          stageMsg={stageMsg}
+        />
+      )}
+
+      {!closed && currentStage === "quote_accepted" && (
+        <StageQuoteAccepted
+          report={report}
+          onAdvance={() => advanceToStage("shipped")}
+          stageMoving={stageMoving}
+          stageMsg={stageMsg}
+        />
+      )}
+
+      {!closed && currentStage === "shipped" && (
+        <StageShipped
+          report={report}
+          password={password}
+          onUnauthorized={onUnauthorized}
+          onUpdate={onUpdate}
           trackingNumber={trackingNumber}
           setTrackingNumber={setTrackingNumber}
           shippingMethod={shippingMethod}
@@ -1751,13 +2273,24 @@ function ReportEditor({ report, password, onUnauthorized, onUpdate }) {
           saveMsg={saveMsg}
           onMarkShipped={handleMarkShipped}
           shipping={shipping}
+          onAdvance={() => advanceToStage("delivered")}
+          stageMoving={stageMoving}
+          stageMsg={stageMsg}
+        />
+      )}
+
+      {!closed && currentStage === "delivered" && (
+        <StageDelivered
+          report={report}
           onAdvance={() => advanceToStage("completed")}
           stageMoving={stageMoving}
           stageMsg={stageMsg}
         />
       )}
 
-      {currentStage === "completed" && <StageCompleted report={report} />}
+      {!closed && currentStage === "completed" && <StageCompleted report={report} />}
+
+      {closed && <StageClosed report={report} />}
 
       <ActivityLog
         entries={report.activity_log}
@@ -2143,12 +2676,133 @@ function FoundImagesEditor({
   );
 }
 
-function StageTracker({ report, password, onUnauthorized, onUpdate, onStatusChange }) {
-  const currentKey = report.process_stage || "received";
-  const currentIdx = Math.max(
-    0,
-    PROCESS_STAGES.findIndex((s) => s.key === currentKey)
+function PhaseBar({
+  label,
+  stages,
+  currentKey,
+  phase,
+  currentPhase,
+  muted,
+  closed,
+  changing,
+  onStageClick,
+}) {
+  const currentIdx = stages.findIndex((s) => s.key === currentKey);
+  const phaseDone = currentPhase > phase;
+
+  return (
+    <div
+      className={`rounded-2xl border p-4 sm:p-5 ${
+        muted
+          ? "border-dashed border-border bg-alt/40"
+          : "border-border bg-alt"
+      }`}
+    >
+      <div className="mb-3 flex flex-wrap items-center justify-between gap-2">
+        <h3
+          className={`text-xs font-semibold uppercase tracking-widest ${
+            muted ? "text-muted/70" : "text-muted"
+          }`}
+        >
+          {label}
+        </h3>
+        <div className="flex items-center gap-2 text-xs">
+          {closed && (
+            <span className="rounded-full border border-slate-300 bg-slate-100 px-2 py-0.5 font-semibold text-slate-700">
+              Not Found — Case Closed
+            </span>
+          )}
+          {muted && !closed && (
+            <span className="text-muted/70">Not applicable</span>
+          )}
+          {changing && <span className="text-muted">Updating…</span>}
+        </div>
+      </div>
+      <ol className="flex items-start overflow-x-auto pb-1">
+        {stages.map((stage, i) => {
+          const isCurrent = i === currentIdx && currentPhase === phase;
+          const isCompleted =
+            (currentPhase === phase && i < currentIdx) || phaseDone;
+          const lineActive = isCompleted;
+          const disabledByMute = muted && !closed;
+          return (
+            <li key={stage.key} className="flex items-start">
+              <button
+                type="button"
+                onClick={() => !disabledByMute && onStageClick(stage)}
+                disabled={changing || disabledByMute}
+                className={`flex min-w-[72px] flex-col items-center gap-1.5 px-1 disabled:opacity-60 ${
+                  disabledByMute ? "cursor-not-allowed" : ""
+                }`}
+                title={disabledByMute ? "Delivery not required for this case" : stage.label}
+              >
+                <span
+                  className={`inline-flex h-8 w-8 items-center justify-center rounded-full border text-xs font-semibold ${
+                    muted && !isCurrent && !isCompleted
+                      ? "border-border/60 bg-card/60 text-muted/70"
+                      : isCurrent
+                      ? "border-accent bg-accent text-white shadow-sm"
+                      : isCompleted
+                      ? "border-accent/50 bg-emerald-50 text-accent"
+                      : "border-border bg-card text-muted"
+                  }`}
+                >
+                  {isCompleted ? (
+                    <svg
+                      className="h-4 w-4"
+                      viewBox="0 0 24 24"
+                      fill="none"
+                      stroke="currentColor"
+                      strokeWidth="3"
+                      strokeLinecap="round"
+                      strokeLinejoin="round"
+                      aria-hidden="true"
+                    >
+                      <polyline points="20 6 9 17 4 12" />
+                    </svg>
+                  ) : (
+                    i + 1
+                  )}
+                </span>
+                <span
+                  className={`text-center text-[11px] leading-tight ${
+                    muted && !isCurrent && !isCompleted
+                      ? "text-muted/70"
+                      : isCurrent
+                      ? "font-semibold text-foreground"
+                      : isCompleted
+                      ? "text-foreground"
+                      : "text-muted"
+                  }`}
+                >
+                  {stage.label}
+                </span>
+              </button>
+              {i < stages.length - 1 && (
+                <span
+                  aria-hidden="true"
+                  className={`mt-4 h-0.5 w-6 sm:w-8 ${
+                    lineActive
+                      ? "bg-accent"
+                      : muted
+                      ? "bg-border/50"
+                      : "bg-border"
+                  }`}
+                />
+              )}
+            </li>
+          );
+        })}
+      </ol>
+    </div>
   );
+}
+
+function DualPhaseTracker({ report, password, onUnauthorized, onUpdate }) {
+  const currentKey = normalizeStageKey(report.process_stage);
+  const currentPhase = getStagePhase(currentKey);
+  const deliveryRequired = isDeliveryRequired(report);
+  const closed = (report.status || "") === "closed";
   const [changing, setChanging] = useState(false);
   const [error, setError] = useState(null);
 
@@ -2175,7 +2829,6 @@ function StageTracker({ report, password, onUnauthorized, onUpdate, onStatusChan
       const json = await res.json().catch(() => ({}));
       if (!res.ok || !json.ok) throw new Error(json.error || "Update failed");
       onUpdate(json.report);
-      onStatusChange?.(json.report.status || stage.status);
     } catch (err) {
       setError(err.message);
     } finally {
@@ -2184,79 +2837,30 @@ function StageTracker({ report, password, onUnauthorized, onUpdate, onStatusChan
   };
 
   return (
-    <div className="mb-6 rounded-2xl border border-border bg-alt p-4 sm:p-5">
-      <div className="mb-3 flex items-center justify-between">
-        <h3 className="text-xs font-semibold uppercase tracking-widest text-muted">
-          Process stage
-        </h3>
-        {changing && <span className="text-xs text-muted">Updating…</span>}
-      </div>
-      <ol className="flex items-start overflow-x-auto pb-1">
-        {PROCESS_STAGES.map((stage, i) => {
-          const isCompleted = i < currentIdx;
-          const isCurrent = i === currentIdx;
-          const lineActive = i < currentIdx;
-          return (
-            <li key={stage.key} className="flex items-start">
-              <button
-                type="button"
-                onClick={() => changeStage(stage)}
-                disabled={changing}
-                className="flex min-w-[72px] flex-col items-center gap-1.5 px-1 disabled:opacity-60"
-              >
-                <span
-                  className={`inline-flex h-8 w-8 items-center justify-center rounded-full border text-xs font-semibold ${
-                    isCurrent
-                      ? "border-accent bg-accent text-white shadow-sm"
-                      : isCompleted
-                      ? "border-accent/50 bg-emerald-50 text-accent"
-                      : "border-border bg-card text-muted"
-                  }`}
-                >
-                  {isCompleted ? (
-                    <svg
-                      className="h-4 w-4"
-                      viewBox="0 0 24 24"
-                      fill="none"
-                      stroke="currentColor"
-                      strokeWidth="3"
-                      strokeLinecap="round"
-                      strokeLinejoin="round"
-                      aria-hidden="true"
-                    >
-                      <polyline points="20 6 9 17 4 12" />
-                    </svg>
-                  ) : (
-                    i + 1
-                  )}
-                </span>
-                <span
-                  className={`text-[11px] leading-tight ${
-                    isCurrent
-                      ? "font-semibold text-foreground"
-                      : isCompleted
-                      ? "text-foreground"
-                      : "text-muted"
-                  }`}
-                >
-                  {stage.label}
-                </span>
-              </button>
-              {i < PROCESS_STAGES.length - 1 && (
-                <span
-                  aria-hidden="true"
-                  className={`mt-4 h-0.5 w-6 sm:w-8 ${
-                    lineActive ? "bg-accent" : "bg-border"
-                  }`}
-                />
-              )}
-            </li>
-          );
-        })}
-      </ol>
-      {error && (
-        <p className="mt-3 text-sm text-red-600">{error}</p>
-      )}
+    <div className="mb-6 space-y-3">
+      <PhaseBar
+        label="Phase 1: Search"
+        stages={PHASE1_STAGES}
+        currentKey={currentKey}
+        phase={1}
+        currentPhase={currentPhase}
+        muted={false}
+        closed={closed}
+        changing={changing}
+        onStageClick={changeStage}
+      />
+      <PhaseBar
+        label="Phase 2: Delivery"
+        stages={PHASE2_STAGES}
+        currentKey={currentKey}
+        phase={2}
+        currentPhase={currentPhase}
+        muted={!deliveryRequired}
+        closed={false}
+        changing={changing}
+        onStageClick={changeStage}
+      />
+      {error && <p className="text-sm text-red-600">{error}</p>}
     </div>
   );
 }
