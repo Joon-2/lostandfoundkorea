@@ -1177,9 +1177,16 @@ function FoundImagesEditor({
     setUploading(true);
     setMsg(null);
     try {
+      console.log("[upload] selected file:", {
+        name: selected.name,
+        size: selected.size,
+        type: selected.type,
+      });
+
       const processed = await processImage(selected, (text) =>
         setProgressStatus(text)
       );
+      console.log("[upload] processed blob size:", processed.size);
       setProgressStatus("Uploading…");
 
       const jpegFile = new File(
@@ -1196,17 +1203,31 @@ function FoundImagesEditor({
         headers: { "x-admin-password": password },
         body: fd,
       });
+      console.log("[upload] response status:", res.status);
+      console.log(
+        "[upload] response headers:",
+        Object.fromEntries(res.headers.entries())
+      );
+
       if (res.status === 401) {
         onUnauthorized?.();
         return;
       }
       const json = await res.json().catch(() => ({}));
+      console.log("[upload] response body:", json);
+
       if (!res.ok || !json.ok) {
-        throw new Error(json.error || json.hint || "Upload failed");
+        const parts = [json.error || json.hint || "Upload failed"];
+        if (json.hint && json.hint !== json.error) parts.push(json.hint);
+        if (json.bucket) parts.push(`bucket: ${json.bucket}`);
+        if (json.debug?.statusCode) parts.push(`status: ${json.debug.statusCode}`);
+        if (json.debug?.code) parts.push(`code: ${json.debug.code}`);
+        throw new Error(parts.join(" · "));
       }
       onChange(json.images);
       setMsg({ kind: "ok", text: "Photo uploaded." });
     } catch (err) {
+      console.error("[upload] failed:", err);
       setMsg({ kind: "err", text: err.message });
     } finally {
       setUploading(false);
@@ -1324,13 +1345,48 @@ function FoundImagesEditor({
         </div>
       )}
 
-      {msg && (
+      {msg && msg.kind === "err" && (
+        <div
+          role="alert"
+          className="mt-3 rounded-xl border-2 border-red-300 bg-red-50 px-4 py-3 text-sm text-red-800"
+        >
+          <div className="flex items-start gap-3">
+            <span aria-hidden="true" className="mt-0.5 text-lg leading-none text-red-600">
+              ⚠
+            </span>
+            <div className="flex-1 min-w-0">
+              <p className="font-semibold">Upload failed</p>
+              <p className="mt-1 break-words text-red-700">{msg.text}</p>
+              <p className="mt-2 text-xs text-red-600/80">
+                Open the browser console and the Vercel Functions logs for
+                the full error object.
+              </p>
+            </div>
+            <button
+              type="button"
+              onClick={() => setMsg(null)}
+              className="flex-none rounded-full p-1 text-red-600 hover:bg-red-100"
+              aria-label="Dismiss"
+            >
+              <svg
+                className="h-4 w-4"
+                viewBox="0 0 24 24"
+                fill="none"
+                stroke="currentColor"
+                strokeWidth="2.5"
+                strokeLinecap="round"
+                strokeLinejoin="round"
+              >
+                <line x1="18" y1="6" x2="6" y2="18" />
+                <line x1="6" y1="6" x2="18" y2="18" />
+              </svg>
+            </button>
+          </div>
+        </div>
+      )}
+      {msg && msg.kind === "ok" && (
         <p
-          className={`mt-3 rounded-lg px-3 py-2 text-sm ${
-            msg.kind === "ok"
-              ? "bg-emerald-50 text-accent"
-              : "bg-red-50 text-red-700"
-          }`}
+          className="mt-3 rounded-lg bg-emerald-50 px-3 py-2 text-sm text-accent"
           role="status"
         >
           {msg.text}

@@ -9,38 +9,83 @@ const BUCKET = "found-images";
 const MAX_BYTES = 5 * 1024 * 1024;
 const MAX_PHOTOS = 5;
 
+function ok(body) {
+  return Response.json(body, {
+    headers: { "Cache-Control": "no-store" },
+  });
+}
+function fail(body, status) {
+  return Response.json(
+    { ok: false, ...body },
+    { status, headers: { "Cache-Control": "no-store" } }
+  );
+}
+
+function errorToPlain(err) {
+  if (!err) return null;
+  const plain = {
+    message: err.message,
+    name: err.name,
+    statusCode: err.statusCode,
+    code: err.code,
+    hint: err.hint,
+    details: err.details,
+  };
+  try {
+    return { ...plain, ...JSON.parse(JSON.stringify(err)) };
+  } catch {
+    return plain;
+  }
+}
+
 export async function POST(request) {
+  console.log("[upload-found-image] request received");
+
   const denied = checkAdminAuth(request);
-  if (denied) return denied;
+  if (denied) {
+    console.log("[upload-found-image] auth denied");
+    return denied;
+  }
 
   if (!supabaseAdmin) {
-    return Response.json(
-      { ok: false, error: "Server not configured" },
-      { status: 500 }
+    console.error(
+      "[upload-found-image] supabaseAdmin is null — check NEXT_PUBLIC_SUPABASE_URL and SUPABASE_SERVICE_ROLE_KEY"
+    );
+    return fail(
+      {
+        error: "Server not configured",
+        debug: "SUPABASE_SERVICE_ROLE_KEY missing on server",
+      },
+      500
     );
   }
+  console.log("[upload-found-image] supabaseAdmin configured, bucket:", BUCKET);
 
   try {
     const formData = await request.formData();
     const file = formData.get("file");
     const caseNumber = formData.get("caseNumber");
+    console.log("[upload-found-image] file info:", {
+      hasFile: !!file && typeof file !== "string",
+      name: file?.name,
+      size: file?.size,
+      type: file?.type,
+      caseNumber,
+    });
 
     if (!file || typeof file === "string" || !caseNumber) {
-      return Response.json(
-        { ok: false, error: "Missing file or caseNumber" },
-        { status: 400 }
-      );
+      return fail({ error: "Missing file or caseNumber" }, 400);
     }
     if (file.type && !file.type.startsWith("image/")) {
-      return Response.json(
-        { ok: false, error: "Not an image" },
-        { status: 400 }
-      );
+      return fail({ error: "Not an image", debug: `type=${file.type}` }, 400);
     }
     if (file.size > MAX_BYTES) {
-      return Response.json(
-        { ok: false, error: "File is larger than 5 MB after compression" },
-        { status: 400 }
+      return fail(
+        {
+          error: "File is larger than 5 MB after compression",
+          debug: `size=${file.size}`,
+        },
+        400
       );
     }
 
@@ -50,31 +95,39 @@ export async function POST(request) {
       .eq("case_number", caseNumber)
       .maybeSingle();
     if (lookupError) {
-      console.error("upload-found-image lookup error:", lookupError);
-      return Response.json(
-        { ok: false, error: lookupError.message },
-        { status: 500 }
+      console.error(
+        "[upload-found-image] DB lookup error:",
+        JSON.stringify(errorToPlain(lookupError))
+      );
+      return fail(
+        {
+          error: lookupError.message,
+          debug: errorToPlain(lookupError),
+        },
+        500
       );
     }
     if (!report) {
-      return Response.json(
-        { ok: false, error: "Case not found" },
-        { status: 404 }
-      );
+      console.log("[upload-found-image] case not found:", caseNumber);
+      return fail({ error: "Case not found" }, 404);
     }
+    console.log("[upload-found-image] report found, id:", report.id);
 
     const existingImages = Array.isArray(report.found_images)
       ? report.found_images
       : [];
     if (existingImages.length >= MAX_PHOTOS) {
-      return Response.json(
-        { ok: false, error: `Maximum ${MAX_PHOTOS} photos per case` },
-        { status: 400 }
-      );
+      return fail({ error: `Maximum ${MAX_PHOTOS} photos per case` }, 400);
     }
 
     const path = `${caseNumber}-${Date.now()}.jpg`;
     const buffer = Buffer.from(await file.arrayBuffer());
+    console.log(
+      "[upload-found-image] uploading to storage:",
+      `${BUCKET}/${path}`,
+      "bytes:",
+      buffer.byteLength
+    );
 
     const { data: uploaded, error: uploadError } = await supabaseAdmin.storage
       .from(BUCKET)
@@ -83,30 +136,40 @@ export async function POST(request) {
         upsert: false,
       });
     if (uploadError) {
-      console.error("upload-found-image upload error:", uploadError);
-      return Response.json(
+      const plain = errorToPlain(uploadError);
+      console.error(
+        "[upload-found-image] storage upload error FULL:",
+        JSON.stringify(plain, null, 2)
+      );
+      return fail(
         {
-          ok: false,
-          error: uploadError.message,
+          error: uploadError.message || "Storage upload failed",
           hint: `Ensure a '${BUCKET}' bucket exists in Supabase Storage.`,
+          bucket: BUCKET,
+          debug: plain,
         },
-        { status: 500 }
+        500
       );
     }
+    console.log("[upload-found-image] storage upload OK, path:", uploaded.path);
 
     const { data: publicData } = supabaseAdmin.storage
       .from(BUCKET)
       .getPublicUrl(uploaded.path);
     const publicUrl = publicData?.publicUrl;
     if (!publicUrl) {
-      return Response.json(
-        { ok: false, error: "Could not resolve public URL for upload" },
-        { status: 500 }
+      console.error(
+        "[upload-found-image] could not resolve public URL for",
+        uploaded.path
+      );
+      return fail(
+        { error: "Could not resolve public URL for upload" },
+        500
       );
     }
+    console.log("[upload-found-image] public URL:", publicUrl);
 
     const nextImages = [...existingImages, publicUrl];
-
     const existingLog = Array.isArray(report.activity_log)
       ? report.activity_log
       : [];
@@ -115,6 +178,12 @@ export async function POST(request) {
       ...existingLog,
     ];
 
+    console.log(
+      "[upload-found-image] DB update: reports.update({found_images, activity_log}).eq('id',",
+      report.id,
+      ") — new array length:",
+      nextImages.length
+    );
     const { error: updateError } = await supabaseAdmin
       .from("reports")
       .update({
@@ -123,19 +192,28 @@ export async function POST(request) {
       })
       .eq("id", report.id);
     if (updateError) {
-      console.error("upload-found-image update error:", updateError);
-      return Response.json(
-        { ok: false, error: updateError.message },
-        { status: 500 }
+      const plain = errorToPlain(updateError);
+      console.error(
+        "[upload-found-image] DB update error FULL:",
+        JSON.stringify(plain, null, 2)
+      );
+      return fail(
+        { error: updateError.message, debug: plain },
+        500
       );
     }
+    console.log("[upload-found-image] DB update OK");
 
-    return Response.json({ ok: true, url: publicUrl, images: nextImages });
+    return ok({ ok: true, url: publicUrl, images: nextImages });
   } catch (err) {
-    console.error("upload-found-image threw:", err);
-    return Response.json(
-      { ok: false, error: err?.message || "Upload failed" },
-      { status: 500 }
+    const plain = errorToPlain(err);
+    console.error(
+      "[upload-found-image] threw:",
+      JSON.stringify(plain, null, 2)
+    );
+    return fail(
+      { error: err?.message || "Upload failed", debug: plain },
+      500
     );
   }
 }
