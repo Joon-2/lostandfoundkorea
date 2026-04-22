@@ -413,6 +413,15 @@ function ReportEditor({ report, password, onUnauthorized, onUpdate }) {
   const [saveMsg, setSaveMsg] = useState(null);
   const [emailMsg, setEmailMsg] = useState(null);
   const [linkCopied, setLinkCopied] = useState(false);
+  const [sendingConfirmation, setSendingConfirmation] = useState(false);
+  const [sendingPayment, setSendingPayment] = useState(false);
+
+  const flashEmail = (msg) => {
+    setEmailMsg(msg);
+    setTimeout(() => {
+      setEmailMsg((curr) => (curr === msg ? null : curr));
+    }, 4000);
+  };
 
   const paymentLink = `https://lostandfoundkorea.com/pay/${report.case_number || ""}`;
 
@@ -461,7 +470,44 @@ function ReportEditor({ report, password, onUnauthorized, onUpdate }) {
     }
   };
 
+  const handleSendConfirmation = async () => {
+    if (sendingConfirmation) return;
+    setSendingConfirmation(true);
+    setEmailMsg(null);
+    try {
+      const res = await fetch("/api/send-email", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({
+          name: report.name,
+          email: report.email,
+          caseNumber: report.case_number,
+          category: report.category,
+          itemDescription: report.item_description,
+          location: report.location,
+        }),
+      });
+      const json = await res.json().catch(() => ({}));
+      if (!res.ok || !json.ok) {
+        throw new Error(json.error || "Send failed");
+      }
+      flashEmail({
+        kind: "ok",
+        text: `Confirmation email sent to ${report.email}.`,
+      });
+    } catch (err) {
+      flashEmail({
+        kind: "err",
+        text: `Confirmation email failed: ${err.message}`,
+      });
+    } finally {
+      setSendingConfirmation(false);
+    }
+  };
+
   const handleSendPayment = async () => {
+    if (sendingPayment) return;
+    setSendingPayment(true);
     setEmailMsg(null);
     try {
       const res = await fetch("/api/admin/send-payment", {
@@ -484,9 +530,17 @@ function ReportEditor({ report, password, onUnauthorized, onUpdate }) {
       if (!res.ok || !json.ok) {
         throw new Error(json.error || "Send failed");
       }
-      setEmailMsg({ kind: "ok", text: `Email sent to ${report.email}.` });
+      flashEmail({
+        kind: "ok",
+        text: `Payment link sent to ${report.email}.`,
+      });
     } catch (err) {
-      setEmailMsg({ kind: "err", text: err.message });
+      flashEmail({
+        kind: "err",
+        text: `Payment email failed: ${err.message}`,
+      });
+    } finally {
+      setSendingPayment(false);
     }
   };
 
@@ -498,7 +552,7 @@ function ReportEditor({ report, password, onUnauthorized, onUpdate }) {
         <h3 className="text-xs font-semibold uppercase tracking-widest text-muted">
           Recovery details
         </h3>
-        <div className="mt-3 grid gap-4 sm:grid-cols-2">
+        <div className="mt-3 grid gap-4 lg:grid-cols-[200px_1fr]">
           <Field label="Status">
             <select
               value={status}
@@ -512,6 +566,43 @@ function ReportEditor({ report, password, onUnauthorized, onUpdate }) {
               ))}
             </select>
           </Field>
+          <div>
+            <span className="mb-1.5 block text-sm font-medium text-foreground">
+              Email actions
+            </span>
+            <div className="flex flex-wrap items-center gap-2">
+              <button
+                onClick={handleSendConfirmation}
+                disabled={sendingConfirmation}
+                className="inline-flex items-center rounded-full border border-border bg-card px-4 py-2 text-sm font-medium text-foreground transition-colors hover:bg-alt disabled:opacity-60"
+              >
+                {sendingConfirmation
+                  ? "Sending…"
+                  : "Send confirmation email"}
+              </button>
+              <button
+                onClick={handleSendPayment}
+                disabled={sendingPayment}
+                className="inline-flex items-center rounded-full bg-accent px-4 py-2 text-sm font-medium text-white transition-colors hover:bg-accent-hover disabled:opacity-60"
+              >
+                {sendingPayment ? "Sending…" : "Send payment link"}
+              </button>
+            </div>
+            {emailMsg && (
+              <p
+                className={`mt-2 rounded-lg px-3 py-2 text-sm ${
+                  emailMsg.kind === "ok"
+                    ? "bg-emerald-50 text-accent"
+                    : "bg-red-50 text-red-700"
+                }`}
+                role="status"
+              >
+                {emailMsg.text}
+              </p>
+            )}
+          </div>
+        </div>
+        <div className="mt-4 grid gap-4 sm:grid-cols-2">
           <Field label="Recovery location">
             <input
               type="text"
@@ -566,12 +657,6 @@ function ReportEditor({ report, password, onUnauthorized, onUpdate }) {
         >
           {linkCopied ? "Copied!" : "Copy payment link"}
         </button>
-        <button
-          onClick={handleSendPayment}
-          className="inline-flex items-center rounded-full border border-border bg-card px-5 py-2.5 text-sm font-medium text-foreground transition-colors hover:bg-alt"
-        >
-          Send payment email
-        </button>
       </div>
 
       <div className="mt-3 space-y-1 text-sm">
@@ -583,15 +668,6 @@ function ReportEditor({ report, password, onUnauthorized, onUpdate }) {
             }
           >
             {saveMsg.text}
-          </p>
-        )}
-        {emailMsg && (
-          <p
-            className={
-              emailMsg.kind === "ok" ? "text-accent" : "text-red-600"
-            }
-          >
-            {emailMsg.text}
           </p>
         )}
       </div>
