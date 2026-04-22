@@ -6,6 +6,7 @@ export const runtime = "nodejs";
 
 const EDITABLE = [
   "status",
+  "process_stage",
   "recovery_location",
   "recovery_contact",
   "recovery_hours",

@@ -15,6 +15,16 @@ const ENV_LABELS = [
   "ADMIN_PASSWORD",
 ];
 
+const PROCESS_STAGES = [
+  { key: "received", label: "Received", status: "pending" },
+  { key: "searching", label: "Searching", status: "pending" },
+  { key: "found", label: "Found", status: "found" },
+  { key: "payment_sent", label: "Payment Sent", status: "found" },
+  { key: "paid", label: "Paid", status: "paid" },
+  { key: "pickup", label: "Pickup", status: "paid" },
+  { key: "completed", label: "Completed", status: "paid" },
+];
+
 const STATUS_OPTIONS = ["pending", "found", "paid", "closed"];
 const STATUS_LABELS = {
   pending: "Pending",
@@ -631,6 +641,14 @@ function ReportEditor({ report, password, onUnauthorized, onUpdate }) {
 
   return (
     <div className="border-t border-border px-5 py-5 sm:px-6 sm:py-6">
+      <StageTracker
+        report={report}
+        password={password}
+        onUnauthorized={onUnauthorized}
+        onUpdate={onUpdate}
+        onStatusChange={setStatus}
+      />
+
       <DetailsBlock report={report} />
 
       <div className="mt-6">
@@ -830,6 +848,124 @@ function ActivityLog({ entries }) {
             </li>
           ))}
         </ol>
+      )}
+    </div>
+  );
+}
+
+function StageTracker({ report, password, onUnauthorized, onUpdate, onStatusChange }) {
+  const currentKey = report.process_stage || "received";
+  const currentIdx = Math.max(
+    0,
+    PROCESS_STAGES.findIndex((s) => s.key === currentKey)
+  );
+  const [changing, setChanging] = useState(false);
+  const [error, setError] = useState(null);
+
+  const changeStage = async (stage) => {
+    if (changing || stage.key === currentKey) return;
+    setChanging(true);
+    setError(null);
+    try {
+      const res = await fetch(`/api/admin/reports/${report.id}`, {
+        method: "PATCH",
+        headers: {
+          "Content-Type": "application/json",
+          "x-admin-password": password,
+        },
+        body: JSON.stringify({
+          process_stage: stage.key,
+          status: stage.status,
+        }),
+      });
+      if (res.status === 401) {
+        onUnauthorized?.();
+        return;
+      }
+      const json = await res.json().catch(() => ({}));
+      if (!res.ok || !json.ok) throw new Error(json.error || "Update failed");
+      onUpdate(json.report);
+      onStatusChange?.(json.report.status || stage.status);
+    } catch (err) {
+      setError(err.message);
+    } finally {
+      setChanging(false);
+    }
+  };
+
+  return (
+    <div className="mb-6 rounded-2xl border border-border bg-alt p-4 sm:p-5">
+      <div className="mb-3 flex items-center justify-between">
+        <h3 className="text-xs font-semibold uppercase tracking-widest text-muted">
+          Process stage
+        </h3>
+        {changing && <span className="text-xs text-muted">Updating…</span>}
+      </div>
+      <ol className="flex items-start overflow-x-auto pb-1">
+        {PROCESS_STAGES.map((stage, i) => {
+          const isCompleted = i < currentIdx;
+          const isCurrent = i === currentIdx;
+          const lineActive = i < currentIdx;
+          return (
+            <li key={stage.key} className="flex items-start">
+              <button
+                type="button"
+                onClick={() => changeStage(stage)}
+                disabled={changing}
+                className="flex min-w-[72px] flex-col items-center gap-1.5 px-1 disabled:opacity-60"
+              >
+                <span
+                  className={`inline-flex h-8 w-8 items-center justify-center rounded-full border text-xs font-semibold ${
+                    isCurrent
+                      ? "border-accent bg-accent text-white shadow-sm"
+                      : isCompleted
+                      ? "border-accent/50 bg-emerald-50 text-accent"
+                      : "border-border bg-card text-muted"
+                  }`}
+                >
+                  {isCompleted ? (
+                    <svg
+                      className="h-4 w-4"
+                      viewBox="0 0 24 24"
+                      fill="none"
+                      stroke="currentColor"
+                      strokeWidth="3"
+                      strokeLinecap="round"
+                      strokeLinejoin="round"
+                      aria-hidden="true"
+                    >
+                      <polyline points="20 6 9 17 4 12" />
+                    </svg>
+                  ) : (
+                    i + 1
+                  )}
+                </span>
+                <span
+                  className={`text-[11px] leading-tight ${
+                    isCurrent
+                      ? "font-semibold text-foreground"
+                      : isCompleted
+                      ? "text-foreground"
+                      : "text-muted"
+                  }`}
+                >
+                  {stage.label}
+                </span>
+              </button>
+              {i < PROCESS_STAGES.length - 1 && (
+                <span
+                  aria-hidden="true"
+                  className={`mt-4 h-0.5 w-6 sm:w-8 ${
+                    lineActive ? "bg-accent" : "bg-border"
+                  }`}
+                />
+              )}
+            </li>
+          );
+        })}
+      </ol>
+      {error && (
+        <p className="mt-3 text-sm text-red-600">{error}</p>
       )}
     </div>
   );
