@@ -53,6 +53,12 @@ export async function GET(_request, { params }) {
     plan: data.plan === "all_in_one" ? "all_in_one" : "recovery",
   };
 
+  if (status === "found" || status === "paid") {
+    base.found_images = Array.isArray(data.found_images)
+      ? data.found_images
+      : [];
+  }
+
   const recovery =
     status === "paid"
       ? {
@@ -60,7 +66,6 @@ export async function GET(_request, { params }) {
           recovery_contact: data.recovery_contact,
           recovery_hours: data.recovery_hours,
           recovery_instructions: data.recovery_instructions,
-          found_images: Array.isArray(data.found_images) ? data.found_images : [],
           authorization_url: data.authorization_url || null,
         }
       : {};

@@ -353,6 +353,9 @@ function FoundState({
   onPaid,
 }) {
   const paypalConfigured = Boolean(PAYPAL_CLIENT_ID);
+  const foundPhotos = Array.isArray(report.found_images)
+    ? report.found_images
+    : [];
 
   const createOrder = useCallback(async () => {
     setPaymentError(null);
@@ -449,6 +452,36 @@ function FoundState({
           )}
         </div>
       </div>
+
+      {foundPhotos.length > 0 && (
+        <div className="mt-6">
+          <h3 className="text-xs font-semibold uppercase tracking-widest text-muted">
+            Found item photos
+          </h3>
+          <div className="mt-3 grid grid-cols-2 gap-3 sm:grid-cols-3">
+            {foundPhotos.map((src, i) => (
+              <a
+                key={src + i}
+                href={src}
+                target="_blank"
+                rel="noopener noreferrer"
+                className="group block overflow-hidden rounded-xl border border-border bg-alt"
+              >
+                <img
+                  src={src}
+                  alt={`Found item photo ${i + 1}`}
+                  className="aspect-square w-full object-cover transition-transform group-hover:scale-105"
+                  loading="lazy"
+                />
+              </a>
+            ))}
+          </div>
+          <p className="mt-2 text-xs italic text-muted">
+            Is this your item? Photos taken by our team at the recovery
+            location.
+          </p>
+        </div>
+      )}
 
       <SummaryCard report={report} />
 
