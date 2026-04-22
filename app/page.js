@@ -387,7 +387,7 @@ export default function Home() {
                   "On-the-ground search in the area",
                   "International shipping included",
                 ]}
-                cta={{ label: "Contact us", href: "mailto:hello@lostandfoundkorea.com" }}
+                cta={{ label: "Contact us", href: "mailto:support@lostandfoundkorea.com" }}
               />
             </div>
 

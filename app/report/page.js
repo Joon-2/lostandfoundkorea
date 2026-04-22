@@ -132,7 +132,7 @@ export default function ReportPage() {
 
     if (!supabase) {
       setSubmitError(
-        "Submissions are temporarily unavailable. Please try again later or email hello@lostandfoundkorea.com."
+        "Submissions are temporarily unavailable. Please try again later or email support@lostandfoundkorea.com."
       );
       setSubmitting(false);
       return;
