@@ -2,15 +2,7 @@
 
 import Link from "next/link";
 import { useState } from "react";
-import { supabase } from "@/lib/supabase";
 import { WHATSAPP_URL } from "@/components/WhatsApp";
-
-function generateCaseNumber() {
-  const n = Math.floor(Math.random() * 1_000_000)
-    .toString()
-    .padStart(6, "0");
-  return `LFK-${n}`;
-}
 
 const TOTAL_STEPS = 2;
 
@@ -130,56 +122,42 @@ export default function ReportPage() {
     setSubmitting(true);
     setSubmitError(null);
 
-    if (!supabase) {
-      setSubmitError(
-        "Submissions are temporarily unavailable. Please try again later or email support@lostandfoundkorea.com."
-      );
-      setSubmitting(false);
-      return;
-    }
-
-    const newCaseNumber = generateCaseNumber();
-
-    const payload = {
-      name: data.fullName.trim(),
-      email: data.email.trim(),
-      category: data.itemCategory,
-      brand_model: data.brandModel.trim() || null,
-      color: data.color.trim() || null,
-      item_description: data.itemDescription.trim(),
-      location: data.locationType,
-      location_detail: data.locationDetails.trim() || null,
-      date_lost: data.date,
-      time_lost: data.time || null,
-      distinguishing_features: data.distinguishingFeatures.trim() || null,
-      additional_info: data.notes.trim() || null,
-      case_number: newCaseNumber,
-    };
-
-    const { error: dbError } = await supabase
-      .from("reports")
-      .insert(payload);
-
-    if (dbError) {
-      console.error("Supabase insert failed:", dbError);
+    let res;
+    try {
+      res = await fetch("/api/submit-report", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify(data),
+      });
+    } catch (err) {
+      console.error("Submit fetch failed:", err);
       setSubmitError("Something went wrong, please try again.");
       setSubmitting(false);
       return;
     }
 
-    fetch("/api/send-confirmation", {
-      method: "POST",
-      headers: { "Content-Type": "application/json" },
-      body: JSON.stringify({
-        name: data.fullName.trim(),
-        email: data.email.trim(),
-        caseNumber: newCaseNumber,
-      }),
-    }).catch((err) => {
-      console.error("Confirmation email request failed:", err);
-    });
+    if (res.status === 429) {
+      setSubmitError(
+        "Too many submissions from this network. Please try again later."
+      );
+      setSubmitting(false);
+      return;
+    }
 
-    setCaseNumber(newCaseNumber);
+    if (!res.ok) {
+      setSubmitError("Something went wrong, please try again.");
+      setSubmitting(false);
+      return;
+    }
+
+    const result = await res.json().catch(() => ({}));
+    if (!result.ok || !result.caseNumber) {
+      setSubmitError("Something went wrong, please try again.");
+      setSubmitting(false);
+      return;
+    }
+
+    setCaseNumber(result.caseNumber);
     setSubmitting(false);
     setSubmitted(true);
   };
