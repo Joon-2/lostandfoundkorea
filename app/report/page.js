@@ -167,6 +167,18 @@ export default function ReportPage() {
       return;
     }
 
+    fetch("/api/send-confirmation", {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({
+        name: data.fullName.trim(),
+        email: data.email.trim(),
+        caseNumber: newCaseNumber,
+      }),
+    }).catch((err) => {
+      console.error("Confirmation email request failed:", err);
+    });
+
     setCaseNumber(newCaseNumber);
     setSubmitting(false);
     setSubmitted(true);
