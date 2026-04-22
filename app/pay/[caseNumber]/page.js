@@ -1,7 +1,7 @@
 "use client";
 
 import Link from "next/link";
-import { use, useCallback, useEffect, useState } from "react";
+import { use, useCallback, useEffect, useRef, useState } from "react";
 import { PayPalScriptProvider, PayPalButtons } from "@paypal/react-paypal-js";
 import { formatDate } from "@/lib/format";
 import { WHATSAPP_URL } from "@/components/WhatsApp";
@@ -16,6 +16,7 @@ export default function PayPage({ params }) {
   const [error, setError] = useState(null);
   const [paymentError, setPaymentError] = useState(null);
   const [paying, setPaying] = useState(false);
+  const [receipt, setReceipt] = useState(null);
 
   const fetchReport = useCallback(async () => {
     setLoading(true);
@@ -123,11 +124,16 @@ export default function PayPage({ params }) {
             paymentError={paymentError}
             setPaymentError={setPaymentError}
             onPaid={fetchReport}
+            onReceipt={setReceipt}
           />
         )}
 
         {!loading && !error && report && report.status === "paid" && (
-          <PaidState report={report} onRefresh={fetchReport} />
+          <PaidState
+            report={report}
+            onRefresh={fetchReport}
+            receipt={receipt}
+          />
         )}
 
         {!loading && !error && report && report.status === "closed" && (
@@ -139,19 +145,33 @@ export default function PayPage({ params }) {
 }
 
 function AuthorizationUpload({ caseNumber, authorizationUrl, onUploaded }) {
+  const fileInputRef = useRef(null);
+  const [legalName, setLegalName] = useState("");
+  const [idNumber, setIdNumber] = useState("");
+  const [authorized, setAuthorized] = useState(false);
   const [file, setFile] = useState(null);
   const [uploading, setUploading] = useState(false);
   const [msg, setMsg] = useState(null);
 
+  const canSubmit =
+    legalName.trim().length > 0 &&
+    idNumber.trim().length > 0 &&
+    Boolean(file) &&
+    authorized &&
+    !uploading;
+
   const handleSubmit = async (e) => {
     e.preventDefault();
-    if (!file || uploading) return;
+    if (!canSubmit) return;
     setUploading(true);
     setMsg(null);
     try {
       const fd = new FormData();
       fd.append("file", file);
       fd.append("caseNumber", caseNumber);
+      fd.append("legalName", legalName.trim());
+      fd.append("idNumber", idNumber.trim());
+      fd.append("authorized", "true");
       const res = await fetch("/api/upload-authorization", {
         method: "POST",
         body: fd,
@@ -161,8 +181,11 @@ function AuthorizationUpload({ caseNumber, authorizationUrl, onUploaded }) {
         console.error("upload failed:", json);
         throw new Error(json.error || "Upload failed");
       }
-      setMsg({ kind: "ok", text: "Authorization uploaded." });
+      setMsg({ kind: "ok", text: "Authorization submitted." });
       setFile(null);
+      setLegalName("");
+      setIdNumber("");
+      setAuthorized(false);
       onUploaded?.();
     } catch (err) {
       setMsg({ kind: "err", text: err.message });
@@ -171,13 +194,16 @@ function AuthorizationUpload({ caseNumber, authorizationUrl, onUploaded }) {
     }
   };
 
+  const fieldCls =
+    "w-full rounded-xl border border-border bg-card px-4 py-3 text-base text-foreground placeholder:text-muted focus:border-accent focus:outline-none focus:ring-2 focus:ring-accent/30";
+
   return (
     <div className="mt-6 rounded-2xl border border-border bg-card p-5 shadow-sm sm:p-6">
       <h3 className="font-serif text-lg tracking-tight text-foreground">
         Authorization form
       </h3>
       <p className="mt-2 text-sm text-body">
-        Upload your ID or a signed authorization so we can pick up your item
+        Provide your details and upload your ID so we can collect your item
         on your behalf. JPG, PNG, or PDF; up to 10 MB.
       </p>
 
@@ -195,19 +221,106 @@ function AuthorizationUpload({ caseNumber, authorizationUrl, onUploaded }) {
         </p>
       )}
 
-      <form onSubmit={handleSubmit} className="mt-4 flex flex-col gap-3 sm:flex-row sm:items-center">
-        <input
-          type="file"
-          accept="image/*,application/pdf"
-          onChange={(e) => setFile(e.target.files?.[0] || null)}
-          className="block w-full text-sm text-foreground file:mr-4 file:rounded-full file:border file:border-border file:bg-alt file:px-4 file:py-2 file:text-sm file:font-medium file:text-foreground hover:file:bg-card"
-        />
+      <form onSubmit={handleSubmit} className="mt-5 space-y-4">
+        <div>
+          <label
+            htmlFor="auth-legal-name"
+            className="mb-1.5 block text-sm font-medium text-foreground"
+          >
+            Full legal name (as shown on ID)
+          </label>
+          <input
+            id="auth-legal-name"
+            type="text"
+            required
+            autoComplete="name"
+            value={legalName}
+            onChange={(e) => setLegalName(e.target.value)}
+            placeholder="e.g. Jane Alice Doe"
+            className={fieldCls}
+          />
+        </div>
+
+        <div>
+          <label
+            htmlFor="auth-id-number"
+            className="mb-1.5 block text-sm font-medium text-foreground"
+          >
+            Passport / ID number
+          </label>
+          <input
+            id="auth-id-number"
+            type="text"
+            required
+            autoComplete="off"
+            value={idNumber}
+            onChange={(e) => setIdNumber(e.target.value)}
+            placeholder="e.g. M12345678"
+            className={fieldCls}
+          />
+        </div>
+
+        <div>
+          <span className="mb-1.5 block text-sm font-medium text-foreground">
+            ID photo
+          </span>
+          <input
+            ref={fileInputRef}
+            type="file"
+            accept="image/*,application/pdf"
+            onChange={(e) => setFile(e.target.files?.[0] || null)}
+            className="sr-only"
+          />
+          <div className="flex flex-wrap items-center gap-3">
+            <button
+              type="button"
+              onClick={() => fileInputRef.current?.click()}
+              className="inline-flex items-center gap-2 rounded-full border border-border bg-card px-4 py-2.5 text-sm font-medium text-foreground transition-colors hover:bg-alt"
+            >
+              <svg
+                className="h-4 w-4 text-accent"
+                viewBox="0 0 24 24"
+                fill="none"
+                stroke="currentColor"
+                strokeWidth="2"
+                strokeLinecap="round"
+                strokeLinejoin="round"
+                aria-hidden="true"
+              >
+                <path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4" />
+                <polyline points="17 8 12 3 7 8" />
+                <line x1="12" y1="3" x2="12" y2="15" />
+              </svg>
+              {file ? "Change file" : "Upload passport or ID photo"}
+            </button>
+            {file ? (
+              <span className="truncate text-sm text-body" title={file.name}>
+                {file.name}
+              </span>
+            ) : (
+              <span className="text-sm text-muted">No file selected</span>
+            )}
+          </div>
+        </div>
+
+        <label className="flex items-start gap-3 text-sm text-foreground">
+          <input
+            type="checkbox"
+            checked={authorized}
+            onChange={(e) => setAuthorized(e.target.checked)}
+            className="mt-0.5 h-4 w-4 flex-none rounded border-border text-accent focus:ring-accent/30"
+          />
+          <span className="leading-snug">
+            I authorize Lost and Found Korea to collect this item on my behalf.
+          </span>
+        </label>
+
         <button
           type="submit"
-          disabled={!file || uploading}
-          className="inline-flex items-center justify-center rounded-full bg-accent px-5 py-2.5 text-sm font-medium text-white transition-colors hover:bg-accent-hover disabled:opacity-60 sm:w-auto"
+          disabled={!canSubmit}
+          className="inline-flex items-center justify-center rounded-full bg-accent px-6 py-3 text-sm font-semibold text-white transition-colors hover:bg-accent-hover disabled:opacity-60"
         >
-          {uploading ? "Uploading…" : "Upload"}
+          {uploading ? "Submitting…" : "Submit authorization"}
         </button>
       </form>
 
@@ -347,6 +460,7 @@ function FoundState({
   paymentError,
   setPaymentError,
   onPaid,
+  onReceipt,
 }) {
   const paypalConfigured = Boolean(PAYPAL_CLIENT_ID);
   const foundPhotos = Array.isArray(report.found_images)
@@ -391,6 +505,28 @@ function FoundState({
           console.error("capture-order failed:", json);
           throw new Error(json.error || "Payment capture failed");
         }
+
+        const amount = report.plan === "all_in_one" ? 79 : 39;
+        const planLabel =
+          report.plan === "all_in_one" ? "All-in-One" : "Recovery";
+        const paidAt = new Date().toISOString();
+        const transactionId = paypalData.orderID;
+        onReceipt?.({ transactionId, amount, paidAt, planLabel });
+
+        fetch("/api/send-receipt", {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({
+            name: report.name,
+            email: report.email,
+            caseNumber: report.case_number,
+            amount,
+            transactionId,
+            paidAt,
+            planLabel,
+          }),
+        }).catch((err) => console.error("send-receipt failed:", err));
+
         onPaid();
       } catch (err) {
         setPaymentError(err.message);
@@ -398,7 +534,16 @@ function FoundState({
         setPaying(false);
       }
     },
-    [report.case_number, onPaid, setPaying, setPaymentError]
+    [
+      report.case_number,
+      report.plan,
+      report.name,
+      report.email,
+      onPaid,
+      onReceipt,
+      setPaying,
+      setPaymentError,
+    ]
   );
 
   return (
@@ -522,7 +667,7 @@ function FoundState({
   );
 }
 
-function PaidState({ report, onRefresh }) {
+function PaidState({ report, onRefresh, receipt }) {
   const rows = [
     ["Location", report.recovery_location],
     ["Contact phone", report.recovery_contact],
@@ -535,11 +680,19 @@ function PaidState({ report, onRefresh }) {
     : null;
   const photos = Array.isArray(report.found_images) ? report.found_images : [];
   const upsellWhatsApp = `https://wa.me/821044921349?text=${encodeURIComponent(
-    `Hi, I'd like to upgrade to Pickup and Delivery ($89) for case ${report.case_number}.`
+    `Hi, I'd like to add Pickup & Delivery (+$49) for case ${report.case_number}.`
   )}`;
   const helpWhatsApp = `https://wa.me/821044921349?text=${encodeURIComponent(
     `Hi, I have a question about picking up my item. Case ${report.case_number}.`
   )}`;
+
+  const transactionId = receipt?.transactionId || report.paypal_transaction_id;
+  const receiptAmount =
+    receipt?.amount ??
+    (report.plan === "all_in_one" ? 79 : 39);
+  const receiptPlanLabel =
+    receipt?.planLabel ||
+    (report.plan === "all_in_one" ? "All-in-One" : "Recovery");
 
   return (
     <Panel>
@@ -568,10 +721,50 @@ function PaidState({ report, onRefresh }) {
         </div>
       </div>
 
+      {transactionId && (
+        <div className="mt-6 rounded-2xl border border-border bg-card p-5 sm:p-6">
+          <h3 className="text-xs font-semibold uppercase tracking-widest text-muted">
+            Payment receipt
+          </h3>
+          <dl className="mt-3 divide-y divide-border text-sm">
+            <div className="grid grid-cols-3 gap-3 py-2.5 sm:grid-cols-4">
+              <dt className="text-muted">Case reference</dt>
+              <dd className="col-span-2 break-words font-mono text-foreground sm:col-span-3">
+                {report.case_number}
+              </dd>
+            </div>
+            <div className="grid grid-cols-3 gap-3 py-2.5 sm:grid-cols-4">
+              <dt className="text-muted">Amount paid</dt>
+              <dd className="col-span-2 font-medium text-foreground sm:col-span-3">
+                ${receiptAmount}{" "}
+                <span className="text-muted">({receiptPlanLabel})</span>
+              </dd>
+            </div>
+            <div className="grid grid-cols-3 gap-3 py-2.5 sm:grid-cols-4">
+              <dt className="text-muted">Transaction ID</dt>
+              <dd className="col-span-2 break-all font-mono text-xs text-foreground sm:col-span-3">
+                {transactionId}
+              </dd>
+            </div>
+            {receipt?.paidAt && (
+              <div className="grid grid-cols-3 gap-3 py-2.5 sm:grid-cols-4">
+                <dt className="text-muted">Date</dt>
+                <dd className="col-span-2 text-foreground sm:col-span-3">
+                  {formatDate(receipt.paidAt) || receipt.paidAt}
+                </dd>
+              </div>
+            )}
+          </dl>
+          <p className="mt-3 text-sm text-muted">
+            A receipt has been sent to your email.
+          </p>
+        </div>
+      )}
+
       {photos.length > 0 && (
         <div className="mt-6">
           <h3 className="text-xs font-semibold uppercase tracking-widest text-muted">
-            Found item photos
+            Your recovered item
           </h3>
           <div className="mt-3 grid grid-cols-2 gap-3 sm:grid-cols-3">
             {photos.map((src, i) => (
@@ -584,7 +777,7 @@ function PaidState({ report, onRefresh }) {
               >
                 <img
                   src={src}
-                  alt={`Found item photo ${i + 1}`}
+                  alt={`Recovered item photo ${i + 1}`}
                   className="aspect-square w-full object-cover transition-transform group-hover:scale-105"
                   loading="lazy"
                 />
@@ -655,8 +848,9 @@ function PaidState({ report, onRefresh }) {
           Need help picking it up?
         </h3>
         <p className="mt-2 text-sm text-body">
-          Upgrade to <strong className="text-foreground">Pickup and Delivery</strong>{" "}
-          for $89 and we&rsquo;ll bring it straight to your hotel or address.
+          Add <strong className="text-foreground">Pickup &amp; Delivery</strong>{" "}
+          for just <strong className="text-foreground">+$49</strong> more and
+          we&rsquo;ll bring it straight to your hotel or address.
         </p>
         <a
           href={upsellWhatsApp}
@@ -664,7 +858,7 @@ function PaidState({ report, onRefresh }) {
           rel="noopener noreferrer"
           className="mt-4 inline-flex items-center gap-2 rounded-full bg-accent px-5 py-2.5 text-sm font-medium text-white transition-colors hover:bg-accent-hover"
         >
-          Upgrade to Pickup &amp; Delivery — $89
+          Add Pickup — $49
         </a>
       </div>
 

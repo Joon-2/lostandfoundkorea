@@ -1,10 +1,18 @@
 import { supabaseAdmin } from "@/lib/supabase-admin";
+import { logToCaseByCaseNumber } from "@/lib/activity-log";
 
 export const runtime = "nodejs";
 export const dynamic = "force-dynamic";
 
 const BUCKET = "authorizations";
 const MAX_BYTES = 10 * 1024 * 1024;
+
+function maskIdNumber(raw) {
+  const s = (raw || "").trim();
+  if (!s) return "";
+  if (s.length <= 4) return `${"•".repeat(s.length)}`;
+  return `${"•".repeat(s.length - 4)}${s.slice(-4)}`;
+}
 
 function safeFilename(name) {
   return (name || "authorization")
@@ -24,10 +32,25 @@ export async function POST(request) {
     const formData = await request.formData();
     const file = formData.get("file");
     const caseNumber = formData.get("caseNumber");
+    const legalName = (formData.get("legalName") || "").toString().trim();
+    const idNumber = (formData.get("idNumber") || "").toString().trim();
+    const authorized = formData.get("authorized") === "true";
 
     if (!file || typeof file === "string" || !caseNumber) {
       return Response.json(
         { ok: false, error: "Missing file or caseNumber" },
+        { status: 400 }
+      );
+    }
+    if (!legalName || !idNumber) {
+      return Response.json(
+        { ok: false, error: "Missing legal name or ID number" },
+        { status: 400 }
+      );
+    }
+    if (!authorized) {
+      return Response.json(
+        { ok: false, error: "Authorization checkbox must be accepted" },
         { status: 400 }
       );
     }
@@ -95,6 +118,13 @@ export async function POST(request) {
         .update({ authorization_url: publicUrl })
         .eq("id", report.id);
     }
+
+    await logToCaseByCaseNumber(caseNumber, {
+      action: `Authorization submitted — name: ${legalName}, ID: ${maskIdNumber(
+        idNumber
+      )}`,
+      user: "customer",
+    });
 
     return Response.json({ ok: true, path: uploaded.path, url: publicUrl });
   } catch (err) {
