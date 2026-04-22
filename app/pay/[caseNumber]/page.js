@@ -504,7 +504,7 @@ function PaidState({ report, onRefresh }) {
         report.recovery_location
       )}`
     : null;
-  const photos = Array.isArray(report.photos) ? report.photos : [];
+  const photos = Array.isArray(report.found_images) ? report.found_images : [];
   const upsellWhatsApp = `https://wa.me/821044921349?text=${encodeURIComponent(
     `Hi, I'd like to upgrade to Pickup and Delivery ($89) for case ${report.case_number}.`
   )}`;

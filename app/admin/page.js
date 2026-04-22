@@ -651,6 +651,16 @@ function ReportEditor({ report, password, onUnauthorized, onUpdate }) {
 
       <DetailsBlock report={report} />
 
+      <UserImages images={report.user_images} />
+
+      <FoundImagesEditor
+        caseNumber={report.case_number}
+        images={report.found_images}
+        password={password}
+        onUnauthorized={onUnauthorized}
+        onChange={(next) => onUpdate({ ...report, found_images: next })}
+      />
+
       <div className="mt-6">
         <h3 className="text-xs font-semibold uppercase tracking-widest text-muted">
           Recovery details
@@ -848,6 +858,201 @@ function ActivityLog({ entries }) {
             </li>
           ))}
         </ol>
+      )}
+    </div>
+  );
+}
+
+function UserImages({ images }) {
+  const list = Array.isArray(images) ? images : [];
+  if (list.length === 0) return null;
+  return (
+    <div className="mt-6">
+      <h3 className="text-xs font-semibold uppercase tracking-widest text-muted">
+        User-uploaded photos
+      </h3>
+      <div className="mt-3 grid grid-cols-3 gap-2 sm:grid-cols-4 md:grid-cols-6">
+        {list.map((src, i) => (
+          <a
+            key={src + i}
+            href={src}
+            target="_blank"
+            rel="noopener noreferrer"
+            className="block aspect-square overflow-hidden rounded-lg border border-border bg-alt"
+          >
+            <img
+              src={src}
+              alt={`User photo ${i + 1}`}
+              className="h-full w-full object-cover"
+              loading="lazy"
+            />
+          </a>
+        ))}
+      </div>
+    </div>
+  );
+}
+
+function FoundImagesEditor({
+  caseNumber,
+  images,
+  password,
+  onUnauthorized,
+  onChange,
+}) {
+  const list = Array.isArray(images) ? images : [];
+  const [file, setFile] = useState(null);
+  const [uploading, setUploading] = useState(false);
+  const [deletingUrl, setDeletingUrl] = useState(null);
+  const [msg, setMsg] = useState(null);
+
+  const handleUpload = async (e) => {
+    e.preventDefault();
+    if (!file || uploading) return;
+    setUploading(true);
+    setMsg(null);
+    try {
+      const fd = new FormData();
+      fd.append("file", file);
+      fd.append("caseNumber", caseNumber);
+      const res = await fetch("/api/admin/upload-found-image", {
+        method: "POST",
+        headers: { "x-admin-password": password },
+        body: fd,
+      });
+      if (res.status === 401) {
+        onUnauthorized?.();
+        return;
+      }
+      const json = await res.json().catch(() => ({}));
+      if (!res.ok || !json.ok) {
+        throw new Error(json.error || json.hint || "Upload failed");
+      }
+      onChange(json.images);
+      setFile(null);
+      setMsg({ kind: "ok", text: "Photo uploaded." });
+    } catch (err) {
+      setMsg({ kind: "err", text: err.message });
+    } finally {
+      setUploading(false);
+    }
+  };
+
+  const handleDelete = async (url) => {
+    if (deletingUrl) return;
+    if (!window.confirm("Delete this photo?")) return;
+    setDeletingUrl(url);
+    setMsg(null);
+    try {
+      const res = await fetch("/api/admin/delete-found-image", {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+          "x-admin-password": password,
+        },
+        body: JSON.stringify({ caseNumber, url }),
+      });
+      if (res.status === 401) {
+        onUnauthorized?.();
+        return;
+      }
+      const json = await res.json().catch(() => ({}));
+      if (!res.ok || !json.ok) {
+        throw new Error(json.error || "Delete failed");
+      }
+      onChange(json.images);
+    } catch (err) {
+      setMsg({ kind: "err", text: err.message });
+    } finally {
+      setDeletingUrl(null);
+    }
+  };
+
+  return (
+    <div className="mt-6">
+      <h3 className="text-xs font-semibold uppercase tracking-widest text-muted">
+        Found item photos
+      </h3>
+      <p className="mt-1 text-sm text-muted">
+        Uploaded photos appear on the customer&rsquo;s /pay page once their
+        case is marked paid.
+      </p>
+
+      {list.length > 0 && (
+        <div className="mt-3 grid grid-cols-3 gap-2 sm:grid-cols-4 md:grid-cols-6">
+          {list.map((src, i) => (
+            <div
+              key={src + i}
+              className="group relative aspect-square overflow-hidden rounded-lg border border-border bg-alt"
+            >
+              <a href={src} target="_blank" rel="noopener noreferrer">
+                <img
+                  src={src}
+                  alt={`Found photo ${i + 1}`}
+                  className="h-full w-full object-cover"
+                  loading="lazy"
+                />
+              </a>
+              <button
+                type="button"
+                onClick={() => handleDelete(src)}
+                disabled={deletingUrl === src}
+                className="absolute right-1.5 top-1.5 inline-flex h-6 w-6 items-center justify-center rounded-full bg-white/90 text-red-600 shadow ring-1 ring-red-200 transition-colors hover:bg-red-50 disabled:opacity-60"
+                aria-label="Delete photo"
+              >
+                {deletingUrl === src ? (
+                  <span className="h-3 w-3 animate-spin rounded-full border-2 border-red-300 border-t-red-600" />
+                ) : (
+                  <svg
+                    className="h-3.5 w-3.5"
+                    viewBox="0 0 24 24"
+                    fill="none"
+                    stroke="currentColor"
+                    strokeWidth="2.5"
+                    strokeLinecap="round"
+                    strokeLinejoin="round"
+                    aria-hidden="true"
+                  >
+                    <line x1="18" y1="6" x2="6" y2="18" />
+                    <line x1="6" y1="6" x2="18" y2="18" />
+                  </svg>
+                )}
+              </button>
+            </div>
+          ))}
+        </div>
+      )}
+
+      <form
+        onSubmit={handleUpload}
+        className="mt-4 flex flex-col gap-3 sm:flex-row sm:items-center"
+      >
+        <input
+          type="file"
+          accept="image/*"
+          onChange={(e) => setFile(e.target.files?.[0] || null)}
+          className="block w-full text-sm text-foreground file:mr-4 file:rounded-full file:border file:border-border file:bg-alt file:px-4 file:py-2 file:text-sm file:font-medium file:text-foreground hover:file:bg-card"
+        />
+        <button
+          type="submit"
+          disabled={!file || uploading}
+          className="inline-flex items-center justify-center rounded-full bg-accent px-5 py-2.5 text-sm font-medium text-white transition-colors hover:bg-accent-hover disabled:opacity-60 sm:w-auto"
+        >
+          {uploading ? "Uploading…" : "Upload photo"}
+        </button>
+      </form>
+
+      {msg && (
+        <p
+          className={`mt-3 rounded-lg px-3 py-2 text-sm ${
+            msg.kind === "ok"
+              ? "bg-emerald-50 text-accent"
+              : "bg-red-50 text-red-700"
+          }`}
+          role="status"
+        >
+          {msg.text}
+        </p>
       )}
     </div>
   );
