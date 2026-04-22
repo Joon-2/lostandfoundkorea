@@ -193,6 +193,7 @@ export default function CheckoutForm({ plan, title, subtitle, price, fields }) {
                     "client-id": PAYPAL_CLIENT_ID,
                     currency: "USD",
                     intent: "capture",
+                    locale: "en_US",
                   }}
                 >
                   <PayPalButtons
