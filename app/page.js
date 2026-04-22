@@ -161,7 +161,7 @@ export default function Home() {
       addressLocality: "Seoul",
       addressCountry: "South Korea",
     },
-    priceRange: "Free - $89",
+    priceRange: "Free - $79",
   };
 
   return (
