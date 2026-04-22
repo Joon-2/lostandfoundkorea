@@ -149,8 +149,27 @@ function PricingCard({ tone, badge, name, price, priceNote, features, cta }) {
 }
 
 export default function Home() {
+  const jsonLd = {
+    "@context": "https://schema.org",
+    "@type": "LocalBusiness",
+    name: "Lost and Found Korea",
+    url: "https://lostandfoundkorea.com",
+    description:
+      "Lost something while traveling in Korea? Report it in 4 simple steps and our local team will help recover it. Fast, trustworthy, English-speaking support.",
+    address: {
+      "@type": "PostalAddress",
+      addressLocality: "Seoul",
+      addressCountry: "South Korea",
+    },
+    priceRange: "Free - $89",
+  };
+
   return (
     <div className="flex flex-1 flex-col">
+      <script
+        type="application/ld+json"
+        dangerouslySetInnerHTML={{ __html: JSON.stringify(jsonLd) }}
+      />
       <header className="bg-navy text-white">
         <div className="mx-auto flex w-full max-w-6xl items-center justify-between px-5 py-5 sm:px-8">
           <Link href="/" className="font-serif text-xl tracking-tight text-white">
