@@ -153,15 +153,17 @@ function PricingCard({
           </li>
         ))}
       </ul>
-      {bottomNote && (
-        <p className="mt-5 text-xs text-muted">{bottomNote}</p>
-      )}
-      <CtaTag
-        href={cta.href}
-        className={`mt-6 inline-flex items-center justify-center rounded-full px-6 py-3 text-sm font-medium transition-colors ${t.cta}`}
-      >
-        {cta.label}
-      </CtaTag>
+      <div className="mt-auto pt-6">
+        <p className="min-h-[2.5rem] text-xs text-muted">
+          {bottomNote || "\u00a0"}
+        </p>
+        <CtaTag
+          href={cta.href}
+          className={`mt-3 inline-flex w-full items-center justify-center rounded-full px-6 py-3 text-sm font-medium transition-colors ${t.cta}`}
+        >
+          {cta.label}
+        </CtaTag>
+      </div>
     </div>
   );
 }
@@ -397,7 +399,7 @@ export default function Home() {
                   "Email update within 24-48 hours",
                   "Pay $39 to unlock pickup details — only if found",
                 ]}
-                bottomNote="Pickup add-on available from +$59"
+                bottomNote="Pickup add-on from +$59 · Outside Seoul/Gyeonggi +$20"
                 cta={{ label: "Start free →", href: "/report" }}
               />
               <PricingCard
@@ -412,7 +414,7 @@ export default function Home() {
                   "Domestic or international shipping included",
                   "Single price upfront — no add-on fees",
                 ]}
-                bottomNote="Outside Seoul/Gyeonggi: $99"
+                bottomNote="Outside Seoul/Gyeonggi +$20"
                 cta={{ label: "Start All-in-One", href: "/pay/all-in-one" }}
               />
               <PricingCard
@@ -427,7 +429,7 @@ export default function Home() {
                   "Korean-language coordination on your behalf",
                   "Tracking number emailed once it ships",
                 ]}
-                bottomNote="Outside Seoul/Gyeonggi: $69"
+                bottomNote="Outside Seoul/Gyeonggi +$20"
                 cta={{ label: "Start Delivery", href: "/pay/delivery-only" }}
               />
             </div>
