@@ -12,6 +12,9 @@ const EDITABLE = [
   "recovery_contact",
   "recovery_hours",
   "recovery_instructions",
+  "tracking_number",
+  "shipping_method",
+  "estimated_delivery",
 ];
 
 const RECOVERY_FIELDS = [

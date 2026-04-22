@@ -410,12 +410,94 @@ function ReportEditor({ report, password, onUnauthorized, onUpdate }) {
   const [closeReason, setCloseReason] = useState("");
   const [closing, setClosing] = useState(false);
   const [closeMsg, setCloseMsg] = useState(null);
+  const [trackingNumber, setTrackingNumber] = useState(
+    report.tracking_number || ""
+  );
+  const [shippingMethod, setShippingMethod] = useState(
+    report.shipping_method || ""
+  );
+  const [estimatedDelivery, setEstimatedDelivery] = useState(
+    report.estimated_delivery || ""
+  );
+  const [stageMoving, setStageMoving] = useState(false);
+  const [stageMsg, setStageMsg] = useState(null);
+  const [shipping, setShipping] = useState(false);
+
+  const currentStage = report.process_stage || "received";
+  const plan = report.plan === "all_in_one" ? "all_in_one" : "recovery";
+  const showConfirmationButton = ["received", "searching"].includes(currentStage);
+  const showPaymentButton = ["found", "payment_sent"].includes(currentStage);
+  const isPaid = currentStage === "paid";
+  const isPickup = currentStage === "pickup";
+  const isCompleted = currentStage === "completed";
+  const showPickupFields = isPickup || isCompleted;
 
   const flashEmail = (msg) => {
     setEmailMsg(msg);
     setTimeout(() => {
       setEmailMsg((curr) => (curr === msg ? null : curr));
     }, 4000);
+  };
+
+  const advanceToStage = async (stageKey) => {
+    if (stageMoving) return;
+    const stage = PROCESS_STAGES.find((s) => s.key === stageKey);
+    if (!stage) return;
+    setStageMoving(true);
+    setStageMsg(null);
+    try {
+      const res = await fetch(`/api/admin/reports/${report.id}`, {
+        method: "PATCH",
+        headers: {
+          "Content-Type": "application/json",
+          "x-admin-password": password,
+        },
+        body: JSON.stringify({
+          process_stage: stage.key,
+          status: stage.status,
+        }),
+      });
+      if (res.status === 401) {
+        onUnauthorized?.();
+        return;
+      }
+      const json = await res.json().catch(() => ({}));
+      if (!res.ok || !json.ok) throw new Error(json.error || "Failed");
+      onUpdate(json.report);
+      setStatus(json.report.status || stage.status);
+    } catch (err) {
+      setStageMsg({ kind: "err", text: err.message });
+    } finally {
+      setStageMoving(false);
+    }
+  };
+
+  const handleMarkShipped = async () => {
+    if (shipping) return;
+    setShipping(true);
+    setStageMsg(null);
+    try {
+      const res = await fetch("/api/admin/mark-shipped", {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+          "x-admin-password": password,
+        },
+        body: JSON.stringify({ caseNumber: report.case_number }),
+      });
+      if (res.status === 401) {
+        onUnauthorized?.();
+        return;
+      }
+      const json = await res.json().catch(() => ({}));
+      if (!res.ok || !json.ok) throw new Error(json.error || "Failed");
+      await refreshThisCase();
+      setStageMsg({ kind: "ok", text: "Marked as shipped." });
+    } catch (err) {
+      setStageMsg({ kind: "err", text: err.message });
+    } finally {
+      setShipping(false);
+    }
   };
 
   const handleCloseCase = async () => {
@@ -492,6 +574,9 @@ function ReportEditor({ report, password, onUnauthorized, onUpdate }) {
           recovery_contact: recoveryContact,
           recovery_hours: recoveryHours,
           recovery_instructions: recoveryInstructions,
+          tracking_number: trackingNumber,
+          shipping_method: shippingMethod,
+          estimated_delivery: estimatedDelivery,
         }),
       });
       if (res.status === 401) {
@@ -629,6 +714,24 @@ function ReportEditor({ report, password, onUnauthorized, onUpdate }) {
         onStatusChange={setStatus}
       />
 
+      {isCompleted && (
+        <div className="mb-4 inline-flex items-center gap-2 rounded-full border border-accent/40 bg-emerald-50 px-4 py-1.5 text-sm font-semibold text-accent">
+          <svg
+            className="h-4 w-4"
+            viewBox="0 0 24 24"
+            fill="none"
+            stroke="currentColor"
+            strokeWidth="3"
+            strokeLinecap="round"
+            strokeLinejoin="round"
+            aria-hidden="true"
+          >
+            <polyline points="20 6 9 17 4 12" />
+          </svg>
+          Case completed
+        </div>
+      )}
+
       <DetailsBlock report={report} />
 
       <UserImages images={report.user_images} />
@@ -651,41 +754,47 @@ function ReportEditor({ report, password, onUnauthorized, onUpdate }) {
               ))}
             </select>
           </Field>
-          <div>
-            <span className="mb-1.5 block text-sm font-medium text-foreground">
-              Email actions
-            </span>
-            <div className="flex flex-wrap items-center gap-2">
-              <button
-                onClick={handleSendConfirmation}
-                disabled={sendingConfirmation}
-                className="inline-flex items-center rounded-full border border-border bg-card px-4 py-2 text-sm font-medium text-foreground transition-colors hover:bg-alt disabled:opacity-60"
-              >
-                {sendingConfirmation
-                  ? "Sending…"
-                  : "Send confirmation email"}
-              </button>
-              <button
-                onClick={handleSendPayment}
-                disabled={sendingPayment}
-                className="inline-flex items-center rounded-full bg-accent px-4 py-2 text-sm font-medium text-white transition-colors hover:bg-accent-hover disabled:opacity-60"
-              >
-                {sendingPayment ? "Sending…" : "Send payment link"}
-              </button>
+          {(showConfirmationButton || showPaymentButton) && (
+            <div>
+              <span className="mb-1.5 block text-sm font-medium text-foreground">
+                Email actions
+              </span>
+              <div className="flex flex-wrap items-center gap-2">
+                {showConfirmationButton && (
+                  <button
+                    onClick={handleSendConfirmation}
+                    disabled={sendingConfirmation}
+                    className="inline-flex items-center rounded-full border border-border bg-card px-4 py-2 text-sm font-medium text-foreground transition-colors hover:bg-alt disabled:opacity-60"
+                  >
+                    {sendingConfirmation
+                      ? "Sending…"
+                      : "Send confirmation email"}
+                  </button>
+                )}
+                {showPaymentButton && (
+                  <button
+                    onClick={handleSendPayment}
+                    disabled={sendingPayment}
+                    className="inline-flex items-center rounded-full bg-accent px-4 py-2 text-sm font-medium text-white transition-colors hover:bg-accent-hover disabled:opacity-60"
+                  >
+                    {sendingPayment ? "Sending…" : "Send payment link"}
+                  </button>
+                )}
+              </div>
+              {emailMsg && (
+                <p
+                  className={`mt-2 rounded-lg px-3 py-2 text-sm ${
+                    emailMsg.kind === "ok"
+                      ? "bg-emerald-50 text-accent"
+                      : "bg-red-50 text-red-700"
+                  }`}
+                  role="status"
+                >
+                  {emailMsg.text}
+                </p>
+              )}
             </div>
-            {emailMsg && (
-              <p
-                className={`mt-2 rounded-lg px-3 py-2 text-sm ${
-                  emailMsg.kind === "ok"
-                    ? "bg-emerald-50 text-accent"
-                    : "bg-red-50 text-red-700"
-                }`}
-                role="status"
-              >
-                {emailMsg.text}
-              </p>
-            )}
-          </div>
+          )}
         </div>
         <div className="mt-4 grid gap-4 sm:grid-cols-2">
           <Field label="Recovery location">
@@ -728,10 +837,126 @@ function ReportEditor({ report, password, onUnauthorized, onUpdate }) {
         </div>
       </div>
 
+      {isPaid && (
+        <div className="mt-6 rounded-2xl border border-border bg-alt p-4 sm:p-5">
+          <h3 className="text-xs font-semibold uppercase tracking-widest text-muted">
+            Customer authorization
+          </h3>
+          <div className="mt-2 flex flex-wrap items-center justify-between gap-2 text-sm">
+            <span className="text-muted">ID / signed authorization:</span>
+            {report.authorization_url ? (
+              <a
+                href={report.authorization_url}
+                target="_blank"
+                rel="noopener noreferrer"
+                className="font-medium text-accent underline"
+              >
+                Uploaded — View
+              </a>
+            ) : (
+              <span className="font-medium text-amber-700">
+                Not uploaded yet
+              </span>
+            )}
+          </div>
+          <div className="mt-4 border-t border-border pt-4">
+            {plan === "recovery" ? (
+              <p className="text-sm text-body">
+                Pickup instructions have been sent to the customer via the
+                recovery email. They will collect the item themselves.
+              </p>
+            ) : (
+              <div className="flex flex-wrap items-center justify-between gap-3">
+                <p className="text-sm text-body">
+                  All-in-One plan. Arrange pickup with the holder and
+                  advance this case to the Pickup stage.
+                </p>
+                <button
+                  onClick={() => advanceToStage("pickup")}
+                  disabled={stageMoving}
+                  className="inline-flex items-center rounded-full bg-accent px-4 py-2 text-sm font-medium text-white transition-colors hover:bg-accent-hover disabled:opacity-60"
+                >
+                  {stageMoving ? "Advancing…" : "Arrange pickup →"}
+                </button>
+              </div>
+            )}
+          </div>
+        </div>
+      )}
+
+      {showPickupFields && (
+        <div className="mt-6">
+          <h3 className="text-xs font-semibold uppercase tracking-widest text-muted">
+            Pickup &amp; shipping details
+          </h3>
+          <div className="mt-3 grid gap-4 sm:grid-cols-2">
+            <Field label="Tracking number">
+              <input
+                type="text"
+                className={inputCls}
+                value={trackingNumber}
+                onChange={(e) => setTrackingNumber(e.target.value)}
+                placeholder="e.g. 1Z999AA10123456784"
+                disabled={isCompleted}
+              />
+            </Field>
+            <Field label="Shipping method">
+              <input
+                type="text"
+                className={inputCls}
+                value={shippingMethod}
+                onChange={(e) => setShippingMethod(e.target.value)}
+                placeholder="e.g. DHL Express, Korea Post EMS"
+                disabled={isCompleted}
+              />
+            </Field>
+            <Field label="Estimated delivery">
+              <input
+                type="date"
+                className={inputCls}
+                value={estimatedDelivery}
+                onChange={(e) => setEstimatedDelivery(e.target.value)}
+                disabled={isCompleted}
+              />
+            </Field>
+          </div>
+          {isPickup && (
+            <div className="mt-4 flex flex-wrap items-center gap-2">
+              <button
+                onClick={handleMarkShipped}
+                disabled={shipping}
+                className="inline-flex items-center rounded-full border border-border bg-card px-4 py-2 text-sm font-medium text-foreground transition-colors hover:bg-alt disabled:opacity-60"
+              >
+                {shipping ? "Logging…" : "Mark as shipped"}
+              </button>
+              <button
+                onClick={() => advanceToStage("completed")}
+                disabled={stageMoving}
+                className="inline-flex items-center rounded-full bg-accent px-4 py-2 text-sm font-medium text-white transition-colors hover:bg-accent-hover disabled:opacity-60"
+              >
+                {stageMoving ? "Advancing…" : "Mark as completed"}
+              </button>
+            </div>
+          )}
+          {stageMsg && (
+            <p
+              className={`mt-2 rounded-lg px-3 py-2 text-sm ${
+                stageMsg.kind === "ok"
+                  ? "bg-emerald-50 text-accent"
+                  : "bg-red-50 text-red-700"
+              }`}
+              role="status"
+            >
+              {stageMsg.text}
+            </p>
+          )}
+        </div>
+      )}
+
       <div className="mt-6 flex flex-wrap items-center gap-3">
         <button
           onClick={handleSave}
-          disabled={saving}
+          disabled={saving || isCompleted}
           className="inline-flex items-center rounded-full bg-accent px-5 py-2.5 text-sm font-medium text-white transition-colors hover:bg-accent-hover disabled:opacity-60"
         >
           {saving ? "Saving…" : "Save"}
