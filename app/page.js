@@ -100,7 +100,16 @@ function StarRow() {
   );
 }
 
-function PricingCard({ tone, badge, name, price, priceNote, features, cta }) {
+function PricingCard({
+  tone,
+  badge,
+  name,
+  price,
+  regional,
+  priceNote,
+  features,
+  cta,
+}) {
   const t = TONE_STYLES[tone];
   const isExternal = cta.href.startsWith("mailto:") || cta.href.startsWith("http");
   const CtaTag = isExternal ? "a" : Link;
@@ -114,12 +123,27 @@ function PricingCard({ tone, badge, name, price, priceNote, features, cta }) {
         {badge}
       </span>
       <h3 className="mt-5 font-serif text-2xl tracking-tight">{name}</h3>
-      <div className="mt-3 flex items-baseline gap-2">
-        <span className={`font-serif text-5xl tracking-tight ${t.price}`}>
-          {price}
-        </span>
-      </div>
-      <p className="mt-1 text-sm text-muted">{priceNote}</p>
+      {regional ? (
+        <dl className="mt-3 space-y-1.5">
+          {regional.map((r) => (
+            <div key={r.label} className="flex items-baseline gap-3">
+              <dt className="text-xs font-medium uppercase tracking-wider text-muted">
+                {r.label}
+              </dt>
+              <dd className={`font-serif text-3xl tracking-tight ${t.price}`}>
+                {r.amount}
+              </dd>
+            </div>
+          ))}
+        </dl>
+      ) : (
+        <div className="mt-3 flex items-baseline gap-2">
+          <span className={`font-serif text-5xl tracking-tight ${t.price}`}>
+            {price}
+          </span>
+        </div>
+      )}
+      <p className="mt-2 text-sm text-muted">{priceNote}</p>
       <ul className="mt-6 space-y-3 text-sm">
         {features.map((f) => (
           <li key={f} className="flex items-start gap-3">
@@ -377,6 +401,7 @@ export default function Home() {
                   "Our team searches in Korean on your behalf",
                   "Email update within 24-48 hours",
                   "Pay $39 to unlock pickup details — only if found",
+                  "Optional pickup add-on: +$59 Seoul / Gyeonggi · +$79 other regions",
                 ]}
                 cta={{ label: "Submit a free report", href: "/report" }}
               />
@@ -384,7 +409,10 @@ export default function Home() {
                 tone="popular"
                 badge="Recommended"
                 name="All-in-One"
-                price="$79"
+                regional={[
+                  { label: "Seoul · Gyeonggi", amount: "$79" },
+                  { label: "Other regions", amount: "$99" },
+                ]}
                 priceNote="Search + delivery to your address"
                 features={[
                   "Everything in Recovery",
@@ -392,13 +420,16 @@ export default function Home() {
                   "Domestic or international shipping included",
                   "Single price upfront — no add-on fees",
                 ]}
-                cta={{ label: "Start All-in-One — $79", href: "/pay/all-in-one" }}
+                cta={{ label: "Start All-in-One", href: "/pay/all-in-one" }}
               />
               <PricingCard
                 tone="free"
                 badge="Already located"
                 name="Delivery Only"
-                price="$49"
+                regional={[
+                  { label: "Seoul · Gyeonggi", amount: "$49" },
+                  { label: "Other regions", amount: "$69" },
+                ]}
                 priceNote="When you already know where the item is"
                 features={[
                   "You tell us where the item is being held",
@@ -406,7 +437,7 @@ export default function Home() {
                   "Korean-language coordination on your behalf",
                   "Tracking number emailed once it ships",
                 ]}
-                cta={{ label: "Start Delivery — $49", href: "/pay/delivery-only" }}
+                cta={{ label: "Start Delivery", href: "/pay/delivery-only" }}
               />
             </div>
 
@@ -415,9 +446,57 @@ export default function Home() {
               <span className="text-accent">You pay nothing.</span>
             </p>
 
-            <p className="mx-auto mt-8 max-w-3xl text-center text-xs leading-relaxed text-muted">
-              Shipping estimates &mdash; Domestic: $10-20 &middot; International: $30-60 depending on destination &middot; Customs duties and taxes are the recipient&rsquo;s responsibility &middot; Oversized or special items may incur additional fees &middot; All prices in USD.
-            </p>
+            <div className="mx-auto mt-10 max-w-4xl rounded-2xl border border-border bg-alt p-6 sm:p-7">
+              <div className="flex flex-col gap-4 sm:flex-row">
+                <div className="flex-none">
+                  <span
+                    aria-hidden="true"
+                    className="inline-flex h-10 w-10 items-center justify-center rounded-full border border-border bg-card text-accent"
+                  >
+                    <svg
+                      className="h-5 w-5"
+                      viewBox="0 0 24 24"
+                      fill="none"
+                      stroke="currentColor"
+                      strokeWidth="2"
+                      strokeLinecap="round"
+                      strokeLinejoin="round"
+                    >
+                      <circle cx="12" cy="12" r="10" />
+                      <line x1="12" y1="16" x2="12" y2="12" />
+                      <line x1="12" y1="8" x2="12.01" y2="8" />
+                    </svg>
+                  </span>
+                </div>
+                <div>
+                  <h3 className="font-serif text-xl tracking-tight text-foreground">
+                    Shipping &amp; additional fees
+                  </h3>
+                  <ul className="mt-3 space-y-1.5 text-sm leading-relaxed text-body">
+                    <li>
+                      &middot; Domestic shipping (within Korea):{" "}
+                      <span className="font-medium text-foreground">$10-20</span>
+                    </li>
+                    <li>
+                      &middot; International shipping:{" "}
+                      <span className="font-medium text-foreground">$30-60</span>{" "}
+                      (varies by destination and weight)
+                    </li>
+                    <li>
+                      &middot; Customs duties and import taxes:{" "}
+                      <span className="font-medium text-foreground">
+                        recipient&rsquo;s responsibility
+                      </span>
+                    </li>
+                    <li>
+                      &middot; Oversized or fragile items may incur additional
+                      handling fees
+                    </li>
+                    <li>&middot; All prices in USD</li>
+                  </ul>
+                </div>
+              </div>
+            </div>
 
             <div className="mt-6 text-center text-[13px] text-muted">
               <p>We accept PayPal, Visa, Mastercard, and Apple Pay</p>
