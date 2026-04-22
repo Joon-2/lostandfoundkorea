@@ -1,12 +1,20 @@
 import { supabaseAdmin } from "@/lib/supabase-admin";
 import { checkAdminAuth } from "@/lib/admin-auth";
 import { buildLogEntry } from "@/lib/activity-log";
+import { getStageLabel } from "@/lib/process-stages";
 
 export const runtime = "nodejs";
 
 const EDITABLE = [
   "status",
   "process_stage",
+  "recovery_location",
+  "recovery_contact",
+  "recovery_hours",
+  "recovery_instructions",
+];
+
+const RECOVERY_FIELDS = [
   "recovery_location",
   "recovery_contact",
   "recovery_hours",
@@ -42,7 +50,7 @@ export async function PATCH(request, { params }) {
 
   const { data: current, error: lookupError } = await supabaseAdmin
     .from("reports")
-    .select("status, activity_log")
+    .select("status, process_stage, activity_log")
     .eq("id", id)
     .maybeSingle();
   if (lookupError) {
@@ -52,22 +60,25 @@ export async function PATCH(request, { params }) {
     ? current.activity_log
     : [];
 
-  const changedKeys = Object.keys(update);
-  const statusChanged =
-    "status" in update && current && update.status !== current.status;
-  const noteParts = [`Saved: ${changedKeys.join(", ")}`];
-  if (statusChanged) {
-    noteParts.push(
-      `status: ${current.status || "pending"} → ${update.status}`
+  const stageChanged =
+    "process_stage" in update &&
+    update.process_stage !== current?.process_stage;
+  const recoveryChanged = RECOVERY_FIELDS.some((k) => k in update);
+
+  const newEntries = [];
+  if (stageChanged) {
+    newEntries.push(
+      buildLogEntry({
+        action: `Stage changed to ${getStageLabel(update.process_stage)}`,
+      })
     );
   }
-  const newLog = [
-    buildLogEntry({
-      action: "recovery_details_saved",
-      note: noteParts.join(" · "),
-    }),
-    ...existingLog,
-  ];
+  if (recoveryChanged) {
+    newEntries.push(
+      buildLogEntry({ action: "Recovery details updated" })
+    );
+  }
+  const newLog = [...newEntries, ...existingLog];
 
   const { data, error } = await supabaseAdmin
     .from("reports")

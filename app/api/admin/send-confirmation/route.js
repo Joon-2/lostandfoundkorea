@@ -27,8 +27,7 @@ export async function POST(request) {
       location,
     });
     await logToCaseByCaseNumber(caseNumber, {
-      action: "confirmation_email_sent",
-      note: `Resent confirmation email to ${email}.`,
+      action: `Confirmation email sent to ${email}`,
     });
     return Response.json({ ok: true });
   } catch (err) {

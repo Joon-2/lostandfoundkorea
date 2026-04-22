@@ -102,10 +102,7 @@ export async function POST(request) {
       ? report.activity_log
       : [];
     const nextLog = [
-      buildLogEntry({
-        action: "found_image_uploaded",
-        note: `Uploaded ${name}`,
-      }),
+      buildLogEntry({ action: "Found item photo uploaded" }),
       ...existingLog,
     ];
 

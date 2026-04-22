@@ -35,8 +35,7 @@ export async function POST(request) {
 
     await sendPaymentEmail({ name, email, caseNumber, amount, planLabel });
     await logToCaseByCaseNumber(caseNumber, {
-      action: "payment_link_sent",
-      note: `Sent ${planLabel} ($${amount}) payment link to ${email}.`,
+      action: "Payment link email sent",
     });
     return Response.json({ ok: true });
   } catch (err) {

@@ -64,14 +64,9 @@ export async function POST(request) {
 
   const existing = Array.isArray(report.activity_log) ? report.activity_log : [];
   const entry = buildLogEntry({
-    action: "case_closed_no_item_found",
-    note: emailSent
-      ? `'No item found' email sent to ${report.email}.${
-          reason ? ` Reason: ${reason}` : ""
-        }`
-      : `Case closed without email (send failed: ${emailError}).${
-          reason ? ` Reason: ${reason}` : ""
-        }`,
+    action: emailSent
+      ? "Case closed — no item found"
+      : `Case closed — no item found (email send failed: ${emailError})`,
   });
   const updatedLog = [entry, ...existing];
 

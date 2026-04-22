@@ -73,10 +73,7 @@ export async function POST(request) {
       ? report.activity_log
       : [];
     const nextLog = [
-      buildLogEntry({
-        action: "found_image_deleted",
-        note: storagePath ? `Deleted ${storagePath}` : "Deleted photo",
-      }),
+      buildLogEntry({ action: "Found item photo deleted" }),
       ...existingLog,
     ];
 
