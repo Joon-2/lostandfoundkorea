@@ -477,8 +477,8 @@ function FoundState({
             ))}
           </div>
           <p className="mt-2 text-xs italic text-muted">
-            Is this your item? Photos taken by our team at the recovery
-            location.
+            Photos taken by our team at the recovery location. Is this your
+            item?
           </p>
         </div>
       )}
