@@ -4,6 +4,7 @@ import Link from "next/link";
 import { useCallback, useEffect, useMemo, useState } from "react";
 import { formatDate, formatDateTime } from "@/lib/format";
 import { PROCESS_STAGES } from "@/lib/process-stages";
+import { processImage } from "@/lib/image-processing";
 
 const STATUS_OPTIONS = ["pending", "found", "paid", "closed"];
 const STATUS_LABELS = {
@@ -1166,6 +1167,7 @@ function FoundImagesEditor({
 }) {
   const list = Array.isArray(images) ? images : [];
   const [uploading, setUploading] = useState(false);
+  const [progressStatus, setProgressStatus] = useState(null);
   const [deletingUrl, setDeletingUrl] = useState(null);
   const [msg, setMsg] = useState(null);
 
@@ -1175,9 +1177,20 @@ function FoundImagesEditor({
     setUploading(true);
     setMsg(null);
     try {
+      const processed = await processImage(selected, (text) =>
+        setProgressStatus(text)
+      );
+      setProgressStatus("Uploading…");
+
+      const jpegFile = new File(
+        [processed],
+        `${caseNumber}-${Date.now()}.jpg`,
+        { type: "image/jpeg" }
+      );
       const fd = new FormData();
-      fd.append("file", selected);
+      fd.append("file", jpegFile);
       fd.append("caseNumber", caseNumber);
+
       const res = await fetch("/api/admin/upload-found-image", {
         method: "POST",
         headers: { "x-admin-password": password },
@@ -1197,6 +1210,7 @@ function FoundImagesEditor({
       setMsg({ kind: "err", text: err.message });
     } finally {
       setUploading(false);
+      setProgressStatus(null);
       e.target.value = "";
     }
   };
@@ -1237,8 +1251,10 @@ function FoundImagesEditor({
         Found Item Photos
       </h3>
       <p className="mt-1 text-sm text-muted">
-        Up to 5 photos, max 5 MB each (JPG, PNG, or WebP). Shown on the
-        customer&rsquo;s /pay page once their case is marked found.
+        Up to 5 photos. Any image format works (JPG, PNG, WebP, HEIC from
+        iPhone, etc.) — photos are compressed to JPEG in the browser
+        before upload. Shown on the customer&rsquo;s /pay page once their
+        case is marked found.
       </p>
 
       {list.length > 0 && (
@@ -1294,15 +1310,15 @@ function FoundImagesEditor({
         <div className="mt-4 flex flex-wrap items-center gap-3">
           <input
             type="file"
-            accept="image/jpeg,image/png,image/webp"
+            accept="image/*,.heic,.heif,.bmp,.tif,.tiff,.svg,.raw"
             onChange={handleFileChange}
             disabled={uploading}
             className="block text-sm text-foreground file:mr-4 file:rounded-full file:border file:border-border file:bg-alt file:px-4 file:py-2 file:text-sm file:font-medium file:text-foreground hover:file:bg-card disabled:opacity-60 disabled:file:opacity-60"
           />
-          {uploading && (
+          {progressStatus && (
             <span className="inline-flex items-center gap-2 text-sm text-muted">
               <span className="h-3 w-3 animate-spin rounded-full border-2 border-accent/30 border-t-accent" />
-              Uploading…
+              {progressStatus}
             </span>
           )}
         </div>

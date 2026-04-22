@@ -8,11 +8,6 @@ export const dynamic = "force-dynamic";
 const BUCKET = "found-images";
 const MAX_BYTES = 5 * 1024 * 1024;
 const MAX_PHOTOS = 5;
-const ALLOWED_TYPES = new Set(["image/jpeg", "image/png", "image/webp"]);
-
-function safeFilename(name) {
-  return (name || "photo").replace(/[^a-z0-9.\-_]/gi, "_").slice(0, 120);
-}
 
 export async function POST(request) {
   const denied = checkAdminAuth(request);
@@ -36,15 +31,15 @@ export async function POST(request) {
         { status: 400 }
       );
     }
-    if (!ALLOWED_TYPES.has(file.type)) {
+    if (file.type && !file.type.startsWith("image/")) {
       return Response.json(
-        { ok: false, error: "Only JPG, PNG, or WebP images are allowed" },
+        { ok: false, error: "Not an image" },
         { status: 400 }
       );
     }
     if (file.size > MAX_BYTES) {
       return Response.json(
-        { ok: false, error: "File is larger than 5 MB" },
+        { ok: false, error: "File is larger than 5 MB after compression" },
         { status: 400 }
       );
     }
@@ -78,14 +73,13 @@ export async function POST(request) {
       );
     }
 
-    const name = safeFilename(file.name);
-    const path = `${caseNumber}/${Date.now()}-${name}`;
+    const path = `${caseNumber}-${Date.now()}.jpg`;
     const buffer = Buffer.from(await file.arrayBuffer());
 
     const { data: uploaded, error: uploadError } = await supabaseAdmin.storage
       .from(BUCKET)
       .upload(path, buffer, {
-        contentType: file.type || "application/octet-stream",
+        contentType: "image/jpeg",
         upsert: false,
       });
     if (uploadError) {
