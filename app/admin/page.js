@@ -15,16 +15,18 @@ const ENV_LABELS = [
   "ADMIN_PASSWORD",
 ];
 
-const STATUS_OPTIONS = ["pending", "found", "paid"];
+const STATUS_OPTIONS = ["pending", "found", "paid", "closed"];
 const STATUS_LABELS = {
   pending: "Pending",
   found: "Found",
   paid: "Paid",
+  closed: "Closed",
 };
 const STATUS_BADGE = {
   pending: "bg-amber-50 text-amber-700 border-amber-200",
   found: "bg-emerald-50 text-accent border-emerald-200",
   paid: "bg-sky-50 text-sky-700 border-sky-200",
+  closed: "bg-slate-100 text-slate-700 border-slate-200",
 };
 
 const SESSION_KEY = "lfk_admin_password";
@@ -415,12 +417,71 @@ function ReportEditor({ report, password, onUnauthorized, onUpdate }) {
   const [linkCopied, setLinkCopied] = useState(false);
   const [sendingConfirmation, setSendingConfirmation] = useState(false);
   const [sendingPayment, setSendingPayment] = useState(false);
+  const [closeReason, setCloseReason] = useState("");
+  const [closing, setClosing] = useState(false);
+  const [closeMsg, setCloseMsg] = useState(null);
 
   const flashEmail = (msg) => {
     setEmailMsg(msg);
     setTimeout(() => {
       setEmailMsg((curr) => (curr === msg ? null : curr));
     }, 4000);
+  };
+
+  const handleCloseCase = async () => {
+    if (closing) return;
+    if (
+      !window.confirm(
+        "Send the 'no item found' email to the customer and close this case?"
+      )
+    )
+      return;
+    setClosing(true);
+    setCloseMsg(null);
+    try {
+      const res = await fetch("/api/admin/close-case", {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+          "x-admin-password": password,
+        },
+        body: JSON.stringify({
+          caseNumber: report.case_number,
+          reason: closeReason,
+        }),
+      });
+      if (res.status === 401) {
+        onUnauthorized?.();
+        return;
+      }
+      const json = await res.json().catch(() => ({}));
+      if (!res.ok || !json.ok) {
+        throw new Error(json.error || "Close failed");
+      }
+      const refresh = await fetch(`/api/admin/reports`, {
+        headers: { "x-admin-password": password },
+        cache: "no-store",
+      });
+      if (refresh.ok) {
+        const fresh = await refresh.json();
+        const updated = (fresh.reports || []).find((r) => r.id === report.id);
+        if (updated) {
+          onUpdate(updated);
+          setStatus(updated.status || "closed");
+        }
+      }
+      setCloseReason("");
+      setCloseMsg({
+        kind: "ok",
+        text: json.emailSent
+          ? `Case closed. Email sent to ${report.email}.`
+          : `Case closed. Email failed: ${json.emailError || "unknown"}.`,
+      });
+    } catch (err) {
+      setCloseMsg({ kind: "err", text: err.message });
+    } finally {
+      setClosing(false);
+    }
   };
 
   const paymentLink = `https://lostandfoundkorea.com/pay/${report.case_number || ""}`;
@@ -671,6 +732,80 @@ function ReportEditor({ report, password, onUnauthorized, onUpdate }) {
           </p>
         )}
       </div>
+
+      <div className="mt-8 rounded-2xl border border-red-200 bg-red-50/40 p-5 sm:p-6">
+        <h3 className="text-xs font-semibold uppercase tracking-widest text-red-700">
+          Close case — no item found
+        </h3>
+        <p className="mt-2 text-sm text-body">
+          Sends the &lsquo;no item found&rsquo; email to the customer
+          (&ldquo;no charge since we didn&rsquo;t find it&rdquo;) and marks
+          the case as closed. The send is also recorded in the activity log.
+        </p>
+        <textarea
+          className={`${inputCls} mt-3 min-h-24 resize-y bg-white`}
+          value={closeReason}
+          onChange={(e) => setCloseReason(e.target.value)}
+          placeholder="Optional: brief reason to include in the email (e.g. 'We checked Lost112, Hongdae station, and surrounding restaurants but it has not been turned in.')"
+        />
+        <button
+          onClick={handleCloseCase}
+          disabled={closing}
+          className="mt-4 inline-flex items-center rounded-full border border-red-300 bg-white px-5 py-2.5 text-sm font-medium text-red-700 transition-colors hover:bg-red-100 disabled:opacity-60"
+        >
+          {closing ? "Closing…" : "Send 'no item found' email & close"}
+        </button>
+        {closeMsg && (
+          <p
+            className={`mt-3 text-sm ${
+              closeMsg.kind === "ok" ? "text-accent" : "text-red-600"
+            }`}
+          >
+            {closeMsg.text}
+          </p>
+        )}
+      </div>
+
+      <ActivityLog entries={report.activity_log} />
+    </div>
+  );
+}
+
+function ActivityLog({ entries }) {
+  const list = Array.isArray(entries) ? entries : [];
+  return (
+    <div className="mt-8">
+      <h3 className="text-xs font-semibold uppercase tracking-widest text-muted">
+        Activity log
+      </h3>
+      {list.length === 0 ? (
+        <p className="mt-2 rounded-xl border border-border bg-alt px-4 py-3 text-sm text-muted">
+          No activity recorded yet.
+        </p>
+      ) : (
+        <ol className="mt-3 space-y-3">
+          {list.map((entry, i) => (
+            <li
+              key={i}
+              className="rounded-xl border border-border bg-card p-4"
+            >
+              <div className="flex flex-wrap items-center justify-between gap-2">
+                <span className="font-mono text-xs uppercase tracking-wider text-muted">
+                  {entry?.action || "event"}
+                </span>
+                <span className="text-xs text-muted">
+                  {entry?.timestamp
+                    ? formatDateTime(entry.timestamp)
+                    : "—"}
+                </span>
+              </div>
+              {entry?.note && (
+                <p className="mt-1 text-sm text-foreground">{entry.note}</p>
+              )}
+            </li>
+          ))}
+        </ol>
+      )}
     </div>
   );
 }
