@@ -531,14 +531,32 @@ function ReportEditor({ report, password, onUnauthorized, onUpdate }) {
     }
   };
 
+  const refreshThisCase = async () => {
+    try {
+      const refresh = await fetch(`/api/admin/reports`, {
+        headers: { "x-admin-password": password },
+        cache: "no-store",
+      });
+      if (!refresh.ok) return;
+      const fresh = await refresh.json();
+      const updated = (fresh.reports || []).find((r) => r.id === report.id);
+      if (updated) onUpdate(updated);
+    } catch {
+      // best-effort refresh
+    }
+  };
+
   const handleSendConfirmation = async () => {
     if (sendingConfirmation) return;
     setSendingConfirmation(true);
     setEmailMsg(null);
     try {
-      const res = await fetch("/api/send-email", {
+      const res = await fetch("/api/admin/send-confirmation", {
         method: "POST",
-        headers: { "Content-Type": "application/json" },
+        headers: {
+          "Content-Type": "application/json",
+          "x-admin-password": password,
+        },
         body: JSON.stringify({
           name: report.name,
           email: report.email,
@@ -548,10 +566,15 @@ function ReportEditor({ report, password, onUnauthorized, onUpdate }) {
           location: report.location,
         }),
       });
+      if (res.status === 401) {
+        onUnauthorized?.();
+        return;
+      }
       const json = await res.json().catch(() => ({}));
       if (!res.ok || !json.ok) {
         throw new Error(json.error || "Send failed");
       }
+      await refreshThisCase();
       flashEmail({
         kind: "ok",
         text: `Confirmation email sent to ${report.email}.`,
@@ -591,6 +614,7 @@ function ReportEditor({ report, password, onUnauthorized, onUpdate }) {
       if (!res.ok || !json.ok) {
         throw new Error(json.error || "Send failed");
       }
+      await refreshThisCase();
       flashEmail({
         kind: "ok",
         text: `Payment link sent to ${report.email}.`,
@@ -794,6 +818,7 @@ function ActivityLog({ entries }) {
                   {entry?.action || "event"}
                 </span>
                 <span className="text-xs text-muted">
+                  {entry?.user ? `${entry.user} · ` : ""}
                   {entry?.timestamp
                     ? formatDateTime(entry.timestamp)
                     : "—"}

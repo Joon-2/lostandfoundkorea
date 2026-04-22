@@ -1,6 +1,7 @@
 import { supabaseAdmin } from "@/lib/supabase-admin";
 import { checkAdminAuth } from "@/lib/admin-auth";
 import { sendNotFoundEmail } from "@/lib/email";
+import { buildLogEntry } from "@/lib/activity-log";
 
 export const runtime = "nodejs";
 
@@ -62,9 +63,8 @@ export async function POST(request) {
   }
 
   const existing = Array.isArray(report.activity_log) ? report.activity_log : [];
-  const entry = {
+  const entry = buildLogEntry({
     action: "case_closed_no_item_found",
-    timestamp: new Date().toISOString(),
     note: emailSent
       ? `'No item found' email sent to ${report.email}.${
           reason ? ` Reason: ${reason}` : ""
@@ -72,7 +72,7 @@ export async function POST(request) {
       : `Case closed without email (send failed: ${emailError}).${
           reason ? ` Reason: ${reason}` : ""
         }`,
-  };
+  });
   const updatedLog = [entry, ...existing];
 
   const { error: updateError } = await supabaseAdmin

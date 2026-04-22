@@ -2,6 +2,7 @@ import { sendPaymentEmail } from "@/lib/email";
 import { checkAdminAuth } from "@/lib/admin-auth";
 import { supabaseAdmin } from "@/lib/supabase-admin";
 import { REPORT_PLAN_LABELS, getReportPlanPrice } from "@/lib/report-plans";
+import { logToCaseByCaseNumber } from "@/lib/activity-log";
 
 export const runtime = "nodejs";
 
@@ -33,6 +34,10 @@ export async function POST(request) {
     const planLabel = REPORT_PLAN_LABELS[plan];
 
     await sendPaymentEmail({ name, email, caseNumber, amount, planLabel });
+    await logToCaseByCaseNumber(caseNumber, {
+      action: "payment_link_sent",
+      note: `Sent ${planLabel} ($${amount}) payment link to ${email}.`,
+    });
     return Response.json({ ok: true });
   } catch (err) {
     console.error("send-payment error:", err);

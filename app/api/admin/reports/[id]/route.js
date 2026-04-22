@@ -1,5 +1,6 @@
 import { supabaseAdmin } from "@/lib/supabase-admin";
 import { checkAdminAuth } from "@/lib/admin-auth";
+import { buildLogEntry } from "@/lib/activity-log";
 
 export const runtime = "nodejs";
 
@@ -38,9 +39,38 @@ export async function PATCH(request, { params }) {
     );
   }
 
+  const { data: current, error: lookupError } = await supabaseAdmin
+    .from("reports")
+    .select("status, activity_log")
+    .eq("id", id)
+    .maybeSingle();
+  if (lookupError) {
+    console.error("PATCH report lookup error:", lookupError);
+  }
+  const existingLog = Array.isArray(current?.activity_log)
+    ? current.activity_log
+    : [];
+
+  const changedKeys = Object.keys(update);
+  const statusChanged =
+    "status" in update && current && update.status !== current.status;
+  const noteParts = [`Saved: ${changedKeys.join(", ")}`];
+  if (statusChanged) {
+    noteParts.push(
+      `status: ${current.status || "pending"} → ${update.status}`
+    );
+  }
+  const newLog = [
+    buildLogEntry({
+      action: "recovery_details_saved",
+      note: noteParts.join(" · "),
+    }),
+    ...existingLog,
+  ];
+
   const { data, error } = await supabaseAdmin
     .from("reports")
-    .update(update)
+    .update({ ...update, activity_log: newLog })
     .eq("id", id)
     .select()
     .single();
