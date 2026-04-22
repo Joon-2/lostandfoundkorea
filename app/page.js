@@ -69,7 +69,7 @@ const TONE_STYLES = {
     cta: "bg-accent text-white hover:bg-accent-hover",
   },
   popular: {
-    card: "border-accent bg-card shadow-xl shadow-accent/10 ring-2 ring-accent/20 lg:scale-[1.02]",
+    card: "border-accent bg-card shadow-xl shadow-accent/10 ring-2 ring-accent/20",
     badge: "bg-accent text-white border-accent",
     price: "text-foreground",
     cta: "bg-accent text-white hover:bg-accent-hover",
@@ -100,6 +100,8 @@ function StarRow() {
   );
 }
 
+const FEATURES_PER_CARD = 4;
+
 function PricingCard({
   tone,
   badge,
@@ -114,56 +116,56 @@ function PricingCard({
   const t = TONE_STYLES[tone];
   const isExternal = cta.href.startsWith("mailto:") || cta.href.startsWith("http");
   const CtaTag = isExternal ? "a" : Link;
+  const padded = features.slice(0, FEATURES_PER_CARD);
+  while (padded.length < FEATURES_PER_CARD) padded.push(null);
   return (
     <div
-      className={`relative flex flex-col rounded-2xl border p-7 transition-shadow ${t.card}`}
+      className={`relative flex flex-col gap-y-4 rounded-2xl border p-7 transition-shadow lg:row-span-11 lg:grid lg:grid-rows-subgrid ${t.card}`}
     >
       <span
         className={`inline-flex w-fit items-center rounded-full border px-3 py-1 text-xs font-medium ${t.badge}`}
       >
         {badge}
       </span>
-      <h3 className="mt-5 font-serif text-2xl tracking-tight">{name}</h3>
-      <div className="mt-3">
-        <span className={`font-serif text-5xl tracking-tight ${t.price}`}>
-          {price}
-        </span>
-        {priceSubtext && (
-          <p className="mt-2 text-sm font-medium text-foreground">
-            {priceSubtext}
-          </p>
-        )}
-      </div>
-      <p className="mt-2 text-sm text-muted">{priceNote}</p>
-      <ul className="mt-6 space-y-3 text-sm">
-        {features.map((f) => (
-          <li key={f} className="flex items-start gap-3">
-            <svg
-              className="mt-0.5 h-4 w-4 flex-none text-accent"
-              viewBox="0 0 24 24"
-              fill="none"
-              stroke="currentColor"
-              strokeWidth="2.5"
-              strokeLinecap="round"
-              strokeLinejoin="round"
-            >
-              <polyline points="20 6 9 17 4 12" />
-            </svg>
-            <span className="text-body">{f}</span>
+      <h3 className="font-serif text-2xl tracking-tight">{name}</h3>
+      <span className={`font-serif text-5xl tracking-tight ${t.price}`}>
+        {price}
+      </span>
+      <p className="text-sm font-medium text-foreground">
+        {priceSubtext || "\u00a0"}
+      </p>
+      <p className="text-sm text-muted">{priceNote}</p>
+      <ul className="contents">
+        {padded.map((f, i) => (
+          <li key={i} className="flex items-start gap-3 text-sm">
+            {f ? (
+              <>
+                <svg
+                  className="mt-0.5 h-4 w-4 flex-none text-accent"
+                  viewBox="0 0 24 24"
+                  fill="none"
+                  stroke="currentColor"
+                  strokeWidth="2.5"
+                  strokeLinecap="round"
+                  strokeLinejoin="round"
+                >
+                  <polyline points="20 6 9 17 4 12" />
+                </svg>
+                <span className="text-body">{f}</span>
+              </>
+            ) : (
+              <span aria-hidden="true">&nbsp;</span>
+            )}
           </li>
         ))}
       </ul>
-      <div className="mt-auto pt-6">
-        <p className="min-h-[2.5rem] text-xs text-muted">
-          {bottomNote || "\u00a0"}
-        </p>
-        <CtaTag
-          href={cta.href}
-          className={`mt-3 inline-flex w-full items-center justify-center rounded-full px-6 py-3 text-sm font-medium transition-colors ${t.cta}`}
-        >
-          {cta.label}
-        </CtaTag>
-      </div>
+      <p className="text-xs text-muted">{bottomNote || "\u00a0"}</p>
+      <CtaTag
+        href={cta.href}
+        className={`inline-flex w-full items-center justify-center rounded-full px-6 py-3 text-sm font-medium transition-colors ${t.cta}`}
+      >
+        {cta.label}
+      </CtaTag>
     </div>
   );
 }
@@ -385,7 +387,7 @@ export default function Home() {
               </p>
             </div>
 
-            <div className="mt-10 grid gap-5 lg:grid-cols-3">
+            <div className="mt-10 grid gap-5 lg:grid-cols-3 lg:grid-rows-[repeat(11,_auto)]">
               <PricingCard
                 tone="free"
                 badge="Pay if found"
