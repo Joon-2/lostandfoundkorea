@@ -23,11 +23,26 @@ export async function GET(request) {
   const headers = { "Cache-Control": "no-store, max-age=0, must-revalidate" };
 
   if (error) {
+    console.error("[admin/reports] select error:", error);
     return Response.json(
       { ok: false, error: error.message },
       { status: 500, headers }
     );
   }
 
-  return Response.json({ ok: true, reports: data || [] }, { headers });
+  const rows = data || [];
+  console.log(
+    "[admin/reports] rows:",
+    rows.length,
+    "— found_images summary:",
+    rows.map((r) => ({
+      id: r.id,
+      case_number: r.case_number,
+      found_images: Array.isArray(r.found_images)
+        ? r.found_images.length
+        : typeof r.found_images,
+    }))
+  );
+
+  return Response.json({ ok: true, reports: rows }, { headers });
 }

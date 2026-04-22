@@ -164,6 +164,17 @@ function Dashboard({ password, onUnauthorized }) {
         throw new Error(json.error || "Failed to load reports");
       }
       const json = await res.json();
+      console.log(
+        "[fetchReports] received",
+        (json.reports || []).length,
+        "reports. found_images summary:",
+        (json.reports || []).map((r) => ({
+          case_number: r.case_number,
+          found_images: Array.isArray(r.found_images)
+            ? r.found_images.length
+            : typeof r.found_images,
+        }))
+      );
       setReports(json.reports || []);
     } catch (err) {
       setLoadError(err.message);
@@ -616,9 +627,18 @@ function ReportEditor({ report, password, onUnauthorized, onUpdate }) {
       if (!refresh.ok) return;
       const fresh = await refresh.json();
       const updated = (fresh.reports || []).find((r) => r.id === report.id);
+      console.log(
+        "[refreshThisCase] fetched updated report for id",
+        report.id,
+        "— found_images:",
+        Array.isArray(updated?.found_images)
+          ? `${updated.found_images.length} items`
+          : typeof updated?.found_images,
+        updated?.found_images
+      );
       if (updated) onUpdate(updated);
-    } catch {
-      // best-effort refresh
+    } catch (err) {
+      console.error("[refreshThisCase] failed:", err);
     }
   };
 
@@ -1170,6 +1190,18 @@ function FoundImagesEditor({
   const [progressStatus, setProgressStatus] = useState(null);
   const [deletingUrl, setDeletingUrl] = useState(null);
   const [msg, setMsg] = useState(null);
+
+  useEffect(() => {
+    console.log(
+      "[FoundImagesEditor] images prop for",
+      caseNumber,
+      "— type:",
+      Array.isArray(images) ? "array" : typeof images,
+      "length:",
+      Array.isArray(images) ? images.length : "n/a",
+      images
+    );
+  }, [images, caseNumber]);
 
   const handleFileChange = async (e) => {
     const selected = e.target.files?.[0];
