@@ -20,7 +20,7 @@ export default function PayPage({ params }) {
     setLoading(true);
     setError(null);
     try {
-      const res = await fetch(`/api/case/${caseNumber}`, { cache: "no-store" });
+      const res = await fetch(`/api/reports/${caseNumber}`, { cache: "no-store" });
       if (res.status === 404) {
         setError("not_found");
         return;
@@ -131,10 +131,140 @@ export default function PayPage({ params }) {
         )}
 
         {!loading && !error && report && report.status === "paid" && (
-          <PaidState report={report} />
+          <PaidState report={report} onRefresh={fetchReport} />
+        )}
+
+        {!loading && !error && report && report.status === "closed" && (
+          <ClosedState />
         )}
       </main>
     </div>
+  );
+}
+
+function AuthorizationUpload({ caseNumber, authorizationUrl, onUploaded }) {
+  const [file, setFile] = useState(null);
+  const [uploading, setUploading] = useState(false);
+  const [msg, setMsg] = useState(null);
+
+  const handleSubmit = async (e) => {
+    e.preventDefault();
+    if (!file || uploading) return;
+    setUploading(true);
+    setMsg(null);
+    try {
+      const fd = new FormData();
+      fd.append("file", file);
+      fd.append("caseNumber", caseNumber);
+      const res = await fetch("/api/upload-authorization", {
+        method: "POST",
+        body: fd,
+      });
+      const json = await res.json().catch(() => ({}));
+      if (!res.ok || !json.ok) {
+        console.error("upload failed:", json);
+        throw new Error(json.error || "Upload failed");
+      }
+      setMsg({ kind: "ok", text: "Authorization uploaded." });
+      setFile(null);
+      onUploaded?.();
+    } catch (err) {
+      setMsg({ kind: "err", text: err.message });
+    } finally {
+      setUploading(false);
+    }
+  };
+
+  return (
+    <div className="mt-6 rounded-2xl border border-border bg-card p-5 shadow-sm sm:p-6">
+      <h3 className="font-serif text-lg tracking-tight text-foreground">
+        Authorization form
+      </h3>
+      <p className="mt-2 text-sm text-body">
+        Upload your ID or a signed authorization so we can pick up your item
+        on your behalf. JPG, PNG, or PDF; up to 10 MB.
+      </p>
+
+      {authorizationUrl && (
+        <p className="mt-3 rounded-lg bg-emerald-50 px-3 py-2 text-sm text-accent">
+          Authorization on file.{" "}
+          <a
+            href={authorizationUrl}
+            target="_blank"
+            rel="noopener noreferrer"
+            className="underline"
+          >
+            View
+          </a>
+        </p>
+      )}
+
+      <form onSubmit={handleSubmit} className="mt-4 flex flex-col gap-3 sm:flex-row sm:items-center">
+        <input
+          type="file"
+          accept="image/*,application/pdf"
+          onChange={(e) => setFile(e.target.files?.[0] || null)}
+          className="block w-full text-sm text-foreground file:mr-4 file:rounded-full file:border file:border-border file:bg-alt file:px-4 file:py-2 file:text-sm file:font-medium file:text-foreground hover:file:bg-card"
+        />
+        <button
+          type="submit"
+          disabled={!file || uploading}
+          className="inline-flex items-center justify-center rounded-full bg-accent px-5 py-2.5 text-sm font-medium text-white transition-colors hover:bg-accent-hover disabled:opacity-60 sm:w-auto"
+        >
+          {uploading ? "Uploading…" : "Upload"}
+        </button>
+      </form>
+
+      {msg && (
+        <p
+          className={`mt-3 rounded-lg px-3 py-2 text-sm ${
+            msg.kind === "ok"
+              ? "bg-emerald-50 text-accent"
+              : "bg-red-50 text-red-700"
+          }`}
+          role="status"
+        >
+          {msg.text}
+        </p>
+      )}
+    </div>
+  );
+}
+
+function ClosedState() {
+  return (
+    <Panel>
+      <div className="flex items-start gap-4">
+        <span className="mt-1 inline-flex h-10 w-10 flex-none items-center justify-center rounded-full bg-slate-100 text-slate-600">
+          <svg
+            className="h-5 w-5"
+            viewBox="0 0 24 24"
+            fill="none"
+            stroke="currentColor"
+            strokeWidth="2"
+            strokeLinecap="round"
+            strokeLinejoin="round"
+            aria-hidden="true"
+          >
+            <circle cx="12" cy="12" r="10" />
+            <line x1="8" y1="12" x2="16" y2="12" />
+          </svg>
+        </span>
+        <div>
+          <h2 className="font-serif text-2xl tracking-tight">
+            This case has been closed
+          </h2>
+          <p className="mt-3 text-body">
+            We were not able to locate your item. As promised, there is no
+            charge.
+          </p>
+          <p className="mt-2 text-sm text-muted">
+            Still have new information? Reply to our email or chat with us on
+            WhatsApp.
+          </p>
+        </div>
+      </div>
+    </Panel>
   );
 }
 
@@ -363,7 +493,7 @@ function FoundState({
   );
 }
 
-function PaidState({ report }) {
+function PaidState({ report, onRefresh }) {
   const rows = [
     ["Location", report.recovery_location],
     ["Contact phone", report.recovery_contact],
@@ -484,6 +614,12 @@ function PaidState({ report }) {
           </p>
         </div>
       )}
+
+      <AuthorizationUpload
+        caseNumber={report.case_number}
+        authorizationUrl={report.authorization_url}
+        onUploaded={onRefresh}
+      />
 
       <div className="mt-6 rounded-2xl border border-accent/30 bg-emerald-50 p-5 sm:p-6">
         <h3 className="font-serif text-lg tracking-tight text-foreground">
