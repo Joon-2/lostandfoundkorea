@@ -8,11 +8,15 @@ export async function POST(request) {
 
   try {
     const body = await request.json().catch(() => ({}));
-    const { name, email, caseNumber } = body || {};
+    const { name, email, caseNumber, category, itemDescription, location } =
+      body || {};
     console.log("Email API payload:", {
       name,
       email,
       caseNumber,
+      category,
+      itemDescription,
+      location,
     });
 
     if (!email || !caseNumber) {
@@ -42,7 +46,13 @@ export async function POST(request) {
       auth: { user, pass },
     });
 
-    const { subject, text, html } = buildConfirmationEmail({ name, caseNumber });
+    const { subject, text, html } = buildConfirmationEmail({
+      name,
+      caseNumber,
+      category,
+      itemDescription,
+      location,
+    });
 
     console.log("Sending email to:", email);
     const info = await transporter.sendMail({

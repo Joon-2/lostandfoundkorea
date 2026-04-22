@@ -186,6 +186,9 @@ export default function ReportPage() {
           name: data.fullName.trim(),
           email: data.email.trim(),
           caseNumber: result.caseNumber,
+          category: data.itemCategory,
+          itemDescription: data.itemDescription.trim(),
+          location: data.locationType,
         }),
       });
       const emailJson = await emailRes.json().catch(() => ({}));
