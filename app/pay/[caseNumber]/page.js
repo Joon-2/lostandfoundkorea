@@ -352,6 +352,19 @@ function PaidState({ report }) {
     ["Contact phone", report.recovery_contact],
     ["Operating hours", report.recovery_hours],
   ];
+  const mapsUrl = report.recovery_location
+    ? `https://www.google.com/maps/search/?api=1&query=${encodeURIComponent(
+        report.recovery_location
+      )}`
+    : null;
+  const photos = Array.isArray(report.photos) ? report.photos : [];
+  const upsellWhatsApp = `https://wa.me/821044921349?text=${encodeURIComponent(
+    `Hi, I'd like to upgrade to Pickup and Delivery ($89) for case ${report.case_number}.`
+  )}`;
+  const helpWhatsApp = `https://wa.me/821044921349?text=${encodeURIComponent(
+    `Hi, I have a question about picking up my item. Case ${report.case_number}.`
+  )}`;
+
   return (
     <Panel>
       <div className="flex items-start gap-4">
@@ -379,6 +392,32 @@ function PaidState({ report }) {
         </div>
       </div>
 
+      {photos.length > 0 && (
+        <div className="mt-6">
+          <h3 className="text-xs font-semibold uppercase tracking-widest text-muted">
+            Found item photos
+          </h3>
+          <div className="mt-3 grid grid-cols-2 gap-3 sm:grid-cols-3">
+            {photos.map((src, i) => (
+              <a
+                key={src + i}
+                href={src}
+                target="_blank"
+                rel="noopener noreferrer"
+                className="group block overflow-hidden rounded-xl border border-border bg-alt"
+              >
+                <img
+                  src={src}
+                  alt={`Found item photo ${i + 1}`}
+                  className="aspect-square w-full object-cover transition-transform group-hover:scale-105"
+                  loading="lazy"
+                />
+              </a>
+            ))}
+          </div>
+        </div>
+      )}
+
       <div className="mt-6 rounded-2xl border border-border bg-alt p-5 sm:p-6">
         <h3 className="text-xs font-semibold uppercase tracking-widest text-muted">
           Pickup details
@@ -393,6 +432,29 @@ function PaidState({ report }) {
             </div>
           ))}
         </dl>
+        {mapsUrl && (
+          <a
+            href={mapsUrl}
+            target="_blank"
+            rel="noopener noreferrer"
+            className="mt-4 inline-flex items-center gap-2 rounded-full border border-border bg-card px-4 py-2 text-sm font-medium text-foreground transition-colors hover:bg-card/70"
+          >
+            <svg
+              className="h-4 w-4 text-accent"
+              viewBox="0 0 24 24"
+              fill="none"
+              stroke="currentColor"
+              strokeWidth="2"
+              strokeLinecap="round"
+              strokeLinejoin="round"
+              aria-hidden="true"
+            >
+              <path d="M21 10c0 7-9 13-9 13s-9-6-9-13a9 9 0 0 1 18 0z" />
+              <circle cx="12" cy="10" r="3" />
+            </svg>
+            Open in Google Maps
+          </a>
+        )}
       </div>
 
       {report.recovery_instructions && (
@@ -406,10 +468,28 @@ function PaidState({ report }) {
         </div>
       )}
 
-      <p className="mt-6 text-sm text-muted">
-        Need help on location?{" "}
+      <div className="mt-6 rounded-2xl border border-accent/30 bg-emerald-50 p-5 sm:p-6">
+        <h3 className="font-serif text-lg tracking-tight text-foreground">
+          Need help picking it up?
+        </h3>
+        <p className="mt-2 text-sm text-body">
+          Upgrade to <strong className="text-foreground">Pickup and Delivery</strong>{" "}
+          for $89 and we&rsquo;ll bring it straight to your hotel or address.
+        </p>
         <a
-          href={WHATSAPP_URL}
+          href={upsellWhatsApp}
+          target="_blank"
+          rel="noopener noreferrer"
+          className="mt-4 inline-flex items-center gap-2 rounded-full bg-accent px-5 py-2.5 text-sm font-medium text-white transition-colors hover:bg-accent-hover"
+        >
+          Upgrade to Pickup &amp; Delivery — $89
+        </a>
+      </div>
+
+      <p className="mt-6 text-sm text-muted">
+        Questions?{" "}
+        <a
+          href={helpWhatsApp}
           target="_blank"
           rel="noopener noreferrer"
           className="text-accent underline"
