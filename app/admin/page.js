@@ -633,14 +633,6 @@ function ReportEditor({ report, password, onUnauthorized, onUpdate }) {
 
       <UserImages images={report.user_images} />
 
-      <FoundImagesEditor
-        caseNumber={report.case_number}
-        images={report.found_images}
-        password={password}
-        onUnauthorized={onUnauthorized}
-        onChange={(next) => onUpdate({ ...report, found_images: next })}
-      />
-
       <div className="mt-6">
         <h3 className="text-xs font-semibold uppercase tracking-widest text-muted">
           Recovery details
@@ -764,6 +756,14 @@ function ReportEditor({ report, password, onUnauthorized, onUpdate }) {
           </p>
         )}
       </div>
+
+      <FoundImagesEditor
+        caseNumber={report.case_number}
+        images={report.found_images}
+        password={password}
+        onUnauthorized={onUnauthorized}
+        onChange={(next) => onUpdate({ ...report, found_images: next })}
+      />
 
       <div className="mt-8 rounded-2xl border border-red-200 bg-red-50/40 p-5 sm:p-6">
         <h3 className="text-xs font-semibold uppercase tracking-widest text-red-700">
@@ -908,7 +908,7 @@ function UserImages({ images }) {
   return (
     <div className="mt-6">
       <h3 className="text-xs font-semibold uppercase tracking-widest text-muted">
-        User-uploaded photos
+        Customer Photos
       </h3>
       <div className="mt-3 grid grid-cols-3 gap-2 sm:grid-cols-4 md:grid-cols-6">
         {list.map((src, i) => (
@@ -1010,11 +1010,11 @@ function FoundImagesEditor({
   return (
     <div className="mt-6">
       <h3 className="text-xs font-semibold uppercase tracking-widest text-muted">
-        Found item photos
+        Found Item Photos
       </h3>
       <p className="mt-1 text-sm text-muted">
-        Uploaded photos appear on the customer&rsquo;s /pay page once their
-        case is marked paid.
+        Up to 5 photos, max 5 MB each (JPG, PNG, or WebP). Shown on the
+        customer&rsquo;s /pay page once their case is marked found.
       </p>
 
       {list.length > 0 && (
@@ -1062,24 +1062,30 @@ function FoundImagesEditor({
         </div>
       )}
 
-      <form
-        onSubmit={handleUpload}
-        className="mt-4 flex flex-col gap-3 sm:flex-row sm:items-center"
-      >
-        <input
-          type="file"
-          accept="image/*"
-          onChange={(e) => setFile(e.target.files?.[0] || null)}
-          className="block w-full text-sm text-foreground file:mr-4 file:rounded-full file:border file:border-border file:bg-alt file:px-4 file:py-2 file:text-sm file:font-medium file:text-foreground hover:file:bg-card"
-        />
-        <button
-          type="submit"
-          disabled={!file || uploading}
-          className="inline-flex items-center justify-center rounded-full bg-accent px-5 py-2.5 text-sm font-medium text-white transition-colors hover:bg-accent-hover disabled:opacity-60 sm:w-auto"
+      {list.length >= 5 ? (
+        <p className="mt-4 rounded-xl border border-border bg-alt px-4 py-3 text-sm text-muted">
+          Photo limit reached (5 / 5). Delete a photo to upload a new one.
+        </p>
+      ) : (
+        <form
+          onSubmit={handleUpload}
+          className="mt-4 flex flex-col gap-3 sm:flex-row sm:items-center"
         >
-          {uploading ? "Uploading…" : "Upload photo"}
-        </button>
-      </form>
+          <input
+            type="file"
+            accept="image/jpeg,image/png,image/webp"
+            onChange={(e) => setFile(e.target.files?.[0] || null)}
+            className="block w-full text-sm text-foreground file:mr-4 file:rounded-full file:border file:border-border file:bg-alt file:px-4 file:py-2 file:text-sm file:font-medium file:text-foreground hover:file:bg-card"
+          />
+          <button
+            type="submit"
+            disabled={!file || uploading}
+            className="inline-flex items-center justify-center rounded-full bg-accent px-5 py-2.5 text-sm font-medium text-white transition-colors hover:bg-accent-hover disabled:opacity-60 sm:w-auto"
+          >
+            {uploading ? "Uploading…" : "Upload photo"}
+          </button>
+        </form>
+      )}
 
       {msg && (
         <p

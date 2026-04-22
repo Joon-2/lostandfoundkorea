@@ -6,7 +6,9 @@ export const runtime = "nodejs";
 export const dynamic = "force-dynamic";
 
 const BUCKET = "found-images";
-const MAX_BYTES = 10 * 1024 * 1024;
+const MAX_BYTES = 5 * 1024 * 1024;
+const MAX_PHOTOS = 5;
+const ALLOWED_TYPES = new Set(["image/jpeg", "image/png", "image/webp"]);
 
 function safeFilename(name) {
   return (name || "photo").replace(/[^a-z0-9.\-_]/gi, "_").slice(0, 120);
@@ -34,9 +36,15 @@ export async function POST(request) {
         { status: 400 }
       );
     }
+    if (!ALLOWED_TYPES.has(file.type)) {
+      return Response.json(
+        { ok: false, error: "Only JPG, PNG, or WebP images are allowed" },
+        { status: 400 }
+      );
+    }
     if (file.size > MAX_BYTES) {
       return Response.json(
-        { ok: false, error: "File is larger than 10 MB" },
+        { ok: false, error: "File is larger than 5 MB" },
         { status: 400 }
       );
     }
@@ -57,6 +65,16 @@ export async function POST(request) {
       return Response.json(
         { ok: false, error: "Case not found" },
         { status: 404 }
+      );
+    }
+
+    const existingImages = Array.isArray(report.found_images)
+      ? report.found_images
+      : [];
+    if (existingImages.length >= MAX_PHOTOS) {
+      return Response.json(
+        { ok: false, error: `Maximum ${MAX_PHOTOS} photos per case` },
+        { status: 400 }
       );
     }
 
@@ -93,9 +111,6 @@ export async function POST(request) {
       );
     }
 
-    const existingImages = Array.isArray(report.found_images)
-      ? report.found_images
-      : [];
     const nextImages = [...existingImages, publicUrl];
 
     const existingLog = Array.isArray(report.activity_log)
