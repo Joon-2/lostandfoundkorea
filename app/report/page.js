@@ -3,6 +3,7 @@
 import Link from "next/link";
 import { useState } from "react";
 import { WHATSAPP_URL } from "@/components/WhatsApp";
+import { formatDate } from "@/lib/format";
 
 const TOTAL_STEPS = 2;
 
@@ -20,6 +21,17 @@ const DATE_CONFIDENCE_OPTIONS = [
   "± 1 day",
   "± 2-3 days",
   "Not sure, around this date",
+];
+
+const TIME_OF_DAY_OPTIONS = [
+  "Morning (6-9 AM)",
+  "Late Morning (9-12 PM)",
+  "Afternoon (12-3 PM)",
+  "Late Afternoon (3-6 PM)",
+  "Evening (6-9 PM)",
+  "Night (9 PM-12 AM)",
+  "Late Night (12-6 AM)",
+  "Not sure",
 ];
 
 const LOCATION_TYPES = [
@@ -52,7 +64,7 @@ const initialData = {
   locationDetails: "",
   date: "",
   dateConfidence: "Exact date",
-  time: "",
+  time: "Not sure",
   notes: "",
 };
 
@@ -393,24 +405,14 @@ function Step2({ data, update, errors }) {
           placeholder="e.g. Line 2, Hongik Univ Station, exit 9"
         />
       </Field>
-      <div className="grid gap-5 sm:grid-cols-2">
-        <Field label="Date lost" required error={errors.date}>
-          <input
-            type="date"
-            className={inputCls}
-            value={data.date}
-            onChange={update("date")}
-          />
-        </Field>
-        <Field label="Time (optional)">
-          <input
-            type="time"
-            className={inputCls}
-            value={data.time}
-            onChange={update("time")}
-          />
-        </Field>
-      </div>
+      <Field label="Date lost" required error={errors.date}>
+        <input
+          type="date"
+          className={inputCls}
+          value={data.date}
+          onChange={update("date")}
+        />
+      </Field>
       <Field label="How sure are you about this date?">
         <select
           className={inputCls}
@@ -418,6 +420,19 @@ function Step2({ data, update, errors }) {
           onChange={update("dateConfidence")}
         >
           {DATE_CONFIDENCE_OPTIONS.map((opt) => (
+            <option key={opt} value={opt}>
+              {opt}
+            </option>
+          ))}
+        </select>
+      </Field>
+      <Field label="Time of day (optional)">
+        <select
+          className={inputCls}
+          value={data.time}
+          onChange={update("time")}
+        >
+          {TIME_OF_DAY_OPTIONS.map((opt) => (
             <option key={opt} value={opt}>
               {opt}
             </option>
@@ -447,9 +462,9 @@ function Summary({ data }) {
     ["Distinguishing features", data.distinguishingFeatures],
     ["Location type", data.locationType],
     ["Specific location", data.locationDetails],
-    ["Date lost", data.date],
+    ["Date lost", formatDate(data.date)],
     ["Date confidence", data.dateConfidence],
-    ["Time", data.time],
+    ["Time of day", data.time],
     ["Additional info", data.notes],
   ];
   return (

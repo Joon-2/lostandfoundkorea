@@ -2,6 +2,7 @@
 
 import Link from "next/link";
 import { useCallback, useEffect, useMemo, useState } from "react";
+import { formatDate, formatDateTime } from "@/lib/format";
 
 const ENV_LABELS = [
   "NEXT_PUBLIC_SUPABASE_URL",
@@ -364,7 +365,7 @@ function ReportCard({
             {STATUS_LABELS[status]}
           </span>
           <span className="hidden text-xs text-muted sm:inline">
-            {report.date_lost || "—"}
+            {formatDate(report.date_lost) || "—"}
           </span>
           <svg
             className={`h-4 w-4 text-muted transition-transform ${
@@ -607,10 +608,11 @@ function DetailsBlock({ report }) {
     ["Distinguishing features", report.distinguishing_features],
     ["Location", report.location],
     ["Specific location", report.location_detail],
-    ["Date lost", report.date_lost],
-    ["Time", report.time_lost],
+    ["Date lost", formatDate(report.date_lost)],
+    ["Date confidence", report.date_confidence],
+    ["Time of day", report.time_lost],
     ["Additional info", report.additional_info],
-    ["Submitted", report.created_at],
+    ["Submitted", formatDateTime(report.created_at)],
   ];
   return (
     <div>
