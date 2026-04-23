@@ -5,7 +5,7 @@ import { use, useCallback, useEffect, useRef, useState } from "react";
 import { PayPalScriptProvider, PayPalButtons } from "@paypal/react-paypal-js";
 import { formatDate } from "@/lib/format";
 import { WHATSAPP_URL } from "@/components/WhatsApp";
-import Header from "@/components/Header";
+import Header from "@/components/layout/Header";
 import { plans } from "@/config/plans";
 import { siteConfig } from "@/config/site";
 

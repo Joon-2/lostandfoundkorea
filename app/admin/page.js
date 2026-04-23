@@ -12,7 +12,7 @@ import {
   normalizeStageKey,
 } from "@/lib/process-stages";
 import { processImage } from "@/lib/image-processing";
-import Header from "@/components/Header";
+import Header from "@/components/layout/Header";
 import { plans } from "@/config/plans";
 import { siteConfig } from "@/config/site";
 

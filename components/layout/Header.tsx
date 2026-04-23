@@ -2,15 +2,17 @@
 
 import Link from "next/link";
 import { useEffect, useState } from "react";
+import type { ReactNode } from "react";
 import { WHATSAPP_URL } from "@/components/WhatsApp";
+import MobileMenu, { type NavLink } from "@/components/layout/MobileMenu";
 
-const NAV_LINKS = [
+const NAV_LINKS: NavLink[] = [
   { href: "/#how-it-works", label: "How It Works" },
   { href: "/#pricing", label: "Pricing" },
   { href: "/#faq", label: "FAQ" },
 ];
 
-function PinIcon({ className = "h-[18px] w-[18px]" }) {
+function PinIcon({ className = "h-[18px] w-[18px]" }: { className?: string }) {
   return (
     <svg
       className={className}
@@ -23,7 +25,7 @@ function PinIcon({ className = "h-[18px] w-[18px]" }) {
   );
 }
 
-function Logo({ onClick }) {
+function Logo({ onClick }: { onClick?: () => void }) {
   return (
     <Link
       href="/"
@@ -36,7 +38,7 @@ function Logo({ onClick }) {
   );
 }
 
-function HamburgerIcon({ open }) {
+function HamburgerIcon() {
   return (
     <svg
       className="h-5 w-5"
@@ -48,23 +50,19 @@ function HamburgerIcon({ open }) {
       strokeLinejoin="round"
       aria-hidden="true"
     >
-      {open ? (
-        <>
-          <line x1="18" y1="6" x2="6" y2="18" />
-          <line x1="6" y1="6" x2="18" y2="18" />
-        </>
-      ) : (
-        <>
-          <line x1="3" y1="7" x2="21" y2="7" />
-          <line x1="3" y1="12" x2="21" y2="12" />
-          <line x1="3" y1="17" x2="21" y2="17" />
-        </>
-      )}
+      <line x1="3" y1="7" x2="21" y2="7" />
+      <line x1="3" y1="12" x2="21" y2="12" />
+      <line x1="3" y1="17" x2="21" y2="17" />
     </svg>
   );
 }
 
-export default function Header({ variant = "marketing", action = null }) {
+type HeaderProps = {
+  variant?: "marketing" | "simple";
+  action?: ReactNode;
+};
+
+export default function Header({ variant = "marketing", action = null }: HeaderProps) {
   const [open, setOpen] = useState(false);
 
   useEffect(() => {
@@ -123,7 +121,7 @@ export default function Header({ variant = "marketing", action = null }) {
                   onClick={() => setOpen(true)}
                   className="inline-flex h-9 w-9 items-center justify-center rounded-md text-foreground transition-colors hover:bg-[#f3f4f6] md:hidden"
                 >
-                  <HamburgerIcon open={false} />
+                  <HamburgerIcon />
                 </button>
               </>
             ) : (
@@ -133,48 +131,14 @@ export default function Header({ variant = "marketing", action = null }) {
         </div>
       </header>
 
-      {isMarketing && open && (
-        <div className="fixed inset-0 z-50 flex flex-col bg-white md:hidden">
-          <div className="flex h-[60px] items-center justify-between border-b border-[#e5e7eb] px-5">
-            <Logo onClick={() => setOpen(false)} />
-            <button
-              type="button"
-              aria-label="Close menu"
-              onClick={() => setOpen(false)}
-              className="inline-flex h-9 w-9 items-center justify-center rounded-md text-foreground transition-colors hover:bg-[#f3f4f6]"
-            >
-              <HamburgerIcon open={true} />
-            </button>
-          </div>
-          <nav className="flex flex-1 flex-col gap-1 px-5 py-6">
-            {NAV_LINKS.map((l) => (
-              <a
-                key={l.href}
-                href={l.href}
-                onClick={() => setOpen(false)}
-                className="rounded-md px-2 py-3 text-lg font-medium text-foreground transition-colors hover:bg-[#f3f4f6]"
-              >
-                {l.label}
-              </a>
-            ))}
-            <a
-              href={WHATSAPP_URL}
-              target="_blank"
-              rel="noopener noreferrer"
-              onClick={() => setOpen(false)}
-              className="rounded-md px-2 py-3 text-lg font-medium text-body transition-colors hover:bg-[#f3f4f6]"
-            >
-              Need help?
-            </a>
-            <Link
-              href="/report"
-              onClick={() => setOpen(false)}
-              className="mt-4 inline-flex items-center justify-center rounded-full bg-accent px-6 py-3 text-base font-semibold text-white transition-colors hover:bg-accent-hover"
-            >
-              Report
-            </Link>
-          </nav>
-        </div>
+      {isMarketing && (
+        <MobileMenu
+          open={open}
+          onClose={() => setOpen(false)}
+          navLinks={NAV_LINKS}
+          whatsappUrl={WHATSAPP_URL}
+          logo={<Logo onClick={() => setOpen(false)} />}
+        />
       )}
     </>
   );
