@@ -1,7 +1,11 @@
 import CheckoutForm from "@/components/CheckoutForm";
+import { plans } from "@/config/plans";
+import { siteConfig } from "@/config/site";
+
+const deliveryPrice = plans.delivery_only.priceSeoul;
 
 export const metadata = {
-  title: "Delivery Only — Lost and Found Korea",
+  title: `${plans.delivery_only.name} — ${siteConfig.name}`,
 };
 
 const FIELDS = [
@@ -27,9 +31,9 @@ export default function Page() {
   return (
     <CheckoutForm
       plan="delivery-only"
-      title="Delivery Only — $49"
+      title={`${plans.delivery_only.name} — $${deliveryPrice}`}
       subtitle="When you already know where the item is. We pick it up in Korean and ship it to your address."
-      price="49"
+      price={String(deliveryPrice)}
       fields={FIELDS}
     />
   );

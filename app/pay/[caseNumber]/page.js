@@ -6,6 +6,8 @@ import { PayPalScriptProvider, PayPalButtons } from "@paypal/react-paypal-js";
 import { formatDate } from "@/lib/format";
 import { WHATSAPP_URL } from "@/components/WhatsApp";
 import Header from "@/components/Header";
+import { plans } from "@/config/plans";
+import { siteConfig } from "@/config/site";
 
 const PAYPAL_CLIENT_ID = process.env.NEXT_PUBLIC_PAYPAL_CLIENT_ID || "";
 
@@ -420,7 +422,7 @@ function AuthorizationUpload({ caseNumber, authorizationUrl, shippingAddress, on
             className="mt-0.5 h-4 w-4 flex-none rounded border-border text-accent focus:ring-accent/30"
           />
           <span className="leading-snug">
-            I authorize Lost and Found Korea to collect this item on my behalf.
+            I authorize {siteConfig.name} to collect this item on my behalf.
           </span>
         </label>
 
@@ -615,9 +617,14 @@ function FoundState({
           throw new Error(json.error || "Payment capture failed");
         }
 
-        const amount = report.plan === "all_in_one" ? 79 : 39;
+        const amount =
+          report.plan === "all_in_one"
+            ? plans.all_in_one.priceSeoul
+            : plans.recovery.paymentPrice;
         const planLabel =
-          report.plan === "all_in_one" ? "All-in-One" : "Recovery";
+          report.plan === "all_in_one"
+            ? plans.all_in_one.name
+            : plans.recovery.name;
         const paidAt = new Date().toISOString();
         const transactionId = paypalData.orderID;
         onReceipt?.({ transactionId, amount, paidAt, planLabel });
@@ -679,7 +686,7 @@ function FoundState({
           {report.plan === "all_in_one" ? (
             <>
               <p className="mt-3 text-body">
-                Pay <strong className="text-foreground">$79</strong> to unlock
+                Pay <strong className="text-foreground">${plans.all_in_one.priceSeoul}</strong> to unlock
                 the recovery details and have your item picked up and shipped
                 to your address.
               </p>
@@ -691,7 +698,7 @@ function FoundState({
           ) : (
             <>
               <p className="mt-3 text-body">
-                Pay <strong className="text-foreground">$39</strong> to unlock
+                Pay <strong className="text-foreground">${plans.recovery.paymentPrice}</strong> to unlock
                 the exact recovery location, contact info, and step-by-step
                 English pickup instructions.
               </p>
@@ -788,7 +795,7 @@ function PaidState({ report, onRefresh, receipt }) {
       )}`
     : null;
   const photos = Array.isArray(report.found_images) ? report.found_images : [];
-  const helpWhatsApp = `https://wa.me/821044921349?text=${encodeURIComponent(
+  const helpWhatsApp = `${siteConfig.whatsapp}?text=${encodeURIComponent(
     `Hi, I have a question about picking up my item. Case ${report.case_number}.`
   )}`;
   const addonPaid = Boolean(report.pickup_addon_transaction_id);
@@ -797,10 +804,12 @@ function PaidState({ report, onRefresh, receipt }) {
   const transactionId = receipt?.transactionId || report.paypal_transaction_id;
   const receiptAmount =
     receipt?.amount ??
-    (report.plan === "all_in_one" ? 79 : 39);
+    (report.plan === "all_in_one"
+      ? plans.all_in_one.priceSeoul
+      : plans.recovery.paymentPrice);
   const receiptPlanLabel =
     receipt?.planLabel ||
-    (report.plan === "all_in_one" ? "All-in-One" : "Recovery");
+    (report.plan === "all_in_one" ? plans.all_in_one.name : plans.recovery.name);
 
   return (
     <Panel>
@@ -1042,11 +1051,11 @@ function PickupUpsell({ caseNumber, onPaid }) {
       </h3>
       <p className="mt-2 text-sm text-body">
         Add <strong className="text-foreground">Pickup &amp; Delivery</strong>{" "}
-        for just <strong className="text-foreground">+$49</strong> more. We&rsquo;ll
+        for just <strong className="text-foreground">+${plans.pickup_addon.price}</strong> more. We&rsquo;ll
         collect the item on your behalf and ship it straight to you.
       </p>
       <p className="mt-2 text-xs text-muted">
-        Charged only if you agree &mdash; no impact on your $39 recovery
+        Charged only if you agree &mdash; no impact on your ${plans.recovery.paymentPrice} recovery
         payment.
       </p>
       <div className="mt-4">

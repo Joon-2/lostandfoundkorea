@@ -1,9 +1,10 @@
 import { createPayPalOrder } from "@/lib/paypal";
 import { supabaseAdmin } from "@/lib/supabase-admin";
+import { plans } from "@/config/plans";
 
 export const runtime = "nodejs";
 
-const ADDON_AMOUNT = "49.00";
+const ADDON_AMOUNT = plans.pickup_addon.price.toFixed(2);
 
 export async function POST(request) {
   try {

@@ -5,6 +5,7 @@ import { useCallback, useState } from "react";
 import { useRouter } from "next/navigation";
 import { PayPalScriptProvider, PayPalButtons } from "@paypal/react-paypal-js";
 import { WHATSAPP_URL } from "@/components/WhatsApp";
+import { siteConfig } from "@/config/site";
 
 const PAYPAL_CLIENT_ID = process.env.NEXT_PUBLIC_PAYPAL_CLIENT_ID || "";
 const EMAIL_RE = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
@@ -107,7 +108,7 @@ export default function CheckoutForm({ plan, title, subtitle, price, fields }) {
             href="/"
             className="font-serif text-xl tracking-tight text-white"
           >
-            Lost & Found Korea
+            {siteConfig.name}
           </Link>
           <a
             href={WHATSAPP_URL}

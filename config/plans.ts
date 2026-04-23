@@ -1,0 +1,52 @@
+export const plans = {
+  recovery: {
+    id: 'recovery',
+    name: 'Recovery',
+    displayPrice: 'FREE',
+    paymentPrice: 39,
+    description: 'Free to start, $39 when found',
+    features: [
+      'Submit a 30-second report',
+      'Our team searches in Korean on your behalf',
+      'Email update within 24-48 hours',
+      'Pay $39 to unlock pickup details — only if found',
+    ],
+    footnote: 'Pickup add-on from +$59',
+  },
+  all_in_one: {
+    id: 'all_in_one',
+    name: 'All-in-One',
+    priceSeoul: 79,
+    priceOther: 99,
+    surcharge: 20,
+    description: 'Search + pickup + delivery included',
+    features: [
+      'Everything in Recovery',
+      'We coordinate pickup with the venue / authorities',
+      'Domestic or international shipping included',
+      'Single price upfront — no add-on fees',
+    ],
+    footnote: 'Outside Seoul/Gyeonggi +$20',
+  },
+  delivery_only: {
+    id: 'delivery_only',
+    name: 'Delivery Only',
+    priceSeoul: 49,
+    priceOther: 69,
+    surcharge: 20,
+    description: 'When you already know where the item is',
+    features: [
+      'You tell us where the item is being held',
+      'We pick it up and ship it to your address',
+      'Korean-language coordination on your behalf',
+      'Tracking number emailed once it ships',
+    ],
+    footnote: 'Outside Seoul/Gyeonggi +$20',
+  },
+  pickup_addon: {
+    id: 'pickup_addon',
+    name: 'Pickup Add-on',
+    price: 49,
+    description: 'Add pickup & delivery after recovery payment',
+  },
+}

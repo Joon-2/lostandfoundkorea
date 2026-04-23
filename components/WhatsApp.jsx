@@ -1,5 +1,6 @@
-export const WHATSAPP_URL =
-  "https://wa.me/821044921349?text=Hi%2C%20I%20lost%20an%20item%20in%20Korea%20and%20need%20help.";
+import { siteConfig } from "@/config/site";
+
+export const WHATSAPP_URL = `${siteConfig.whatsapp}?text=${encodeURIComponent(siteConfig.whatsappMessage)}`;
 
 function WhatsAppIcon({ className = "h-7 w-7" }) {
   return (

@@ -13,6 +13,8 @@ import {
 } from "@/lib/process-stages";
 import { processImage } from "@/lib/image-processing";
 import Header from "@/components/Header";
+import { plans } from "@/config/plans";
+import { siteConfig } from "@/config/site";
 
 const STATUS_OPTIONS = ["pending", "found", "paid", "closed"];
 const STATUS_LABELS = {
@@ -29,7 +31,7 @@ const STATUS_BADGE = {
 };
 
 const SESSION_KEY = "lfk_admin_password";
-const PRICE = 39;
+const PRICE = plans.recovery.paymentPrice;
 
 const inputCls =
   "w-full rounded-xl border border-border bg-card px-4 py-3 text-base text-foreground placeholder:text-muted focus:border-accent focus:outline-none focus:ring-2 focus:ring-accent/30";
@@ -515,7 +517,9 @@ function StageBanner({ tone = "muted", children }) {
 
 function SummaryRow({ report }) {
   const plan =
-    report.plan === "all_in_one" ? "All-in-One ($79)" : "Recovery ($39)";
+    report.plan === "all_in_one"
+      ? `${plans.all_in_one.name} ($${plans.all_in_one.priceSeoul})`
+      : `${plans.recovery.name} ($${plans.recovery.paymentPrice})`;
   const items = [
     ["Case", report.case_number || "—"],
     ["Item", report.category || "—"],
@@ -1207,7 +1211,7 @@ function StagePaid({
             {report.plan === "all_in_one"
               ? "All-in-One plan — we pick up and deliver."
               : report.pickup_addon_transaction_id
-              ? "Pickup add-on purchased (+$49)."
+              ? `Pickup add-on purchased (+$${plans.pickup_addon.price}).`
               : "Delivery Only case."}{" "}
             Advance to Phase 2 to coordinate pickup.
           </p>
@@ -1893,8 +1897,11 @@ function ReportEditor({ report, password, onUnauthorized, onUpdate }) {
 
   const currentStage = normalizeStageKey(report.process_stage);
   const plan = report.plan === "all_in_one" ? "all_in_one" : "recovery";
-  const amount = plan === "all_in_one" ? 79 : 39;
-  const paymentLink = `https://lostandfoundkorea.com/pay/${report.case_number || ""}`;
+  const amount =
+    plan === "all_in_one"
+      ? plans.all_in_one.priceSeoul
+      : plans.recovery.paymentPrice;
+  const paymentLink = `${siteConfig.url}/pay/${report.case_number || ""}`;
   const deliveryRequired = isDeliveryRequired(report);
   const closed = (report.status || "") === "closed";
 
@@ -2874,7 +2881,12 @@ function DetailsBlock({ report }) {
     ["Distinguishing features", report.distinguishing_features],
     ["Location", report.location],
     ["Specific location", report.location_detail],
-    ["Plan", report.plan === "all_in_one" ? "All-in-One ($79)" : "Recovery ($39)"],
+    [
+      "Plan",
+      report.plan === "all_in_one"
+        ? `${plans.all_in_one.name} ($${plans.all_in_one.priceSeoul})`
+        : `${plans.recovery.name} ($${plans.recovery.paymentPrice})`,
+    ],
     ["Date lost", formatDate(report.date_lost)],
     ["Date confidence", report.date_confidence],
     ["Time of day", report.time_lost],

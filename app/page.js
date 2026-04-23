@@ -1,5 +1,7 @@
 import Link from "next/link";
 import Header from "@/components/Header";
+import { plans } from "@/config/plans";
+import { siteConfig } from "@/config/site";
 
 const STEPS = [
   {
@@ -20,7 +22,7 @@ const STEPS = [
   {
     n: "04",
     title: "Unlock & retrieve",
-    body: "Pay $39 to get the exact location, contact info, and English pickup instructions. Need delivery? We handle that too.",
+    body: `Pay $${plans.recovery.paymentPrice} to get the exact location, contact info, and English pickup instructions. Need delivery? We handle that too.`,
   },
 ];
 
@@ -175,8 +177,8 @@ export default function Home() {
   const jsonLd = {
     "@context": "https://schema.org",
     "@type": "LocalBusiness",
-    name: "Lost and Found Korea",
-    url: "https://lostandfoundkorea.com",
+    name: siteConfig.name,
+    url: siteConfig.url,
     description:
       "Lost something while traveling in Korea? Report it in 4 simple steps and our local team will help recover it. Fast, trustworthy, English-speaking support.",
     address: {
@@ -184,7 +186,7 @@ export default function Home() {
       addressLocality: "Seoul",
       addressCountry: "South Korea",
     },
-    priceRange: "Free - $79",
+    priceRange: `Free - $${plans.all_in_one.priceSeoul}`,
   };
 
   return (
@@ -372,47 +374,32 @@ export default function Home() {
               <PricingCard
                 tone="free"
                 badge="Pay if found"
-                name="Recovery"
-                price="FREE"
-                priceSubtext="→ $39 only when we find your item"
+                name={plans.recovery.name}
+                price={plans.recovery.displayPrice}
+                priceSubtext={`→ $${plans.recovery.paymentPrice} only when we find your item`}
                 priceNote="Free to start. No card needed."
-                features={[
-                  "Submit a 30-second report",
-                  "Our team searches in Korean on your behalf",
-                  "Email update within 24-48 hours",
-                  "Pay $39 to unlock pickup details — only if found",
-                ]}
-                bottomNote="Pickup add-on from +$59 · Outside Seoul/Gyeonggi +$20"
+                features={plans.recovery.features}
+                bottomNote={`${plans.recovery.footnote} · Outside Seoul/Gyeonggi +$${plans.all_in_one.surcharge}`}
                 cta={{ label: "Start free →", href: "/report" }}
               />
               <PricingCard
                 tone="popular"
                 badge="Recommended"
-                name="All-in-One"
-                price="$79"
+                name={plans.all_in_one.name}
+                price={`$${plans.all_in_one.priceSeoul}`}
                 priceNote="Search + delivery to your address"
-                features={[
-                  "Everything in Recovery",
-                  "We coordinate pickup with the venue / authorities",
-                  "Domestic or international shipping included",
-                  "Single price upfront — no add-on fees",
-                ]}
-                bottomNote="Outside Seoul/Gyeonggi +$20"
-                cta={{ label: "Start All-in-One", href: "/report?plan=all_in_one" }}
+                features={plans.all_in_one.features}
+                bottomNote={plans.all_in_one.footnote}
+                cta={{ label: `Start ${plans.all_in_one.name}`, href: "/report?plan=all_in_one" }}
               />
               <PricingCard
                 tone="muted"
                 badge="Already located"
-                name="Delivery Only"
-                price="$49"
-                priceNote="When you already know where the item is"
-                features={[
-                  "You tell us where the item is being held",
-                  "We pick it up and ship it to your address",
-                  "Korean-language coordination on your behalf",
-                  "Tracking number emailed once it ships",
-                ]}
-                bottomNote="Outside Seoul/Gyeonggi +$20"
+                name={plans.delivery_only.name}
+                price={`$${plans.delivery_only.priceSeoul}`}
+                priceNote={plans.delivery_only.description}
+                features={plans.delivery_only.features}
+                bottomNote={plans.delivery_only.footnote}
                 cta={{ label: "Start Delivery", href: "/pay/delivery-only" }}
               />
             </div>
@@ -494,8 +481,8 @@ export default function Home() {
 
       <footer className="bg-navy text-slate-300" id="footer">
         <div className="mx-auto flex w-full max-w-6xl flex-col gap-2 px-5 py-8 text-sm sm:flex-row sm:items-center sm:justify-between sm:px-8">
-          <span>&copy; {new Date().getFullYear()} Lost and Found Korea</span>
-          <span>Seoul, Korea &middot; English-speaking support</span>
+          <span>&copy; {new Date().getFullYear()} {siteConfig.name}</span>
+          <span>{siteConfig.location} &middot; English-speaking support</span>
         </div>
       </footer>
     </div>

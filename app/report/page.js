@@ -6,61 +6,33 @@ import { useSearchParams } from "next/navigation";
 import { WHATSAPP_URL } from "@/components/WhatsApp";
 import Header from "@/components/Header";
 import { formatDate } from "@/lib/format";
+import {
+  CATEGORIES,
+  LOCATIONS,
+  TIME_OPTIONS,
+  DATE_CONFIDENCE,
+} from "@/lib/constants";
+import { plans } from "@/config/plans";
 
 const PLAN_OPTIONS = [
   {
     value: "recovery",
-    title: "Recovery",
-    tagline: "FREE to start, $39 when found",
+    title: plans.recovery.name,
+    tagline: `FREE to start, $${plans.recovery.paymentPrice} when found`,
   },
   {
     value: "all_in_one",
-    title: "All-in-One",
-    tagline: "FREE to start, $79 when found (includes pickup & delivery)",
+    title: plans.all_in_one.name,
+    tagline: `FREE to start, $${plans.all_in_one.priceSeoul} when found (includes pickup & delivery)`,
   },
 ];
 
 const TOTAL_STEPS = 2;
 
-const ITEM_CATEGORIES = [
-  "Phone / Electronics",
-  "Bag / Wallet",
-  "Passport / ID",
-  "Keys",
-  "Clothing / Accessories",
-  "Other",
-];
-
-const DATE_CONFIDENCE_OPTIONS = [
-  "Exact date",
-  "± 1 day",
-  "± 2-3 days",
-  "Not sure, around this date",
-];
-
-const TIME_OF_DAY_OPTIONS = [
-  "Morning (6-9 AM)",
-  "Late Morning (9-12 PM)",
-  "Afternoon (12-3 PM)",
-  "Late Afternoon (3-6 PM)",
-  "Evening (6-9 PM)",
-  "Night (9 PM-12 AM)",
-  "Late Night (12-6 AM)",
-  "Not sure",
-];
-
-const LOCATION_TYPES = [
-  "Subway / Train",
-  "Bus",
-  "Taxi",
-  "Restaurant / Cafe",
-  "Hotel",
-  "Airport",
-  "Shopping Mall",
-  "Street / Park",
-  "Tourist Attraction",
-  "Other",
-];
+const ITEM_CATEGORIES = CATEGORIES.map((c) => c.value);
+const DATE_CONFIDENCE_OPTIONS = DATE_CONFIDENCE;
+const TIME_OF_DAY_OPTIONS = TIME_OPTIONS;
+const LOCATION_TYPES = LOCATIONS;
 
 const STEP_LABELS = {
   1: "You & your item",
@@ -79,7 +51,7 @@ const initialData = {
   locationType: "",
   locationDetails: "",
   date: "",
-  dateConfidence: "Exact date",
+  dateConfidence: DATE_CONFIDENCE[0],
   time: "Not sure",
   notes: "",
 };
@@ -647,7 +619,7 @@ function SubmittedScreen({ email, caseNumber }) {
         </p>
         <p className="mt-4 max-w-md text-base text-body">
           If we find it, you can unlock the full details for just{" "}
-          <span className="font-semibold text-foreground">$39</span>.
+          <span className="font-semibold text-foreground">${plans.recovery.paymentPrice}</span>.
         </p>
         <p className="mt-3 font-serif text-xl tracking-tight">
           No item found?{" "}

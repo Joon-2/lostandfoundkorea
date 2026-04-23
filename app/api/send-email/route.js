@@ -1,5 +1,6 @@
 import nodemailer from "nodemailer";
 import { buildConfirmationEmail } from "@/lib/email";
+import { siteConfig } from "@/config/site";
 
 export const runtime = "nodejs";
 
@@ -56,7 +57,7 @@ export async function POST(request) {
 
     console.log("Sending email to:", email);
     const info = await transporter.sendMail({
-      from: '"Lost and Found Korea" <support@lostandfoundkorea.com>',
+      from: `"${siteConfig.name}" <${siteConfig.email}>`,
       to: email,
       subject,
       text,

@@ -1,4 +1,5 @@
 import { supabase } from "@/lib/supabase";
+import { DATE_CONFIDENCE } from "@/lib/constants";
 
 export const runtime = "nodejs";
 
@@ -78,7 +79,7 @@ export async function POST(request) {
     const location = body.locationType;
     const dateLost = body.date;
     const timeLost = body.time || null;
-    const dateConfidence = body.dateConfidence || "Exact date";
+    const dateConfidence = body.dateConfidence || DATE_CONFIDENCE[0];
     const plan = body.plan === "all_in_one" ? "all_in_one" : "recovery";
 
     if (

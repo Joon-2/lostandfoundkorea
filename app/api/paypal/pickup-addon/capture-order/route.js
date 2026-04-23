@@ -1,6 +1,7 @@
 import { capturePayPalOrder } from "@/lib/paypal";
 import { supabaseAdmin } from "@/lib/supabase-admin";
 import { logToCaseByCaseNumber } from "@/lib/activity-log";
+import { plans } from "@/config/plans";
 
 export const runtime = "nodejs";
 
@@ -51,7 +52,7 @@ export async function POST(request) {
     }
 
     await logToCaseByCaseNumber(caseNumber, {
-      action: "Pickup add-on paid ($49)",
+      action: `Pickup add-on paid ($${plans.pickup_addon.price})`,
       user: "customer",
     });
 

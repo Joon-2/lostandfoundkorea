@@ -2,6 +2,7 @@ import { Inter, DM_Serif_Display } from "next/font/google";
 import { Analytics } from "@vercel/analytics/react";
 import { SpeedInsights } from "@vercel/speed-insights/next";
 import { FloatingWhatsApp } from "@/components/WhatsApp";
+import { siteConfig } from "@/config/site";
 import "./globals.css";
 
 const inter = Inter({
@@ -16,7 +17,7 @@ const dmSerif = DM_Serif_Display({
 });
 
 export const metadata = {
-  title: "Lost and Found Korea - We Find Your Lost Items",
+  title: `${siteConfig.name} - We Find Your Lost Items`,
   description:
     "Lost something while traveling in Korea? Report it in 4 simple steps and our local team will help recover it. Fast, trustworthy, English-speaking support.",
 };
