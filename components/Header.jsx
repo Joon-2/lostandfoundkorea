@@ -90,7 +90,7 @@ export default function Header({ variant = "marketing", action = null }) {
                   <a
                     key={l.href}
                     href={l.href}
-                    className="text-sm text-[#4a5568] transition-colors hover:text-black"
+                    className="text-sm text-body transition-colors hover:text-black"
                   >
                     {l.label}
                   </a>
@@ -106,7 +106,7 @@ export default function Header({ variant = "marketing", action = null }) {
                   href={WHATSAPP_URL}
                   target="_blank"
                   rel="noopener noreferrer"
-                  className="hidden text-sm text-[#4a5568] transition-colors hover:text-black md:inline"
+                  className="hidden text-sm text-body transition-colors hover:text-black md:inline"
                 >
                   Need help?
                 </a>
@@ -162,7 +162,7 @@ export default function Header({ variant = "marketing", action = null }) {
               target="_blank"
               rel="noopener noreferrer"
               onClick={() => setOpen(false)}
-              className="rounded-md px-2 py-3 text-lg font-medium text-[#4a5568] transition-colors hover:bg-[#f3f4f6]"
+              className="rounded-md px-2 py-3 text-lg font-medium text-body transition-colors hover:bg-[#f3f4f6]"
             >
               Need help?
             </a>

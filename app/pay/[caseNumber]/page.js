@@ -57,7 +57,7 @@ export default function PayPage({ params }) {
             href={WHATSAPP_URL}
             target="_blank"
             rel="noopener noreferrer"
-            className="text-sm text-[#4a5568] transition-colors hover:text-black"
+            className="text-sm text-body transition-colors hover:text-black"
           >
             Need help?
           </a>

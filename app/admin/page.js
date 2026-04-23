@@ -132,12 +132,12 @@ function AdminHeader({ onLogout }) {
         onLogout ? (
           <button
             onClick={onLogout}
-            className="text-sm text-[#4a5568] transition-colors hover:text-black"
+            className="text-sm text-body transition-colors hover:text-black"
           >
             Sign out
           </button>
         ) : (
-          <span className="text-sm text-[#4a5568]">Admin</span>
+          <span className="text-sm text-body">Admin</span>
         )
       }
     />
