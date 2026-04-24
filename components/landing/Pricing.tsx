@@ -1,5 +1,6 @@
 import Link from "next/link";
 import type { ReactNode } from "react";
+import { getTranslations } from "next-intl/server";
 import { plans } from "@/config/plans";
 
 type Tone = "free" | "popular" | "muted";
@@ -71,7 +72,7 @@ function PricingCard({
         {price}
       </span>
       <p className="text-sm font-medium text-foreground">
-        {priceSubtext || " "}
+        {priceSubtext || " "}
       </p>
       <p className="text-sm text-muted">{priceNote}</p>
       <ul className="contents">
@@ -98,7 +99,7 @@ function PricingCard({
           </li>
         ))}
       </ul>
-      <p className="text-xs text-muted">{bottomNote || " "}</p>
+      <p className="text-xs text-muted">{bottomNote || " "}</p>
       <CtaTag
         href={cta.href}
         className={`inline-flex w-full items-center justify-center rounded-full px-6 py-3 text-sm font-medium transition-colors ${t.cta}`}
@@ -109,56 +110,63 @@ function PricingCard({
   );
 }
 
-export default function Pricing() {
+export default async function Pricing() {
+  const t = await getTranslations("pricing");
   return (
     <section id="pricing" className="border-b border-border">
       <div className="mx-auto w-full max-w-6xl px-5 py-20 sm:px-8 sm:py-24">
         <div className="max-w-2xl">
           <h2 className="font-serif text-3xl tracking-tight sm:text-4xl">
-            Simple, fair pricing
+            {t("title")}
           </h2>
-          <p className="mt-3 text-body">
-            Start free. You only pay when we actually find your item.
-          </p>
+          <p className="mt-3 text-body">{t("subtitle")}</p>
         </div>
 
         <div className="mt-10 grid gap-5 lg:grid-cols-3 lg:grid-rows-[repeat(11,_auto)]">
           <PricingCard
             tone="free"
-            badge="Pay if found"
+            badge={t("recoveryBadge")}
             name={plans.recovery.name}
             price={plans.recovery.displayPrice}
-            priceSubtext={`→ $${plans.recovery.paymentPrice} only when we find your item`}
-            priceNote="Free to start. No card needed."
+            priceSubtext={t("recoveryPriceSubtext", {
+              amount: plans.recovery.paymentPrice,
+            })}
+            priceNote={t("recoveryPriceNote")}
             features={plans.recovery.features}
-            bottomNote={`${plans.recovery.footnote} · Outside Seoul/Gyeonggi +$${plans.all_in_one.surcharge}`}
-            cta={{ label: "Start free →", href: "/report" }}
+            bottomNote={t("recoveryBottomNote", {
+              footnote: plans.recovery.footnote,
+              surcharge: plans.all_in_one.surcharge,
+            })}
+            cta={{ label: t("recoveryCta"), href: "/report" }}
           />
           <PricingCard
             tone="popular"
-            badge="Recommended"
+            badge={t("allInOneBadge")}
             name={plans.all_in_one.name}
             price={`$${plans.all_in_one.priceSeoul}`}
-            priceNote="Search + delivery to your address"
+            priceNote={t("allInOnePriceNote")}
             features={plans.all_in_one.features}
             bottomNote={plans.all_in_one.footnote}
-            cta={{ label: `Start ${plans.all_in_one.name}`, href: "/report?plan=all_in_one" }}
+            cta={{
+              label: t("allInOneCta", { planName: plans.all_in_one.name }),
+              href: "/report?plan=all_in_one",
+            }}
           />
           <PricingCard
             tone="muted"
-            badge="Already located"
+            badge={t("deliveryBadge")}
             name={plans.delivery_only.name}
             price={`$${plans.delivery_only.priceSeoul}`}
             priceNote={plans.delivery_only.description}
             features={plans.delivery_only.features}
             bottomNote={plans.delivery_only.footnote}
-            cta={{ label: "Start Delivery", href: "/pay/delivery-only" }}
+            cta={{ label: t("deliveryCta"), href: "/pay/delivery-only" }}
           />
         </div>
 
         <p className="mt-10 text-center font-serif text-2xl tracking-tight sm:text-3xl">
-          No item found?{" "}
-          <span className="text-accent">You pay nothing.</span>
+          {t("noItemFoundLine1")}{" "}
+          <span className="text-accent">{t("noItemFoundLine2")}</span>
         </p>
 
         <div className="mx-auto mt-10 max-w-3xl rounded-2xl border border-border bg-alt p-5 sm:p-6">
@@ -183,28 +191,25 @@ export default function Pricing() {
             </span>
             <p className="text-sm leading-relaxed text-body">
               <span className="font-medium text-foreground">
-                Shipping costs are calculated after we locate and assess your
-                item.
+                {t("shippingNoteBold")}
               </span>{" "}
-              We&rsquo;ll send you an exact quote before any shipment &mdash; no
-              surprises. Customs duties and import taxes are the
-              recipient&rsquo;s responsibility. All prices in USD.
+              {t("shippingNoteBody")}
             </p>
           </div>
         </div>
 
         <div className="mt-6 text-center text-[13px] text-muted">
-          <p>We accept PayPal, Visa, Mastercard, and Apple Pay</p>
+          <p>{t("paymentMethodsTitle")}</p>
           <p className="mt-2 flex flex-wrap items-center justify-center gap-x-3 gap-y-1">
-            <span>💳 Visa / Mastercard</span>
+            <span>{t("paymentMethodVisa")}</span>
             <span aria-hidden="true" className="text-muted/50">
               &middot;
             </span>
-            <span>🅿️ PayPal</span>
+            <span>{t("paymentMethodPaypal")}</span>
             <span aria-hidden="true" className="text-muted/50">
               &middot;
             </span>
-            <span>🍎 Apple Pay</span>
+            <span>{t("paymentMethodApplePay")}</span>
           </p>
         </div>
       </div>

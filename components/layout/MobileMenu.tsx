@@ -2,6 +2,7 @@
 
 import Link from "next/link";
 import type { ReactNode } from "react";
+import { useTranslations } from "next-intl";
 
 export type NavLink = { href: string; label: string };
 
@@ -38,6 +39,7 @@ export default function MobileMenu({
   whatsappUrl,
   logo,
 }: MobileMenuProps) {
+  const t = useTranslations("nav");
   if (!open) return null;
   return (
     <div className="fixed inset-0 z-50 flex flex-col bg-white md:hidden">
@@ -70,14 +72,14 @@ export default function MobileMenu({
           onClick={onClose}
           className="rounded-md px-2 py-3 text-lg font-medium text-body transition-colors hover:bg-[#f3f4f6]"
         >
-          Need help?
+          {t("needHelp")}
         </a>
         <Link
           href="/report"
           onClick={onClose}
           className="mt-4 inline-flex items-center justify-center rounded-full bg-accent px-6 py-3 text-base font-semibold text-white transition-colors hover:bg-accent-hover"
         >
-          Report
+          {t("report")}
         </Link>
       </nav>
     </div>

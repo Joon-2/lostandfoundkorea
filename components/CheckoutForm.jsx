@@ -3,6 +3,7 @@
 import Link from "next/link";
 import { useCallback, useState } from "react";
 import { useRouter } from "next/navigation";
+import { useTranslations } from "next-intl";
 import { PayPalScriptProvider, PayPalButtons } from "@paypal/react-paypal-js";
 import { WHATSAPP_URL } from "@/components/WhatsApp";
 import { siteConfig } from "@/config/site";
@@ -14,6 +15,7 @@ const inputCls =
   "w-full rounded-xl border border-border bg-card px-4 py-3 text-base text-foreground placeholder:text-muted focus:border-accent focus:outline-none focus:ring-2 focus:ring-accent/30";
 
 export default function CheckoutForm({ plan, title, subtitle, price, fields }) {
+  const t = useTranslations("checkout");
   const router = useRouter();
   const initial = fields.reduce(
     (acc, f) => ({ ...acc, [f.name]: "" }),
@@ -31,12 +33,11 @@ export default function CheckoutForm({ plan, title, subtitle, price, fields }) {
 
   const validate = () => {
     const e = {};
-    if (!data.fullName.trim()) e.fullName = "Required";
-    if (!data.email.trim()) e.email = "Required";
-    else if (!EMAIL_RE.test(data.email))
-      e.email = "Enter a valid email address";
+    if (!data.fullName.trim()) e.fullName = t("required");
+    if (!data.email.trim()) e.email = t("required");
+    else if (!EMAIL_RE.test(data.email)) e.email = t("emailInvalid");
     for (const f of fields) {
-      if (f.required && !data[f.name].trim()) e[f.name] = "Required";
+      if (f.required && !data[f.name].trim()) e[f.name] = t("required");
     }
     return e;
   };
@@ -116,14 +117,14 @@ export default function CheckoutForm({ plan, title, subtitle, price, fields }) {
             rel="noopener noreferrer"
             className="text-sm text-slate-300 transition-colors hover:text-white"
           >
-            Need help?
+            {t("needHelp")}
           </a>
         </div>
       </header>
 
       <main className="mx-auto w-full max-w-2xl flex-1 px-5 py-10 sm:px-8 sm:py-14">
         <p className="text-xs font-semibold uppercase tracking-widest text-muted">
-          Checkout
+          {t("header")}
         </p>
         <h1 className="mt-1 font-serif text-3xl tracking-tight sm:text-4xl">
           {title}
@@ -133,7 +134,7 @@ export default function CheckoutForm({ plan, title, subtitle, price, fields }) {
         <div className="mt-8 rounded-2xl border border-border bg-card p-6 shadow-sm sm:p-8">
           <div className="flex items-baseline justify-between border-b border-border pb-4">
             <span className="text-sm font-medium text-foreground">
-              Total today
+              {t("totalToday")}
             </span>
             <span className="font-serif text-3xl tracking-tight text-foreground">
               ${price}
@@ -141,28 +142,28 @@ export default function CheckoutForm({ plan, title, subtitle, price, fields }) {
           </div>
 
           <div className="mt-6 space-y-5">
-            <Field label="Full name" required error={errors.fullName}>
+            <Field label={t("fullName")} required error={errors.fullName}>
               <input
                 type="text"
                 className={inputCls}
                 value={data.fullName}
                 onChange={update("fullName")}
-                placeholder="Jane Smith"
+                placeholder={t("fullNamePlaceholder")}
               />
             </Field>
-            <Field label="Email" required error={errors.email}>
+            <Field label={t("email")} required error={errors.email}>
               <input
                 type="email"
                 className={inputCls}
                 value={data.email}
                 onChange={update("email")}
-                placeholder="you@example.com"
+                placeholder={t("emailPlaceholder")}
               />
             </Field>
             {fields.map((f) => (
               <Field
                 key={f.name}
-                label={f.label + (f.required ? "" : " (optional)")}
+                label={f.label + (f.required ? "" : t("optional"))}
                 required={f.required}
                 error={errors[f.name]}
               >
@@ -205,7 +206,7 @@ export default function CheckoutForm({ plan, title, subtitle, price, fields }) {
                     onApprove={onApprove}
                     onError={(err) => {
                       console.error("PayPal button error:", err);
-                      setPaymentError("PayPal error. Please try again.");
+                      setPaymentError(t("paymentFailed"));
                       setPaying(false);
                     }}
                     onCancel={() => {
@@ -215,14 +216,13 @@ export default function CheckoutForm({ plan, title, subtitle, price, fields }) {
                 </PayPalScriptProvider>
                 {!formIsValid && (
                   <p className="mt-2 text-xs text-muted">
-                    Complete the form above to enable payment.
+                    {t("completeToEnable")}
                   </p>
                 )}
               </div>
             ) : (
               <p className="rounded-xl border border-amber-200 bg-amber-50 px-4 py-3 text-sm text-amber-800">
-                Payment is temporarily unavailable. Please contact us on
-                WhatsApp.
+                {t("paymentUnavailable")}
               </p>
             )}
 

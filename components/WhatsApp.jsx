@@ -1,3 +1,6 @@
+"use client";
+
+import { useTranslations } from "next-intl";
 import { siteConfig } from "@/config/site";
 
 export const WHATSAPP_URL = `${siteConfig.whatsapp}?text=${encodeURIComponent(siteConfig.whatsappMessage)}`;
@@ -16,17 +19,18 @@ function WhatsAppIcon({ className = "h-7 w-7" }) {
 }
 
 export function FloatingWhatsApp() {
+  const t = useTranslations("whatsapp");
   return (
     <a
       href={WHATSAPP_URL}
       target="_blank"
       rel="noopener noreferrer"
-      aria-label="Chat with us on WhatsApp"
+      aria-label={t("ariaLabel")}
       className="fixed bottom-5 right-5 z-[9999] flex items-center gap-3"
       style={{ zIndex: 9999 }}
     >
       <span className="hidden items-center rounded-full bg-[#25D366] px-4 py-2 text-sm font-medium text-white shadow-lg sm:inline-flex">
-        Urgent? Chat now
+        {t("urgentChatNow")}
       </span>
       <span className="relative flex h-14 w-14">
         <span className="absolute inset-0 animate-ping rounded-full bg-[#25D366] opacity-60" />
@@ -39,14 +43,13 @@ export function FloatingWhatsApp() {
 }
 
 export function WhatsAppBanner() {
+  const t = useTranslations("whatsapp");
   return (
     <div className="border-y border-[#25D366]/30 bg-[#25D366]/10">
       <div className="mx-auto flex w-full max-w-6xl flex-col items-start gap-3 px-5 py-4 sm:flex-row sm:items-center sm:justify-between sm:px-8">
         <p className="text-sm font-medium text-foreground sm:text-base">
-          Leaving Korea soon?{" "}
-          <span className="text-muted">
-            Chat with us now for urgent help.
-          </span>
+          {t("bannerLead")}{" "}
+          <span className="text-muted">{t("bannerCta")}</span>
         </p>
         <a
           href={WHATSAPP_URL}
@@ -55,7 +58,7 @@ export function WhatsAppBanner() {
           className="inline-flex items-center gap-2 rounded-full bg-[#25D366] px-5 py-2.5 text-sm font-medium text-white transition-colors hover:bg-[#1ebe57]"
         >
           <WhatsAppIcon className="h-4 w-4" />
-          Chat on WhatsApp
+          {t("chatButton")}
         </a>
       </div>
     </div>

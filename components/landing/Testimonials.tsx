@@ -1,33 +1,10 @@
-const TESTIMONIALS = [
-  {
-    quote:
-      "I left my passport at a restaurant in Myeongdong. They found it within 6 hours. Lifesaver!",
-    name: "Sarah M.",
-    country: "United States",
-  },
-  {
-    quote:
-      "Lost my wallet on the KTX to Busan. I was already back in Japan when they located it and shipped it to me.",
-    name: "Kenji T.",
-    country: "Japan",
-  },
-  {
-    quote:
-      "My phone fell out on the subway. I had no idea how to use Lost112 in Korean. They handled everything.",
-    name: "Emma L.",
-    country: "United Kingdom",
-  },
-  {
-    quote:
-      "Found my camera bag that I left at Incheon Airport in under 24 hours. Worth every dollar.",
-    name: "Lucas R.",
-    country: "Germany",
-  },
-];
+import { getTranslations } from "next-intl/server";
 
-function StarRow() {
+const QUOTE_KEYS = ["sarah", "kenji", "emma", "lucas"] as const;
+
+function StarRow({ label }: { label: string }) {
   return (
-    <div className="flex gap-0.5" aria-label="5 out of 5 stars">
+    <div className="flex gap-0.5" aria-label={label}>
       {Array.from({ length: 5 }).map((_, i) => (
         <svg
           key={i}
@@ -43,20 +20,21 @@ function StarRow() {
   );
 }
 
-export default function Testimonials() {
+export default async function Testimonials() {
+  const t = await getTranslations("testimonials");
   return (
     <section id="testimonials" className="border-y border-border bg-alt">
       <div className="mx-auto w-full max-w-6xl px-5 py-20 sm:px-8 sm:py-24">
         <h2 className="text-center font-serif text-3xl tracking-tight sm:text-4xl">
-          Trusted by travelers
+          {t("title")}
         </h2>
         <p className="mx-auto mt-3 max-w-xl text-center text-body">
-          Real stories from people who got their belongings back.
+          {t("subtitle")}
         </p>
         <div className="mt-12 grid gap-5 sm:grid-cols-2">
-          {TESTIMONIALS.map((t, i) => (
+          {QUOTE_KEYS.map((key, i) => (
             <figure
-              key={t.name}
+              key={key}
               className={`relative flex h-full flex-col overflow-hidden rounded-2xl border border-border p-6 shadow-sm sm:p-7 ${
                 i % 2 === 0 ? "bg-card" : "bg-[#f0fdf4]"
               }`}
@@ -70,14 +48,16 @@ export default function Testimonials() {
                 <path d="M30 25c-11 0-20 9-20 20v30h30V45H20c0-5.5 4.5-10 10-10V25zm45 0c-11 0-20 9-20 20v30h30V45H65c0-5.5 4.5-10 10-10V25z" />
               </svg>
               <div className="relative">
-                <StarRow />
+                <StarRow label={t("starLabel")} />
                 <blockquote className="mt-4 flex-1 text-[17px] leading-relaxed text-foreground">
-                  &ldquo;{t.quote}&rdquo;
+                  &ldquo;{t(`${key}Quote`)}&rdquo;
                 </blockquote>
                 <figcaption className="mt-5 text-sm text-muted">
-                  <span className="font-medium text-foreground">{t.name}</span>
+                  <span className="font-medium text-foreground">
+                    {t(`${key}Name`)}
+                  </span>
                   <span className="mx-2 text-muted/60">&middot;</span>
-                  {t.country}
+                  {t(`${key}Country`)}
                 </figcaption>
               </div>
             </figure>

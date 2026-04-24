@@ -3,6 +3,7 @@
 import Link from "next/link";
 import { use, useCallback, useEffect, useRef, useState } from "react";
 import { PayPalScriptProvider, PayPalButtons } from "@paypal/react-paypal-js";
+import { useTranslations } from "next-intl";
 import { formatDate } from "@/lib/format";
 import { WHATSAPP_URL } from "@/components/WhatsApp";
 import Header from "@/components/layout/Header";
@@ -13,6 +14,8 @@ const PAYPAL_CLIENT_ID = process.env.NEXT_PUBLIC_PAYPAL_CLIENT_ID || "";
 
 export default function PayPage({ params }) {
   const { caseNumber } = use(params);
+  const t = useTranslations("pay");
+  const tn = useTranslations("nav");
   const [loading, setLoading] = useState(true);
   const [report, setReport] = useState(null);
   const [error, setError] = useState(null);
@@ -59,14 +62,14 @@ export default function PayPage({ params }) {
             rel="noopener noreferrer"
             className="text-sm text-body transition-colors hover:text-black"
           >
-            Need help?
+            {tn("needHelp")}
           </a>
         }
       />
 
       <main className="mx-auto w-full max-w-2xl flex-1 px-5 py-10 sm:px-8 sm:py-14">
         <p className="text-xs font-semibold uppercase tracking-widest text-muted">
-          Case reference
+          {t("receiptCaseRef")}
         </p>
         <h1 className="mt-1 font-mono text-2xl font-semibold tracking-wider text-foreground">
           {caseNumber}
@@ -74,42 +77,30 @@ export default function PayPage({ params }) {
 
         {loading && (
           <div className="mt-10 rounded-2xl border border-border bg-card p-8 text-center shadow-sm">
-            <p className="text-sm text-muted">Loading case…</p>
+            <p className="text-sm text-muted">{t("loadingCase")}</p>
           </div>
         )}
 
         {!loading && error === "not_found" && (
           <Panel>
             <h2 className="font-serif text-2xl tracking-tight">
-              Case not found
+              {t("notFoundTitle")}
             </h2>
-            <p className="mt-3 text-body">
-              We couldn&rsquo;t locate a case with that reference. Please
-              double-check the link from your email, or{" "}
-              <a
-                href={WHATSAPP_URL}
-                target="_blank"
-                rel="noopener noreferrer"
-                className="text-accent underline"
-              >
-                contact us on WhatsApp
-              </a>
-              .
-            </p>
+            <p className="mt-3 text-body">{t("notFoundBody")}</p>
           </Panel>
         )}
 
         {!loading && error && error !== "not_found" && (
           <Panel tone="error">
             <h2 className="font-serif text-2xl tracking-tight">
-              Something went wrong
+              {t("loadError")}
             </h2>
             <p className="mt-3 text-body">{error}</p>
             <button
               onClick={fetchReport}
               className="mt-5 inline-flex items-center rounded-full border border-border bg-card px-5 py-2.5 text-sm font-medium text-foreground transition-colors hover:bg-alt"
             >
-              Try again
+              {t("loadErrorHint")}
             </button>
           </Panel>
         )}
@@ -452,6 +443,7 @@ function AuthorizationUpload({ caseNumber, authorizationUrl, shippingAddress, on
 }
 
 function ClosedState() {
+  const t = useTranslations("pay");
   return (
     <Panel>
       <div className="flex items-start gap-4">
@@ -472,16 +464,9 @@ function ClosedState() {
         </span>
         <div>
           <h2 className="font-serif text-2xl tracking-tight">
-            This case has been closed
+            {t("closedTitle")}
           </h2>
-          <p className="mt-3 text-body">
-            We were not able to locate your item. As promised, there is no
-            charge.
-          </p>
-          <p className="mt-2 text-sm text-muted">
-            Still have new information? Reply to our email or chat with us on
-            WhatsApp.
-          </p>
+          <p className="mt-3 text-body">{t("closedBody")}</p>
         </div>
       </div>
     </Panel>
@@ -527,6 +512,7 @@ function SummaryCard({ report }) {
 }
 
 function PendingState({ report }) {
+  const t = useTranslations("pay");
   return (
     <Panel>
       <div className="flex items-start gap-4">
@@ -547,16 +533,9 @@ function PendingState({ report }) {
         </span>
         <div>
           <h2 className="font-serif text-2xl tracking-tight">
-            Still searching
+            {t("stillSearching")}
           </h2>
-          <p className="mt-3 text-body">
-            We&rsquo;re still searching for your item. We&rsquo;ll email you
-            when we find it.
-          </p>
-          <p className="mt-3 text-sm text-muted">
-            You&rsquo;ll only ever pay if we locate your item. No item found?
-            You pay nothing.
-          </p>
+          <p className="mt-3 text-body">{t("stillSearchingBody")}</p>
         </div>
       </div>
       <SummaryCard report={report} />
@@ -573,6 +552,7 @@ function FoundState({
   onPaid,
   onReceipt,
 }) {
+  const t = useTranslations("pay");
   const paypalConfigured = Boolean(PAYPAL_CLIENT_ID);
   const foundPhotos = Array.isArray(report.found_images)
     ? report.found_images
@@ -681,29 +661,24 @@ function FoundState({
         </span>
         <div className="flex-1">
           <h2 className="font-serif text-2xl tracking-tight">
-            Your item has been found
+            {t("foundTitle")}
           </h2>
           {report.plan === "all_in_one" ? (
             <>
               <p className="mt-3 text-body">
-                Pay <strong className="text-foreground">${plans.all_in_one.priceSeoul}</strong> to unlock
-                the recovery details and have your item picked up and shipped
-                to your address.
+                {t("foundBodyAllInOne", { amount: plans.all_in_one.priceSeoul })}
               </p>
               <p className="mt-2 text-sm text-muted">
-                Pickup &amp; delivery included. If this turns out not to be
-                your item, we refund in full.
+                {t("foundBodyAllInOneNote")}
               </p>
             </>
           ) : (
             <>
               <p className="mt-3 text-body">
-                Pay <strong className="text-foreground">${plans.recovery.paymentPrice}</strong> to unlock
-                the exact recovery location, contact info, and step-by-step
-                English pickup instructions.
+                {t("foundBodyRecovery", { amount: plans.recovery.paymentPrice })}
               </p>
               <p className="mt-2 text-sm text-muted">
-                If this turns out not to be your item, we refund in full.
+                {t("foundBodyRecoveryNote")}
               </p>
             </>
           )}
@@ -713,7 +688,7 @@ function FoundState({
       {foundPhotos.length > 0 && (
         <div className="mt-6">
           <h3 className="text-xs font-semibold uppercase tracking-widest text-muted">
-            Found item photos
+            {t("foundPhotosTitle")}
           </h3>
           <div className="mt-3 grid grid-cols-2 gap-3 sm:grid-cols-3">
             {foundPhotos.map((src, i) => (
@@ -734,8 +709,7 @@ function FoundState({
             ))}
           </div>
           <p className="mt-2 text-xs italic text-muted">
-            Photos taken by our team at the recovery location. Is this your
-            item?
+            {t("foundPhotosHint")}
           </p>
         </div>
       )}
@@ -759,7 +733,7 @@ function FoundState({
               onApprove={onApprove}
               onError={(err) => {
                 console.error("PayPal button error:", err);
-                setPaymentError("PayPal error. Please try again.");
+                setPaymentError(t("paypalError"));
                 setPaying(false);
               }}
               onCancel={() => {
@@ -769,7 +743,7 @@ function FoundState({
           </PayPalScriptProvider>
         ) : (
           <p className="rounded-xl border border-amber-200 bg-amber-50 px-4 py-3 text-sm text-amber-800">
-            Payment is temporarily unavailable. Please contact us on WhatsApp.
+            {t("paypalUnavailable")}
           </p>
         )}
 
@@ -784,10 +758,11 @@ function FoundState({
 }
 
 function PaidState({ report, onRefresh, receipt }) {
+  const t = useTranslations("pay");
   const rows = [
-    ["Location", report.recovery_location],
-    ["Contact phone", report.recovery_contact],
-    ["Operating hours", report.recovery_hours],
+    [t("recoveryLocation"), report.recovery_location],
+    [t("recoveryContact"), report.recovery_contact],
+    [t("recoveryHours"), report.recovery_hours],
   ];
   const mapsUrl = report.recovery_location
     ? `https://www.google.com/maps/search/?api=1&query=${encodeURIComponent(
@@ -830,10 +805,10 @@ function PaidState({ report, onRefresh, receipt }) {
         </span>
         <div>
           <h2 className="font-serif text-2xl tracking-tight">
-            Payment complete
+            {t("paidTitle")}
           </h2>
           <p className="mt-3 text-body">
-            Here&rsquo;s everything you need to pick up your item.
+            {t("paidBody")}
           </p>
         </div>
       </div>
@@ -841,31 +816,31 @@ function PaidState({ report, onRefresh, receipt }) {
       {transactionId && (
         <div className="mt-6 rounded-2xl border border-border bg-card p-5 sm:p-6">
           <h3 className="text-xs font-semibold uppercase tracking-widest text-muted">
-            Payment receipt
+            {t("receiptTitle")}
           </h3>
           <dl className="mt-3 divide-y divide-border text-sm">
             <div className="grid grid-cols-3 gap-3 py-2.5 sm:grid-cols-4">
-              <dt className="text-muted">Case reference</dt>
+              <dt className="text-muted">{t("receiptCaseRef")}</dt>
               <dd className="col-span-2 break-words font-mono text-foreground sm:col-span-3">
                 {report.case_number}
               </dd>
             </div>
             <div className="grid grid-cols-3 gap-3 py-2.5 sm:grid-cols-4">
-              <dt className="text-muted">Amount paid</dt>
+              <dt className="text-muted">{t("receiptAmount")}</dt>
               <dd className="col-span-2 font-medium text-foreground sm:col-span-3">
                 ${receiptAmount}{" "}
                 <span className="text-muted">({receiptPlanLabel})</span>
               </dd>
             </div>
             <div className="grid grid-cols-3 gap-3 py-2.5 sm:grid-cols-4">
-              <dt className="text-muted">Transaction ID</dt>
+              <dt className="text-muted">{t("receiptTxId")}</dt>
               <dd className="col-span-2 break-all font-mono text-xs text-foreground sm:col-span-3">
                 {transactionId}
               </dd>
             </div>
             {receipt?.paidAt && (
               <div className="grid grid-cols-3 gap-3 py-2.5 sm:grid-cols-4">
-                <dt className="text-muted">Date</dt>
+                <dt className="text-muted">{t("receiptDate")}</dt>
                 <dd className="col-span-2 text-foreground sm:col-span-3">
                   {formatDate(receipt.paidAt) || receipt.paidAt}
                 </dd>
@@ -873,7 +848,7 @@ function PaidState({ report, onRefresh, receipt }) {
             )}
           </dl>
           <p className="mt-3 text-sm text-muted">
-            A receipt has been sent to your email.
+            {t("receiptEmailed")}
           </p>
         </div>
       )}
@@ -881,7 +856,7 @@ function PaidState({ report, onRefresh, receipt }) {
       {photos.length > 0 && (
         <div className="mt-6">
           <h3 className="text-xs font-semibold uppercase tracking-widest text-muted">
-            Your recovered item
+            {t("recoveredTitle")}
           </h3>
           <div className="mt-3 grid grid-cols-2 gap-3 sm:grid-cols-3">
             {photos.map((src, i) => (
@@ -994,6 +969,7 @@ function PaidState({ report, onRefresh, receipt }) {
 }
 
 function PickupUpsell({ caseNumber, onPaid }) {
+  const t = useTranslations("pay");
   const paypalConfigured = Boolean(PAYPAL_CLIENT_ID);
   const [paying, setPaying] = useState(false);
   const [err, setErr] = useState(null);
@@ -1047,16 +1023,18 @@ function PickupUpsell({ caseNumber, onPaid }) {
   return (
     <div className="mt-6 rounded-2xl border border-accent/30 bg-emerald-50 p-5 sm:p-6">
       <h3 className="font-serif text-lg tracking-tight text-foreground">
-        Need help picking it up?
+        {t("pickupUpgradeTitle")}
       </h3>
       <p className="mt-2 text-sm text-body">
-        Add <strong className="text-foreground">Pickup &amp; Delivery</strong>{" "}
-        for just <strong className="text-foreground">+${plans.pickup_addon.price}</strong> more. We&rsquo;ll
-        collect the item on your behalf and ship it straight to you.
+        {t("pickupUpgradeBodyPrefix")}{" "}
+        <strong className="text-foreground">{t("pickupUpgradeBodyName")}</strong>{" "}
+        {t("pickupUpgradeBodyMiddle")}{" "}
+        <strong className="text-foreground">+${plans.pickup_addon.price}</strong>{" "}
+        {t("pickupUpgradeBodyMore")}
       </p>
       <p className="mt-2 text-xs text-muted">
-        Charged only if you agree &mdash; no impact on your ${plans.recovery.paymentPrice} recovery
-        payment.
+        {t("pickupUpgradeHintPrefix")} ${plans.recovery.paymentPrice}{" "}
+        {t("pickupUpgradeHintSuffix")}
       </p>
       <div className="mt-4">
         {paypalConfigured ? (
@@ -1081,7 +1059,7 @@ function PickupUpsell({ caseNumber, onPaid }) {
               onApprove={onApprove}
               onError={(e) => {
                 console.error("PayPal pickup error:", e);
-                setErr("PayPal error. Please try again.");
+                setErr(t("paypalError"));
                 setPaying(false);
               }}
               onCancel={() => setPaying(false)}

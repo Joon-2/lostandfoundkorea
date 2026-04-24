@@ -3,6 +3,7 @@
 import Link from "next/link";
 import { Suspense, useState } from "react";
 import { useSearchParams } from "next/navigation";
+import { useTranslations } from "next-intl";
 import { WHATSAPP_URL } from "@/components/WhatsApp";
 import Header from "@/components/layout/Header";
 import { formatDate } from "@/lib/format";
@@ -14,30 +15,10 @@ import {
 } from "@/lib/constants";
 import { plans } from "@/config/plans";
 
-const PLAN_OPTIONS = [
-  {
-    value: "recovery",
-    title: plans.recovery.name,
-    tagline: `FREE to start, $${plans.recovery.paymentPrice} when found`,
-  },
-  {
-    value: "all_in_one",
-    title: plans.all_in_one.name,
-    tagline: `FREE to start, $${plans.all_in_one.priceSeoul} when found (includes pickup & delivery)`,
-  },
-];
-
 const TOTAL_STEPS = 2;
 
 const ITEM_CATEGORIES = CATEGORIES.map((c) => c.value);
-const DATE_CONFIDENCE_OPTIONS = DATE_CONFIDENCE;
-const TIME_OF_DAY_OPTIONS = TIME_OPTIONS;
 const LOCATION_TYPES = LOCATIONS;
-
-const STEP_LABELS = {
-  1: "You & your item",
-  2: "Where & when",
-};
 
 const initialData = {
   plan: "recovery",
@@ -74,19 +55,19 @@ function Field({ label, required, error, children }) {
   );
 }
 
-function validateStep(step, data) {
+function validateStep(step, data, t) {
   const errors = {};
   if (step === 1) {
-    if (!data.fullName.trim()) errors.fullName = "Required";
-    if (!data.email.trim()) errors.email = "Required";
+    if (!data.fullName.trim()) errors.fullName = t("required");
+    if (!data.email.trim()) errors.email = t("required");
     else if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(data.email))
-      errors.email = "Enter a valid email address";
-    if (!data.itemCategory) errors.itemCategory = "Required";
-    if (!data.itemDescription.trim()) errors.itemDescription = "Required";
+      errors.email = t("emailInvalid");
+    if (!data.itemCategory) errors.itemCategory = t("required");
+    if (!data.itemDescription.trim()) errors.itemDescription = t("required");
   }
   if (step === 2) {
-    if (!data.locationType) errors.locationType = "Required";
-    if (!data.date) errors.date = "Required";
+    if (!data.locationType) errors.locationType = t("required");
+    if (!data.date) errors.date = t("required");
   }
   return errors;
 }
@@ -100,9 +81,28 @@ export default function ReportPage() {
 }
 
 function ReportPageInner() {
+  const t = useTranslations("form");
   const searchParams = useSearchParams();
   const initialPlan =
     searchParams.get("plan") === "all_in_one" ? "all_in_one" : "recovery";
+
+  const PLAN_OPTIONS = [
+    {
+      value: "recovery",
+      title: t("planRecoveryTitle"),
+      tagline: t("planRecoveryTagline", { amount: plans.recovery.paymentPrice }),
+    },
+    {
+      value: "all_in_one",
+      title: t("planAllInOneTitle"),
+      tagline: t("planAllInOneTagline", { amount: plans.all_in_one.priceSeoul }),
+    },
+  ];
+
+  const STEP_LABELS = {
+    1: t("step1Label"),
+    2: t("step2Label"),
+  };
 
   const [step, setStep] = useState(1);
   const [data, setData] = useState({ ...initialData, plan: initialPlan });
@@ -122,7 +122,7 @@ function ReportPageInner() {
   };
 
   const next = () => {
-    const e = validateStep(step, data);
+    const e = validateStep(step, data, t);
     if (Object.keys(e).length) {
       setErrors(e);
       return;
@@ -138,7 +138,7 @@ function ReportPageInner() {
 
   const submit = async () => {
     if (submitting) return;
-    const e = validateStep(step, data);
+    const e = validateStep(step, data, t);
     if (Object.keys(e).length) {
       setErrors(e);
       return;
@@ -155,15 +155,13 @@ function ReportPageInner() {
       });
     } catch (err) {
       console.error("Submit fetch failed:", err);
-      setSubmitError("Something went wrong, please try again.");
+      setSubmitError(t("submitFailedGeneric"));
       setSubmitting(false);
       return;
     }
 
     if (res.status === 429) {
-      setSubmitError(
-        "Too many submissions from this network. Please try again later."
-      );
+      setSubmitError(t("tooManySubmissions"));
       setSubmitting(false);
       return;
     }
@@ -176,7 +174,7 @@ function ReportPageInner() {
         error: result.error,
         debug: result.debug,
       });
-      setSubmitError("Something went wrong, please try again.");
+      setSubmitError(t("submitFailedGeneric"));
       setSubmitting(false);
       return;
     }
@@ -223,7 +221,7 @@ function ReportPageInner() {
             href="/"
             className="text-sm text-body transition-colors hover:text-black"
           >
-            Cancel
+            {t("cancel")}
           </Link>
         }
       />
@@ -232,7 +230,7 @@ function ReportPageInner() {
         <div className="mb-8">
           <div className="mb-2 flex items-center justify-between text-sm">
             <span className="font-medium text-foreground">
-              Step {step} of {TOTAL_STEPS}
+              {t("stepCounter", { step, total: TOTAL_STEPS })}
             </span>
             <span className="text-muted">{STEP_LABELS[step]}</span>
           </div>
@@ -251,18 +249,20 @@ function ReportPageInner() {
               update={update}
               errors={errors}
               setPlan={setPlan}
+              t={t}
+              planOptions={PLAN_OPTIONS}
             />
           )}
           {step === 2 && (
-            <Step2 data={data} update={update} errors={errors} />
+            <Step2 data={data} update={update} errors={errors} t={t} />
           )}
         </div>
 
-        {step === TOTAL_STEPS && <Summary data={data} />}
+        {step === TOTAL_STEPS && <Summary data={data} t={t} />}
 
         {submitError && step === TOTAL_STEPS && (
           <div className="mt-4 rounded-xl border border-red-300 bg-red-50 px-4 py-3 text-sm text-red-800">
-            <p className="font-semibold">Submission failed</p>
+            <p className="font-semibold">{t("submitFailed")}</p>
             <p className="mt-1 text-red-700">{submitError}</p>
             <button
               type="button"
@@ -270,7 +270,7 @@ function ReportPageInner() {
               disabled={submitting}
               className="mt-3 inline-flex items-center rounded-full border border-red-300 bg-white px-4 py-2 text-xs font-medium text-red-700 transition-colors hover:bg-red-100 disabled:opacity-60"
             >
-              Try again
+              {t("tryAgain")}
             </button>
           </div>
         )}
@@ -282,7 +282,7 @@ function ReportPageInner() {
             disabled={step === 1 || submitting}
             className="rounded-full border border-border bg-card px-6 py-3 text-sm font-medium text-foreground transition-colors hover:bg-alt disabled:cursor-not-allowed disabled:opacity-40"
           >
-            Back
+            {t("back")}
           </button>
           {step < TOTAL_STEPS ? (
             <button
@@ -290,7 +290,7 @@ function ReportPageInner() {
               onClick={next}
               className="rounded-full bg-accent px-8 py-3 text-sm font-medium text-white transition-colors hover:bg-accent-hover"
             >
-              Continue &rarr;
+              {t("continue")}
             </button>
           ) : (
             <button
@@ -302,10 +302,10 @@ function ReportPageInner() {
               {submitting ? (
                 <>
                   <Spinner />
-                  <span>Submitting…</span>
+                  <span>{t("submitting")}</span>
                 </>
               ) : (
-                <span>Submit report</span>
+                <span>{t("submit")}</span>
               )}
             </button>
           )}
@@ -315,14 +315,14 @@ function ReportPageInner() {
   );
 }
 
-function PlanPicker({ plan, setPlan }) {
+function PlanPicker({ plan, setPlan, t, planOptions }) {
   return (
     <fieldset>
       <legend className="mb-2 block text-sm font-medium text-foreground">
-        Choose your plan
+        {t("planLegend")}
       </legend>
       <div className="grid gap-3 sm:grid-cols-2">
-        {PLAN_OPTIONS.map((opt) => {
+        {planOptions.map((opt) => {
           const selected = plan === opt.value;
           return (
             <label
@@ -357,41 +357,39 @@ function PlanPicker({ plan, setPlan }) {
   );
 }
 
-function Step1({ data, update, errors, setPlan }) {
+function Step1({ data, update, errors, setPlan, t, planOptions }) {
   return (
     <div className="space-y-5">
       <div>
-        <h2 className="font-serif text-2xl tracking-tight">You & your item</h2>
-        <p className="mt-1 text-sm text-muted">
-          Tell us how to reach you and what you lost.
-        </p>
+        <h2 className="font-serif text-2xl tracking-tight">{t("step1Title")}</h2>
+        <p className="mt-1 text-sm text-muted">{t("step1Subtitle")}</p>
       </div>
-      <PlanPicker plan={data.plan} setPlan={setPlan} />
-      <Field label="Name" required error={errors.fullName}>
+      <PlanPicker plan={data.plan} setPlan={setPlan} t={t} planOptions={planOptions} />
+      <Field label={t("name")} required error={errors.fullName}>
         <input
           type="text"
           className={inputCls}
           value={data.fullName}
           onChange={update("fullName")}
-          placeholder="Jane Smith"
+          placeholder={t("namePlaceholder")}
         />
       </Field>
-      <Field label="Email" required error={errors.email}>
+      <Field label={t("email")} required error={errors.email}>
         <input
           type="email"
           className={inputCls}
           value={data.email}
           onChange={update("email")}
-          placeholder="you@example.com"
+          placeholder={t("emailPlaceholder")}
         />
       </Field>
-      <Field label="Category" required error={errors.itemCategory}>
+      <Field label={t("category")} required error={errors.itemCategory}>
         <select
           className={inputCls}
           value={data.itemCategory}
           onChange={update("itemCategory")}
         >
-          <option value="">Select category</option>
+          <option value="">{t("categoryPlaceholder")}</option>
           {ITEM_CATEGORIES.map((c) => (
             <option key={c} value={c}>
               {c}
@@ -400,27 +398,27 @@ function Step1({ data, update, errors, setPlan }) {
         </select>
       </Field>
       <div className="grid gap-5 sm:grid-cols-2">
-        <Field label="Brand / Model (optional)">
+        <Field label={t("brandModel")}>
           <input
             type="text"
             className={inputCls}
             value={data.brandModel}
             onChange={update("brandModel")}
-            placeholder="e.g. iPhone 15 Pro, Louis Vuitton"
+            placeholder={t("brandModelPlaceholder")}
           />
         </Field>
-        <Field label="Color (optional)">
+        <Field label={t("color")}>
           <input
             type="text"
             className={inputCls}
             value={data.color}
             onChange={update("color")}
-            placeholder="e.g. Black"
+            placeholder={t("colorPlaceholder")}
           />
         </Field>
       </div>
       <Field
-        label="Brief item description"
+        label={t("description")}
         required
         error={errors.itemDescription}
       >
@@ -428,37 +426,35 @@ function Step1({ data, update, errors, setPlan }) {
           className={`${inputCls} min-h-28 resize-y`}
           value={data.itemDescription}
           onChange={update("itemDescription")}
-          placeholder="What it looks like, what's inside, model number, etc."
+          placeholder={t("descriptionPlaceholder")}
         />
       </Field>
-      <Field label="Distinguishing features (optional)">
+      <Field label={t("distinguishingFeatures")}>
         <textarea
           className={`${inputCls} min-h-24 resize-y`}
           value={data.distinguishingFeatures}
           onChange={update("distinguishingFeatures")}
-          placeholder="Any unique marks, stickers, engravings, or contents that would help identify it"
+          placeholder={t("distinguishingFeaturesPlaceholder")}
         />
       </Field>
     </div>
   );
 }
 
-function Step2({ data, update, errors }) {
+function Step2({ data, update, errors, t }) {
   return (
     <div className="space-y-5">
       <div>
-        <h2 className="font-serif text-2xl tracking-tight">Where & when</h2>
-        <p className="mt-1 text-sm text-muted">
-          The last place you remember having it.
-        </p>
+        <h2 className="font-serif text-2xl tracking-tight">{t("step2Title")}</h2>
+        <p className="mt-1 text-sm text-muted">{t("step2Subtitle")}</p>
       </div>
-      <Field label="Location type" required error={errors.locationType}>
+      <Field label={t("locationType")} required error={errors.locationType}>
         <select
           className={inputCls}
           value={data.locationType}
           onChange={update("locationType")}
         >
-          <option value="">Select type</option>
+          <option value="">{t("locationTypePlaceholder")}</option>
           {LOCATION_TYPES.map((l) => (
             <option key={l} value={l}>
               {l}
@@ -466,16 +462,16 @@ function Step2({ data, update, errors }) {
           ))}
         </select>
       </Field>
-      <Field label="Specific location (optional)">
+      <Field label={t("specificLocation")}>
         <input
           type="text"
           className={inputCls}
           value={data.locationDetails}
           onChange={update("locationDetails")}
-          placeholder="e.g. Line 2, Hongik Univ Station, exit 9"
+          placeholder={t("specificLocationPlaceholder")}
         />
       </Field>
-      <Field label="Date lost" required error={errors.date}>
+      <Field label={t("dateLost")} required error={errors.date}>
         <input
           type="date"
           className={inputCls}
@@ -483,64 +479,64 @@ function Step2({ data, update, errors }) {
           onChange={update("date")}
         />
       </Field>
-      <Field label="How sure are you about this date?">
+      <Field label={t("dateConfidence")}>
         <select
           className={inputCls}
           value={data.dateConfidence}
           onChange={update("dateConfidence")}
         >
-          {DATE_CONFIDENCE_OPTIONS.map((opt) => (
+          {DATE_CONFIDENCE.map((opt) => (
             <option key={opt} value={opt}>
               {opt}
             </option>
           ))}
         </select>
       </Field>
-      <Field label="Time of day (optional)">
+      <Field label={t("timeOfDay")}>
         <select
           className={inputCls}
           value={data.time}
           onChange={update("time")}
         >
-          {TIME_OF_DAY_OPTIONS.map((opt) => (
+          {TIME_OPTIONS.map((opt) => (
             <option key={opt} value={opt}>
               {opt}
             </option>
           ))}
         </select>
       </Field>
-      <Field label="Additional info (optional)">
+      <Field label={t("additionalInfo")}>
         <textarea
           className={`${inputCls} min-h-24 resize-y`}
           value={data.notes}
           onChange={update("notes")}
-          placeholder="Anything else — were you with someone? Did you contact any staff?"
+          placeholder={t("additionalInfoPlaceholder")}
         />
       </Field>
     </div>
   );
 }
 
-function Summary({ data }) {
+function Summary({ data, t }) {
   const rows = [
-    ["Name", data.fullName],
-    ["Email", data.email],
-    ["Category", data.itemCategory],
-    ["Brand / Model", data.brandModel],
-    ["Color", data.color],
-    ["Description", data.itemDescription],
-    ["Distinguishing features", data.distinguishingFeatures],
-    ["Location type", data.locationType],
-    ["Specific location", data.locationDetails],
-    ["Date lost", formatDate(data.date)],
-    ["Date confidence", data.dateConfidence],
-    ["Time of day", data.time],
-    ["Additional info", data.notes],
+    [t("summaryName"), data.fullName],
+    [t("summaryEmail"), data.email],
+    [t("summaryCategory"), data.itemCategory],
+    [t("summaryBrandModel"), data.brandModel],
+    [t("summaryColor"), data.color],
+    [t("summaryDescription"), data.itemDescription],
+    [t("summaryDistinguishingFeatures"), data.distinguishingFeatures],
+    [t("summaryLocationType"), data.locationType],
+    [t("summarySpecificLocation"), data.locationDetails],
+    [t("summaryDateLost"), formatDate(data.date)],
+    [t("summaryDateConfidence"), data.dateConfidence],
+    [t("summaryTimeOfDay"), data.time],
+    [t("summaryAdditionalInfo"), data.notes],
   ];
   return (
     <div className="mt-4 rounded-2xl border border-border bg-alt p-5 sm:p-6">
       <h3 className="mb-3 text-xs font-semibold uppercase tracking-widest text-muted">
-        Review before submitting
+        {t("reviewBeforeSubmitting")}
       </h3>
       <dl className="divide-y divide-border">
         {rows.map(([k, v]) => (
@@ -586,6 +582,8 @@ function Spinner() {
 }
 
 function SubmittedScreen({ email, caseNumber }) {
+  const t = useTranslations("form");
+  const tw = useTranslations("whatsapp");
   return (
     <div className="flex flex-1 flex-col">
       <Header variant="simple" />
@@ -605,36 +603,40 @@ function SubmittedScreen({ email, caseNumber }) {
           </svg>
         </div>
         <h1 className="font-serif text-4xl tracking-tight sm:text-5xl">
-          Report Submitted &mdash; We&rsquo;re On It
+          {t("submittedTitle")}
         </h1>
         <p className="mt-4 max-w-md text-lg text-body">
-          Our team will search for your item and notify you
+          {t("submittedNotifyPrefix")}
           {email ? (
             <>
               {" "}
-              at <span className="font-semibold text-foreground">{email}</span>
+              {t("submittedNotifyAt")}{" "}
+              <span className="font-semibold text-foreground">{email}</span>
             </>
           ) : null}
           .
         </p>
         <p className="mt-4 max-w-md text-base text-body">
-          If we find it, you can unlock the full details for just{" "}
-          <span className="font-semibold text-foreground">${plans.recovery.paymentPrice}</span>.
+          {t("submittedUnlockPrefix")}{" "}
+          <span className="font-semibold text-foreground">
+            ${plans.recovery.paymentPrice}
+          </span>
+          .
         </p>
         <p className="mt-3 font-serif text-xl tracking-tight">
-          No item found?{" "}
-          <span className="text-accent">You pay nothing.</span>
+          {t("submittedNoItemFoundLine1")}{" "}
+          <span className="text-accent">{t("submittedNoItemFoundLine2")}</span>
         </p>
 
         <div className="mt-8 w-full max-w-sm rounded-2xl border border-border bg-alt px-6 py-5 shadow-sm">
           <p className="text-xs font-medium uppercase tracking-widest text-muted">
-            Case reference
+            {t("submittedCaseRef")}
           </p>
           <p className="mt-1 font-mono text-2xl font-semibold tracking-wider text-foreground">
             {caseNumber}
           </p>
           <p className="mt-2 text-xs text-muted">
-            Save this number to track your case.
+            {t("submittedSaveHint")}
           </p>
         </div>
 
@@ -653,13 +655,13 @@ function SubmittedScreen({ email, caseNumber }) {
             >
               <path d="M19.11 17.205c-.372 0-1.088 1.39-1.518 1.39-.101 0-.237-.061-.386-.135-.897-.452-1.826-.975-2.744-1.487-.45-.252-.9-.504-1.35-.756-.45-.252-.9-.504-1.3-.806-.4-.302-.7-.604-1-.906-.3-.302-.6-.604-.9-.906-.3-.302-.55-.604-.7-.906-.15-.302-.25-.604-.25-.856 0-.252.1-.504.3-.705.2-.202.45-.353.7-.504.25-.151.5-.252.7-.302.2-.05.4-.05.5-.05.15 0 .3.05.45.151.15.101.25.252.35.403.1.151.2.302.25.453.05.151.1.302.1.403 0 .101-.05.202-.15.302-.1.101-.2.202-.35.302-.15.101-.25.202-.3.302-.05.101-.05.202 0 .353.1.302.3.604.5.856.2.252.5.554.75.806.25.252.5.504.8.705.3.202.6.353.85.453.25.101.5.151.65.151.15 0 .3-.05.4-.151.1-.101.25-.252.4-.403.15-.151.25-.302.4-.403.15-.101.3-.151.5-.101.2.05.45.151.75.302.3.151.55.302.75.453.2.151.35.252.4.302.05.05.05.202-.05.403zM16 2C8.268 2 2 8.268 2 16c0 2.47.64 4.79 1.766 6.807L2 30l7.326-1.735A13.94 13.94 0 0 0 16 30c7.732 0 14-6.268 14-14S23.732 2 16 2zm0 25.648c-2.087 0-4.034-.608-5.676-1.658l-.407-.24-4.22.998 1.002-4.11-.266-.42A11.597 11.597 0 0 1 4.351 16C4.351 9.573 9.573 4.35 16 4.35c6.428 0 11.65 5.223 11.65 11.65 0 6.426-5.222 11.648-11.65 11.648z" />
             </svg>
-            Chat with us on WhatsApp
+            {tw("chatWithUs")}
           </a>
           <Link
             href="/"
             className="inline-flex w-full items-center justify-center rounded-full border border-border bg-card px-7 py-3.5 text-sm font-medium text-foreground transition-colors hover:bg-alt sm:w-auto"
           >
-            Back to Home
+            {t("submittedBackHome")}
           </Link>
         </div>
       </main>

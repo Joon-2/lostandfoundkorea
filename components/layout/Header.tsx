@@ -3,14 +3,9 @@
 import Link from "next/link";
 import { useEffect, useState } from "react";
 import type { ReactNode } from "react";
+import { useTranslations } from "next-intl";
 import { WHATSAPP_URL } from "@/components/WhatsApp";
 import MobileMenu, { type NavLink } from "@/components/layout/MobileMenu";
-
-const NAV_LINKS: NavLink[] = [
-  { href: "/#how-it-works", label: "How It Works" },
-  { href: "/#pricing", label: "Pricing" },
-  { href: "/#faq", label: "FAQ" },
-];
 
 function PinIcon({ className = "h-[18px] w-[18px]" }: { className?: string }) {
   return (
@@ -25,7 +20,7 @@ function PinIcon({ className = "h-[18px] w-[18px]" }: { className?: string }) {
   );
 }
 
-function Logo({ onClick }: { onClick?: () => void }) {
+function Logo({ name, onClick }: { name: string; onClick?: () => void }) {
   return (
     <Link
       href="/"
@@ -33,7 +28,7 @@ function Logo({ onClick }: { onClick?: () => void }) {
       className="inline-flex items-center gap-2 text-[17px] font-bold tracking-tight text-black"
     >
       <PinIcon className="h-[18px] w-[18px] text-accent" />
-      <span>Lost &amp; Found Korea</span>
+      <span>{name}</span>
     </Link>
   );
 }
@@ -63,7 +58,15 @@ type HeaderProps = {
 };
 
 export default function Header({ variant = "marketing", action = null }: HeaderProps) {
+  const t = useTranslations("nav");
+  const tb = useTranslations("brand");
   const [open, setOpen] = useState(false);
+
+  const NAV_LINKS: NavLink[] = [
+    { href: "/#how-it-works", label: t("howItWorks") },
+    { href: "/#pricing", label: t("pricing") },
+    { href: "/#faq", label: t("faq") },
+  ];
 
   useEffect(() => {
     if (typeof document === "undefined") return;
@@ -81,7 +84,7 @@ export default function Header({ variant = "marketing", action = null }: HeaderP
       <header className="sticky top-0 z-40 border-b border-[#e5e7eb] bg-white">
         <div className="mx-auto flex h-[60px] w-full max-w-6xl items-center justify-between px-5 sm:px-8">
           <div className="flex items-center gap-8">
-            <Logo />
+            <Logo name={tb("nameAmpersand")} />
             {isMarketing && (
               <nav className="hidden items-center gap-6 md:flex">
                 {NAV_LINKS.map((l) => (
@@ -106,13 +109,13 @@ export default function Header({ variant = "marketing", action = null }: HeaderP
                   rel="noopener noreferrer"
                   className="hidden text-sm text-body transition-colors hover:text-black md:inline"
                 >
-                  Need help?
+                  {t("needHelp")}
                 </a>
                 <Link
                   href="/report"
                   className="hidden items-center rounded-full bg-accent px-5 py-2 text-sm font-semibold text-white transition-colors hover:bg-accent-hover md:inline-flex"
                 >
-                  Report
+                  {t("report")}
                 </Link>
                 <button
                   type="button"
@@ -137,7 +140,7 @@ export default function Header({ variant = "marketing", action = null }: HeaderP
           onClose={() => setOpen(false)}
           navLinks={NAV_LINKS}
           whatsappUrl={WHATSAPP_URL}
-          logo={<Logo onClick={() => setOpen(false)} />}
+          logo={<Logo name={tb("nameAmpersand")} onClick={() => setOpen(false)} />}
         />
       )}
     </>
