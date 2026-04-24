@@ -1,3 +1,4 @@
+import type { NextRequest } from "next/server";
 import { supabase } from "@/lib/supabase";
 import { checkAdminAuth } from "@/lib/admin-auth";
 
@@ -13,18 +14,18 @@ const ENV_VARS = [
   "GMAIL_USER",
   "GMAIL_APP_PASSWORD",
   "ADMIN_PASSWORD",
-];
+] as const;
 
-export async function GET(request) {
+export async function GET(request: NextRequest) {
   const denied = checkAdminAuth(request);
   if (denied) return denied;
 
-  const env = {};
+  const env: Record<string, boolean> = {};
   for (const key of ENV_VARS) {
     env[key] = Boolean(process.env[key]);
   }
 
-  let supabaseCheck;
+  let supabaseCheck: { ok: boolean; count?: number; error?: string };
   if (!supabase) {
     supabaseCheck = { ok: false, error: "Client not initialized" };
   } else {
@@ -37,14 +38,11 @@ export async function GET(request) {
       } else {
         supabaseCheck = { ok: true, count: count ?? 0 };
       }
-    } catch (err) {
+    } catch (err: any) {
+      console.error("[health] supabase probe threw:", err);
       supabaseCheck = { ok: false, error: err?.message || "Unknown error" };
     }
   }
 
-  return Response.json({
-    ok: true,
-    supabase: supabaseCheck,
-    env,
-  });
+  return Response.json({ ok: true, supabase: supabaseCheck, env });
 }

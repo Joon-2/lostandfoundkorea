@@ -1,9 +1,14 @@
 import { supabaseAdmin } from "@/lib/supabase-admin";
+import type { Report } from "@/types/report";
 
 export const runtime = "nodejs";
 export const dynamic = "force-dynamic";
 
-function noStore(body, init) {
+// Customer-facing case lookup: no admin auth (the case-number URL is the
+// access token). Returns a trimmed Report shape whose detail level depends
+// on status — we only expose recovery details once the case is paid.
+
+function noStore(body: any, init?: ResponseInit) {
   return Response.json(body, {
     ...init,
     headers: {
@@ -13,11 +18,14 @@ function noStore(body, init) {
   });
 }
 
-export async function GET(_request, { params }) {
+export async function GET(
+  _request: Request,
+  { params }: { params: Promise<{ caseNumber: string }> }
+) {
   const { caseNumber } = await params;
 
   if (!supabaseAdmin) {
-    console.error("reports lookup: supabaseAdmin not configured");
+    console.error("[reports/:caseNumber] supabaseAdmin not configured");
     return noStore(
       { ok: false, error: "Server not configured" },
       { status: 500 }
@@ -31,7 +39,7 @@ export async function GET(_request, { params }) {
     .maybeSingle();
 
   if (error) {
-    console.error("reports lookup error:", error);
+    console.error("[reports/:caseNumber] lookup error:", error);
     return noStore({ ok: false, error: error.message }, { status: 500 });
   }
 
@@ -41,7 +49,7 @@ export async function GET(_request, { params }) {
 
   const status = data.status || "pending";
 
-  const base = {
+  const base: Partial<Report> = {
     case_number: data.case_number,
     name: data.name,
     category: data.category,
@@ -54,7 +62,7 @@ export async function GET(_request, { params }) {
   };
 
   if (status === "found" || status === "paid") {
-    base.found_images = Array.isArray(data.found_images)
+    (base as any).found_images = Array.isArray(data.found_images)
       ? data.found_images
       : [];
   }
