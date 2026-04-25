@@ -5,6 +5,7 @@ import AdminSidebar, { type SidebarKey } from "@/components/admin/AdminSidebar";
 import AdminTopBar from "@/components/admin/AdminTopBar";
 import CaseList from "@/components/admin/CaseList";
 import FacilitiesView from "@/components/admin/FacilitiesView";
+import DeliveriesView from "@/components/admin/DeliveriesView";
 import ComingSoon from "@/components/admin/ComingSoon";
 
 const SESSION_KEY = "lfk_admin_password";
@@ -27,8 +28,7 @@ const SECTIONS: Record<
   dashboard: { section: "Overview", page: "Dashboard", comingSoon: { title: "Dashboard" } },
   reports: { section: "Operations", page: "Reports" },
   facilities: { section: "Operations", page: "Facilities" },
-  lost_items: { section: "Operations", page: "Lost Items", comingSoon: { title: "Lost Items" } },
-  found_items: { section: "Operations", page: "Found Items", comingSoon: { title: "Found Items" } },
+  deliveries: { section: "Operations", page: "Deliveries" },
   payments: { section: "Finance", page: "Payments", comingSoon: { title: "Payments" } },
   revenue: { section: "Finance", page: "Revenue", comingSoon: { title: "Revenue" } },
   users: { section: "System", page: "Users", comingSoon: { title: "Users" } },
@@ -189,11 +189,7 @@ function AdminShell({
   }, []);
 
   const counts = useMemo(() => {
-    const total = reports.length;
-    const paid = reports.filter(
-      (r) => (r.status || "pending") === "paid"
-    ).length;
-    return { reports: total, payments: paid };
+    return { reports: reports.length };
   }, [reports]);
 
   const meta = SECTIONS[section];
@@ -266,6 +262,9 @@ function AdminShell({
           )}
           {section === "facilities" && (
             <FacilitiesView password={password} onUnauthorized={onLogout} />
+          )}
+          {section === "deliveries" && (
+            <DeliveriesView password={password} onUnauthorized={onLogout} />
           )}
           {meta.comingSoon && (
             <ComingSoon

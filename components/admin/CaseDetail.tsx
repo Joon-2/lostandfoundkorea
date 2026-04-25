@@ -11,6 +11,7 @@ import { siteConfig } from "@/config/site";
 import ProcessTracker from "@/components/admin/ProcessTracker";
 import ActivityLog from "@/components/admin/ActivityLog";
 import CustomerMessages from "@/components/admin/CustomerMessages";
+import DeliveryPanel from "@/components/admin/DeliveryPanel";
 import StageReceived from "@/components/admin/StageReceived";
 import StageSearching from "@/components/admin/StageSearching";
 import StageFound from "@/components/admin/StageFound";
@@ -467,6 +468,14 @@ export default function CaseDetail({
       {!closed && currentStage === "completed" && <StageCompleted report={report} />}
 
       {closed && <StageClosed report={report} />}
+
+      {deliveryRequired && (
+        <DeliveryPanel
+          report={report}
+          password={password}
+          onUnauthorized={onUnauthorized}
+        />
+      )}
 
       <CustomerMessages report={report} />
 

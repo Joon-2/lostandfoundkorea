@@ -8,8 +8,7 @@ export type SidebarKey =
   | "dashboard"
   | "reports"
   | "facilities"
-  | "lost_items"
-  | "found_items"
+  | "deliveries"
   | "payments"
   | "revenue"
   | "users"
@@ -18,7 +17,7 @@ export type SidebarKey =
 type SidebarProps = {
   activeKey: SidebarKey;
   onSelect: (key: SidebarKey) => void;
-  counts: { reports: number; payments: number };
+  counts: { reports: number };
   mobileOpen: boolean;
   onMobileClose: () => void;
   onLogout: () => void;
@@ -53,20 +52,17 @@ function buildGroups(counts: SidebarProps["counts"]): Group[] {
           enabled: true,
         },
         { key: "facilities", label: "Facilities", icon: <PinIcon />, enabled: true },
-        { key: "lost_items", label: "Lost Items", icon: <SearchIcon />, enabled: false },
-        { key: "found_items", label: "Found Items", icon: <CheckCircleIcon />, enabled: false },
+        { key: "deliveries", label: "Deliveries", icon: <TruckIcon />, enabled: true },
       ],
     },
     {
       label: "Finance",
       items: [
-        {
-          key: "payments",
-          label: "Payments",
-          icon: <DollarIcon />,
-          badge: counts.payments,
-          enabled: false,
-        },
+        // Payments is shaped for the future — no count badge yet because
+        // the screen behind it isn't built. Adding `badge: ...` here
+        // alongside the "Soon" tag mixed two signals; keep it muted
+        // until the page lands.
+        { key: "payments", label: "Payments", icon: <DollarIcon />, enabled: false },
         { key: "revenue", label: "Revenue", icon: <ChartIcon />, enabled: false },
       ],
     },
@@ -183,11 +179,14 @@ function SidebarItem({
 }) {
   const base =
     "group flex w-full items-center gap-3 rounded-lg px-3 py-2 text-sm transition-colors";
+  // Active items pop. Enabled-but-not-active items use the body text
+  // color with a hover state. Unbuilt items are visibly muted via
+  // opacity so the sidebar's hierarchy is read at a glance.
   const cls = active
     ? `${base} bg-accent/10 font-semibold text-accent`
     : item.enabled
     ? `${base} text-body hover:bg-alt hover:text-foreground`
-    : `${base} cursor-not-allowed text-muted/60`;
+    : `${base} cursor-not-allowed text-muted/70 opacity-50`;
 
   return (
     <button
@@ -264,19 +263,13 @@ function PinIcon() {
     </svg>
   );
 }
-function SearchIcon() {
+function TruckIcon() {
   return (
     <svg {...SVG_PROPS}>
-      <circle cx="11" cy="11" r="7" />
-      <line x1="21" y1="21" x2="16.65" y2="16.65" />
-    </svg>
-  );
-}
-function CheckCircleIcon() {
-  return (
-    <svg {...SVG_PROPS}>
-      <circle cx="12" cy="12" r="9" />
-      <polyline points="9 12 11 14 15 10" />
+      <path d="M1 3h15v13H1z" />
+      <path d="M16 8h4l3 3v5h-7" />
+      <circle cx="5.5" cy="18.5" r="2" />
+      <circle cx="18.5" cy="18.5" r="2" />
     </svg>
   );
 }
