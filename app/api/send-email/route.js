@@ -58,6 +58,7 @@ export async function POST(request) {
     console.log("Sending email to:", email);
     const info = await transporter.sendMail({
       from: `"${siteConfig.name}" <${siteConfig.email}>`,
+      replyTo: siteConfig.email,
       to: email,
       subject,
       text,
