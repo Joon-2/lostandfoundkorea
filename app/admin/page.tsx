@@ -3,6 +3,9 @@
 import { useCallback, useEffect, useState } from "react";
 import Header from "@/components/layout/Header";
 import CaseList from "@/components/admin/CaseList";
+import FacilitiesView from "@/components/admin/FacilitiesView";
+
+type Tab = "reports" | "facilities";
 
 const SESSION_KEY = "lfk_admin_password";
 
@@ -33,6 +36,7 @@ export default function AdminPage() {
   const [password, setPassword] = useState("");
   const [authed, setAuthed] = useState(false);
   const [authError, setAuthError] = useState<string | null>(null);
+  const [tab, setTab] = useState<Tab>("reports");
 
   useEffect(() => {
     const stored =
@@ -113,8 +117,47 @@ export default function AdminPage() {
     <div className="flex flex-1 flex-col">
       <AdminHeader onLogout={logout} />
       <main className="mx-auto w-full max-w-6xl flex-1 px-5 py-6 sm:px-8">
-        <CaseList password={password} onUnauthorized={logout} />
+        <div className="mb-5 inline-flex rounded-full border border-border bg-alt p-1 text-sm">
+          <TabButton active={tab === "reports"} onClick={() => setTab("reports")}>
+            Reports
+          </TabButton>
+          <TabButton
+            active={tab === "facilities"}
+            onClick={() => setTab("facilities")}
+          >
+            Facilities
+          </TabButton>
+        </div>
+        {tab === "reports" ? (
+          <CaseList password={password} onUnauthorized={logout} />
+        ) : (
+          <FacilitiesView password={password} onUnauthorized={logout} />
+        )}
       </main>
     </div>
+  );
+}
+
+function TabButton({
+  active,
+  onClick,
+  children,
+}: {
+  active: boolean;
+  onClick: () => void;
+  children: React.ReactNode;
+}) {
+  return (
+    <button
+      type="button"
+      onClick={onClick}
+      className={`rounded-full px-4 py-1.5 font-medium transition-colors ${
+        active
+          ? "bg-card text-foreground shadow-sm"
+          : "text-muted hover:text-foreground"
+      }`}
+    >
+      {children}
+    </button>
   );
 }

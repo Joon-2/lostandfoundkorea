@@ -6,6 +6,7 @@ import StatusPill, { type StatusMsg } from "@/components/admin/StatusPill";
 import SummaryRow from "@/components/admin/SummaryRow";
 import NoteForm from "@/components/admin/NoteForm";
 import SearchPlan, { detectLocationType } from "@/components/admin/SearchPlan";
+import FacilityLinker from "@/components/admin/FacilityLinker";
 import { inputCls } from "@/components/admin/styles";
 
 type StageSearchingProps = {
@@ -93,6 +94,12 @@ export default function StageSearching({
       </StageBanner>
       <SummaryRow report={report} />
       <SearchPlan report={report} selectedKey={typeKey} onChange={setTypeKey} />
+      <FacilityLinker
+        report={report}
+        password={password}
+        onUnauthorized={onUnauthorized}
+        onUpdate={onUpdate}
+      />
       <div>
         <h3 className="text-xs font-semibold uppercase tracking-widest text-muted">
           Search progress note
