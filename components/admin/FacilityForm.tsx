@@ -18,7 +18,7 @@ type FacilityFormProps = {
 
 type FormState = {
   category: FacilityCategory | "";
-  name_en: string;
+  name: string;
   name_ko: string;
   phone: string;
   phone_2: string;
@@ -41,7 +41,7 @@ type FormState = {
 function emptyState(): FormState {
   return {
     category: "",
-    name_en: "",
+    name: "",
     name_ko: "",
     phone: "",
     phone_2: "",
@@ -65,7 +65,7 @@ function emptyState(): FormState {
 function fromFacility(f: Facility): FormState {
   return {
     category: f.category,
-    name_en: f.name_en || "",
+    name: f.name || "",
     name_ko: f.name_ko || "",
     phone: f.phone || "",
     phone_2: f.phone_2 || "",
@@ -127,7 +127,7 @@ export default function FacilityForm({
       setMsg({ kind: "err", text: "Category is required." });
       return;
     }
-    if (!data.name_en.trim()) {
+    if (!data.name.trim()) {
       setMsg({ kind: "err", text: "Name (English) is required." });
       return;
     }
@@ -135,7 +135,7 @@ export default function FacilityForm({
     try {
       const payload = {
         category: data.category,
-        name_en: data.name_en,
+        name: data.name,
         name_ko: data.name_ko,
         phone: data.phone,
         phone_2: data.phone_2,
@@ -180,7 +180,7 @@ export default function FacilityForm({
 
   const handleDelete = async () => {
     if (!isEdit || deleting) return;
-    if (!window.confirm(`Delete "${facility!.name_en}"? This cannot be undone.`)) {
+    if (!window.confirm(`Delete "${facility!.name}"? This cannot be undone.`)) {
       return;
     }
     setDeleting(true);
@@ -251,12 +251,12 @@ export default function FacilityForm({
                 placeholder="e.g. 10"
               />
             </Field>
-            <Field label="Name (English) *">
+            <Field label="Name *">
               <input
                 type="text"
                 className={inputCls}
-                value={data.name_en}
-                onChange={update("name_en")}
+                value={data.name}
+                onChange={update("name")}
                 required
               />
             </Field>

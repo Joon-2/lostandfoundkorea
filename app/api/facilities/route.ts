@@ -25,7 +25,7 @@ export async function GET(request: NextRequest) {
     .from("facilities")
     .select("*")
     .order("sort_order", { ascending: true, nullsFirst: false })
-    .order("name_en", { ascending: true });
+    .order("name", { ascending: true });
 
   if (!isAdmin) {
     query = query.eq("is_active", true);
@@ -59,9 +59,9 @@ export async function POST(request: NextRequest) {
   }
 
   const body = (await request.json().catch(() => ({}))) as Partial<FacilityInsert>;
-  if (!body.category || !body.name_en) {
+  if (!body.category || !body.name) {
     return Response.json(
-      { ok: false, error: "category and name_en are required" },
+      { ok: false, error: "category and name are required" },
       { status: 400 }
     );
   }

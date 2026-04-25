@@ -59,7 +59,7 @@ export default function FacilitiesView({
       const q = search.trim().toLowerCase();
       arr = arr.filter(
         (f) =>
-          (f.name_en || "").toLowerCase().includes(q) ||
+          (f.name || "").toLowerCase().includes(q) ||
           (f.name_ko || "").toLowerCase().includes(q) ||
           (f.phone || "").toLowerCase().includes(q)
       );
@@ -195,7 +195,7 @@ export default function FacilitiesView({
                     className="border-t border-border hover:bg-alt/40"
                   >
                     <td className="px-4 py-3">
-                      <div className="font-medium text-foreground">{f.name_en}</div>
+                      <div className="font-medium text-foreground">{f.name}</div>
                       {f.name_ko && (
                         <div className="text-xs text-muted">{f.name_ko}</div>
                       )}
@@ -210,7 +210,7 @@ export default function FacilitiesView({
                       <button
                         type="button"
                         onClick={() => handleToggleActive(f)}
-                        aria-label={`Toggle active for ${f.name_en}`}
+                        aria-label={`Toggle active for ${f.name}`}
                         className={`inline-flex h-6 w-11 items-center rounded-full transition-colors ${
                           f.is_active ? "bg-accent" : "bg-border"
                         }`}

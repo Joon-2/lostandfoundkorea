@@ -70,7 +70,7 @@ export default function FacilityLinker({
     setLinking(true);
     setMsg(null);
 
-    const recoveryLocation = [f.name_en, f.address_en]
+    const recoveryLocation = [f.name, f.address_en]
       .filter(Boolean)
       .join(" — ");
     const recoveryContact = f.phone || f.phone_2 || "";
@@ -100,7 +100,7 @@ export default function FacilityLinker({
       onUpdate(json.report);
       setMsg({
         kind: "ok",
-        text: `Linked ${f.name_en}. Recovery details prefilled.`,
+        text: `Linked ${f.name}. Recovery details prefilled.`,
       });
     } catch (err: any) {
       setMsg({ kind: "err", text: err.message });
@@ -142,7 +142,7 @@ export default function FacilityLinker({
               <optgroup key={c.key} label={`${c.emoji} ${c.label}`}>
                 {inCat.map((f) => (
                   <option key={f.id} value={f.id}>
-                    {f.name_en}
+                    {f.name}
                     {f.location_detail ? ` (${f.location_detail})` : ""}
                   </option>
                 ))}

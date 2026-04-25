@@ -13,7 +13,7 @@ export type FacilityCategory =
 export interface Facility {
   id: string;
   category: FacilityCategory;
-  name_en: string;
+  name: string;
   name_ko: string | null;
   phone: string | null;
   phone_2: string | null;

@@ -107,9 +107,9 @@ export default function AdminSidebar({
       >
         {/* Brand */}
         <div className="flex h-[60px] items-center gap-2 border-b border-border px-5">
-          <LogoIcon className="h-[18px] w-[18px] text-accent" />
-          <span className="text-[17px] font-bold tracking-tight text-foreground">
-            Kustody
+          <LogoIcon className="h-[18px] w-[18px] flex-none text-accent" />
+          <span className="truncate text-[15px] font-bold tracking-tight text-foreground">
+            Lost &amp; Found Korea
           </span>
         </div>
 

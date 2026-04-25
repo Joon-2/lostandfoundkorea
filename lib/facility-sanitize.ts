@@ -2,7 +2,7 @@ import type { FacilityInsert } from "@/types/facility";
 
 const STRING_FIELDS = [
   "category",
-  "name_en",
+  "name",
   "name_ko",
   "phone",
   "phone_2",

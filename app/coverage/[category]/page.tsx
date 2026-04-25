@@ -40,7 +40,7 @@ async function getFacilities(category: string): Promise<Facility[]> {
     .eq("category", category)
     .eq("is_active", true)
     .order("sort_order", { ascending: true, nullsFirst: false })
-    .order("name_en", { ascending: true });
+    .order("name", { ascending: true });
   if (error) {
     console.error("[coverage/category] fetch error:", error);
     return [];
@@ -135,7 +135,7 @@ function FacilityCard({
       <header className="flex flex-wrap items-baseline justify-between gap-3">
         <div>
           <h3 className="font-serif text-2xl tracking-tight text-foreground">
-            {f.name_en}
+            {f.name}
           </h3>
           {f.name_ko && (
             <p className="mt-0.5 text-sm text-muted">{f.name_ko}</p>
