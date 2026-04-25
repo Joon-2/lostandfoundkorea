@@ -30,7 +30,7 @@ export interface Facility {
   retention_period: string | null;
   tags: string[] | null;
   sort_order: number | null;
-  active: boolean;
+  is_active: boolean;
   created_at: string;
 }
 

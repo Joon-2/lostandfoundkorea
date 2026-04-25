@@ -35,7 +35,7 @@ type FormState = {
   retention_period: string;
   tags: string;
   sort_order: string;
-  active: boolean;
+  is_active: boolean;
 };
 
 function emptyState(): FormState {
@@ -58,7 +58,7 @@ function emptyState(): FormState {
     retention_period: "",
     tags: "",
     sort_order: "",
-    active: true,
+    is_active: true,
   };
 }
 
@@ -82,7 +82,7 @@ function fromFacility(f: Facility): FormState {
     retention_period: f.retention_period || "",
     tags: Array.isArray(f.tags) ? f.tags.join(", ") : "",
     sort_order: f.sort_order != null ? String(f.sort_order) : "",
-    active: f.active,
+    is_active: f.is_active,
   };
 }
 
@@ -152,7 +152,7 @@ export default function FacilityForm({
         retention_period: data.retention_period,
         tags: data.tags,
         sort_order: data.sort_order,
-        active: data.active,
+        is_active: data.is_active,
       };
       const url = isEdit ? `/api/facilities/${facility!.id}` : "/api/facilities";
       const method = isEdit ? "PUT" : "POST";
@@ -391,8 +391,8 @@ export default function FacilityForm({
           <label className="flex items-center gap-3 rounded-xl border border-border bg-alt px-4 py-3 text-sm">
             <input
               type="checkbox"
-              checked={data.active}
-              onChange={update("active")}
+              checked={data.is_active}
+              onChange={update("is_active")}
               className="h-4 w-4 rounded border-border text-accent focus:ring-accent/30"
             />
             <span>

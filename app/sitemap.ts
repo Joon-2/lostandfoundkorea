@@ -23,7 +23,7 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
     const { data, error } = await supabase
       .from("facilities")
       .select("category")
-      .eq("active", true);
+      .eq("is_active", true);
     if (error) {
       console.error("[sitemap] facilities probe error:", error);
     } else {

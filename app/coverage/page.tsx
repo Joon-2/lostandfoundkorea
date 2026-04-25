@@ -33,7 +33,7 @@ async function getCounts(): Promise<Record<FacilityCategory, number>> {
   const { data, error } = await supabase
     .from("facilities")
     .select("category")
-    .eq("active", true);
+    .eq("is_active", true);
   if (error) {
     console.error("[coverage] count fetch error:", error);
     return empty;

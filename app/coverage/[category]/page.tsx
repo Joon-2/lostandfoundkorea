@@ -38,7 +38,7 @@ async function getFacilities(category: string): Promise<Facility[]> {
     .from("facilities")
     .select("*")
     .eq("category", category)
-    .eq("active", true)
+    .eq("is_active", true)
     .order("sort_order", { ascending: true, nullsFirst: false })
     .order("name_en", { ascending: true });
   if (error) {

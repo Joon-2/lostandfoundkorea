@@ -49,7 +49,7 @@ export default function FacilityLinker({
         }
         if (!cancelled) {
           setFacilities(
-            (json.facilities || []).filter((f: Facility) => f.active)
+            (json.facilities || []).filter((f: Facility) => f.is_active)
           );
         }
       } catch (err: any) {

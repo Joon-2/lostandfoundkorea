@@ -28,7 +28,7 @@ export async function GET(request: NextRequest) {
     .order("name_en", { ascending: true });
 
   if (!isAdmin) {
-    query = query.eq("active", true);
+    query = query.eq("is_active", true);
   }
 
   const { data, error } = await query;

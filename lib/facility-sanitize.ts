@@ -48,8 +48,8 @@ export function sanitizeFacilityInput(input: Partial<FacilityInsert>) {
     const n = Number((input as any).sort_order);
     out.sort_order = Number.isFinite(n) ? n : null;
   }
-  if ("active" in input) {
-    out.active = Boolean((input as any).active);
+  if ("is_active" in input) {
+    out.is_active = Boolean((input as any).is_active);
   }
   return out;
 }

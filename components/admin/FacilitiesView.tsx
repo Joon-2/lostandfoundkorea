@@ -94,7 +94,7 @@ export default function FacilitiesView({
           "Content-Type": "application/json",
           "x-admin-password": password,
         },
-        body: JSON.stringify({ active: !f.active }),
+        body: JSON.stringify({ is_active: !f.is_active }),
       });
       if (res.status === 401) {
         onUnauthorized?.();
@@ -212,12 +212,12 @@ export default function FacilitiesView({
                         onClick={() => handleToggleActive(f)}
                         aria-label={`Toggle active for ${f.name_en}`}
                         className={`inline-flex h-6 w-11 items-center rounded-full transition-colors ${
-                          f.active ? "bg-accent" : "bg-border"
+                          f.is_active ? "bg-accent" : "bg-border"
                         }`}
                       >
                         <span
                           className={`inline-block h-5 w-5 transform rounded-full bg-white shadow transition-transform ${
-                            f.active ? "translate-x-5" : "translate-x-0.5"
+                            f.is_active ? "translate-x-5" : "translate-x-0.5"
                           }`}
                         />
                       </button>
