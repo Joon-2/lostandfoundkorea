@@ -1,19 +1,34 @@
 import Link from "next/link";
 import type { Metadata } from "next";
 import { notFound } from "next/navigation";
-import { getTranslations } from "next-intl/server";
+import { getLocale, getTranslations } from "next-intl/server";
 import { supabase } from "@/lib/supabase";
 import { siteConfig } from "@/config/site";
 import { CATEGORIES, getCategoryDef } from "@/config/categories";
+import {
+  DEFAULT_LOCALE,
+  isSupportedLocale,
+  type Locale,
+} from "@/config/locales";
+import {
+  resolveFacility,
+  indexTranslations,
+} from "@/lib/facility-i18n";
 import Header from "@/components/layout/Header";
 import Footer from "@/components/layout/Footer";
-import type { Facility } from "@/types/facility";
+import type {
+  Facility,
+  FacilityRow,
+  FacilityTranslation,
+} from "@/types/facility";
 
 export const revalidate = 60;
 
 type RouteParams = { params: Promise<{ category: string }> };
 
-export async function generateMetadata({ params }: RouteParams): Promise<Metadata> {
+export async function generateMetadata({
+  params,
+}: RouteParams): Promise<Metadata> {
   const { category } = await params;
   const def = getCategoryDef(category);
   if (!def) return {};
@@ -32,26 +47,45 @@ export async function generateStaticParams() {
   return CATEGORIES.map((c) => ({ category: c.key }));
 }
 
-async function getFacilities(category: string): Promise<Facility[]> {
+async function getFacilities(
+  category: string,
+  locale: Locale
+): Promise<Facility[]> {
   if (!supabase) return [];
-  const { data, error } = await supabase
+  const { data: rows, error: rowError } = await supabase
     .from("facilities")
     .select("*")
     .eq("category", category)
     .eq("is_active", true)
-    .order("sort_order", { ascending: true, nullsFirst: false })
-    .order("name", { ascending: true });
-  if (error) {
-    console.error("[coverage/category] fetch error:", error);
+    .order("sort_order", { ascending: true, nullsFirst: false });
+  if (rowError) {
+    console.error("[coverage/category] row fetch error:", rowError);
     return [];
   }
-  return (data || []) as Facility[];
+  const ids = (rows || []).map((r) => r.id);
+  if (ids.length === 0) return [];
+  const { data: trs, error: tError } = await supabase
+    .from("facility_translations")
+    .select("*")
+    .in("facility_id", ids);
+  if (tError) {
+    console.error("[coverage/category] translations fetch error:", tError);
+  }
+  const grouped = indexTranslations((trs || []) as FacilityTranslation[]);
+  const resolved = (rows || []).map((row) =>
+    resolveFacility(row as FacilityRow, grouped.get(row.id) || [], locale)
+  );
+  resolved.sort((a, b) => {
+    const so = (a.sort_order ?? Infinity) - (b.sort_order ?? Infinity);
+    if (so !== 0) return so;
+    return (a.name || "").localeCompare(b.name || "");
+  });
+  return resolved;
 }
 
-function mapsHref(addressEn: string | null, addressKo: string | null) {
-  const q = addressEn || addressKo;
-  if (!q) return null;
-  return `https://www.google.com/maps/search/?api=1&query=${encodeURIComponent(q)}`;
+function mapsHref(address: string | null) {
+  if (!address) return null;
+  return `https://www.google.com/maps/search/?api=1&query=${encodeURIComponent(address)}`;
 }
 
 function telHref(phone: string | null) {
@@ -66,7 +100,11 @@ export default async function CategoryPage({ params }: RouteParams) {
   if (!def) notFound();
 
   const t = await getTranslations("coverage");
-  const facilities = await getFacilities(category);
+  const localeRaw = await getLocale();
+  const locale: Locale = isSupportedLocale(localeRaw)
+    ? localeRaw
+    : DEFAULT_LOCALE;
+  const facilities = await getFacilities(category, locale);
 
   return (
     <div className="flex flex-1 flex-col">
@@ -129,24 +167,23 @@ function FacilityCard({
 }) {
   const tel = telHref(f.phone);
   const tel2 = telHref(f.phone_2);
-  const maps = mapsHref(f.address_en, f.address_ko);
+  const maps = mapsHref(f.address);
   return (
     <article className="rounded-2xl border border-border bg-card p-5 shadow-card sm:p-6">
       <header className="flex flex-wrap items-baseline justify-between gap-3">
-        <div>
-          <h3 className="font-serif text-2xl tracking-tight text-foreground">
-            {f.name}
-          </h3>
-          {f.name_ko && (
-            <p className="mt-0.5 text-sm text-muted">{f.name_ko}</p>
-          )}
-        </div>
+        <h3 className="font-serif text-2xl tracking-tight text-foreground">
+          {f.name}
+        </h3>
         {f.location_detail && (
           <span className="rounded-full border border-border bg-alt px-3 py-1 text-xs text-muted">
             {f.location_detail}
           </span>
         )}
       </header>
+
+      {f.description && (
+        <p className="mt-3 whitespace-pre-wrap text-body">{f.description}</p>
+      )}
 
       <dl className="mt-4 grid gap-3 text-sm sm:grid-cols-2">
         {f.phone && (
@@ -191,15 +228,10 @@ function FacilityCard({
             </span>
           </Row>
         )}
-        {(f.address_en || f.address_ko) && (
+        {f.address && (
           <Row label={t("address")}>
             <div>
-              {f.address_en && (
-                <div className="text-foreground">{f.address_en}</div>
-              )}
-              {f.address_ko && (
-                <div className="text-muted">{f.address_ko}</div>
-              )}
+              <div className="text-foreground">{f.address}</div>
               {maps && (
                 <a
                   href={maps}
@@ -227,7 +259,7 @@ function FacilityCard({
         )}
       </dl>
 
-      {(f.how_to_report || f.how_to_trace || f.retention_period || f.notes) && (
+      {(f.how_to_report || f.how_to_trace || f.retention_period) && (
         <div className="mt-5 space-y-3 border-t border-border pt-5 text-sm">
           {f.how_to_report && (
             <Block label={t("howToReport")} body={f.how_to_report} />
@@ -238,7 +270,6 @@ function FacilityCard({
           {f.retention_period && (
             <Block label={t("retentionPeriod")} body={f.retention_period} />
           )}
-          {f.notes && <Block label={t("notes")} body={f.notes} />}
         </div>
       )}
 
@@ -258,7 +289,13 @@ function FacilityCard({
   );
 }
 
-function Row({ label, children }: { label: string; children: React.ReactNode }) {
+function Row({
+  label,
+  children,
+}: {
+  label: string;
+  children: React.ReactNode;
+}) {
   return (
     <div className="flex flex-col">
       <dt className="text-[11px] font-semibold uppercase tracking-widest text-muted">

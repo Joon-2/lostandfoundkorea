@@ -60,7 +60,7 @@ export default function FacilitiesView({
       arr = arr.filter(
         (f) =>
           (f.name || "").toLowerCase().includes(q) ||
-          (f.name_ko || "").toLowerCase().includes(q) ||
+          (f.translations?.ko?.name || "").toLowerCase().includes(q) ||
           (f.phone || "").toLowerCase().includes(q)
       );
     }
@@ -195,9 +195,23 @@ export default function FacilitiesView({
                     className="border-t border-border hover:bg-alt/40"
                   >
                     <td className="px-4 py-3">
-                      <div className="font-medium text-foreground">{f.name}</div>
-                      {f.name_ko && (
-                        <div className="text-xs text-muted">{f.name_ko}</div>
+                      <div className="flex items-center gap-2">
+                        <span className="font-medium text-foreground">
+                          {f.name}
+                        </span>
+                        {!f.translations?.ko?.name && (
+                          <span
+                            title="Korean translation missing"
+                            className="rounded-full border border-amber-200 bg-amber-50 px-1.5 py-0.5 text-[9px] font-medium uppercase tracking-widest text-amber-700"
+                          >
+                            KO missing
+                          </span>
+                        )}
+                      </div>
+                      {f.translations?.ko?.name && (
+                        <div className="text-xs text-muted">
+                          {f.translations.ko.name}
+                        </div>
                       )}
                     </td>
                     <td className="px-4 py-3 text-body">

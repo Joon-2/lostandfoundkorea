@@ -1,22 +1,30 @@
+import { cookies, headers } from "next/headers";
 import { getRequestConfig } from "next-intl/server";
+import {
+  DEFAULT_LOCALE,
+  isSupportedLocale,
+  negotiateLocale,
+  type Locale,
+} from "@/config/locales";
 
-// next-intl is running in "without i18n routing" mode per CLAUDE.md — no
-// [locale] segments, no middleware. The active locale is hardcoded to "en"
-// for now. ja / zh locale files are present but empty; next-intl falls
-// back to the default message when a key is missing. Switch this to read
-// from a cookie or header when we're ready to let users pick a language.
-export const SUPPORTED_LOCALES = ["en", "ja", "zh"] as const;
-export const DEFAULT_LOCALE = "en";
-export type Locale = (typeof SUPPORTED_LOCALES)[number];
+export const LOCALE_COOKIE = "lfk-locale";
+
+// Detection priority:
+//   1. lfk-locale cookie (user-set override)
+//   2. Accept-Language header (browser preference)
+//   3. DEFAULT_LOCALE
+// English messages are always loaded as the base; the chosen locale's
+// non-empty strings are deep-merged on top so any missing key falls
+// back to English without rendering blank.
 
 export default getRequestConfig(async () => {
-  const locale: Locale = DEFAULT_LOCALE;
+  const locale = await detectLocale();
   const englishMessages = (await import("@/locales/en.json")).default;
   let messages: typeof englishMessages = englishMessages;
-  if (locale !== "en") {
+  if (locale !== DEFAULT_LOCALE) {
     try {
-      const localeMessages = (await import(`@/locales/${locale}.json`)).default;
-      messages = mergeMessages(englishMessages, localeMessages);
+      const overlay = (await import(`@/locales/${locale}.json`)).default;
+      messages = mergeMessages(englishMessages, overlay);
     } catch {
       messages = englishMessages;
     }
@@ -24,9 +32,24 @@ export default getRequestConfig(async () => {
   return { locale, messages };
 });
 
-// Deep-merge locale messages on top of English, so any key missing from a
-// non-English locale file (empty string or undefined) falls back to the
-// English copy instead of rendering blank.
+async function detectLocale(): Promise<Locale> {
+  // Cookie override
+  try {
+    const store = await cookies();
+    const cookieValue = store.get(LOCALE_COOKIE)?.value;
+    if (cookieValue && isSupportedLocale(cookieValue)) return cookieValue;
+  } catch {
+    // cookies() throws outside a request scope (e.g. during build).
+  }
+  // Browser preference
+  try {
+    const h = await headers();
+    const accept = h.get("accept-language");
+    if (accept) return negotiateLocale(accept);
+  } catch {}
+  return DEFAULT_LOCALE;
+}
+
 function mergeMessages(base: any, overlay: any): any {
   if (
     typeof base !== "object" ||

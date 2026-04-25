@@ -70,12 +70,11 @@ export default function FacilityLinker({
     setLinking(true);
     setMsg(null);
 
-    const recoveryLocation = [f.name, f.address_en]
-      .filter(Boolean)
-      .join(" — ");
+    const recoveryLocation = [f.name, f.address].filter(Boolean).join(" — ");
     const recoveryContact = f.phone || f.phone_2 || "";
     const recoveryHours = [f.hours, f.hours_note].filter(Boolean).join(" · ");
-    const recoveryInstructions = f.how_to_report || f.notes || "";
+    const recoveryInstructions =
+      f.how_to_report || f.description || "";
 
     try {
       const res = await fetch(`/api/admin/reports/${report.id}`, {
