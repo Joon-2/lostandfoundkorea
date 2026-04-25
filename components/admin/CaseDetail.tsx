@@ -1,6 +1,6 @@
 "use client";
 
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import {
   PROCESS_STAGES,
   isDeliveryRequired,
@@ -10,6 +10,7 @@ import { plans } from "@/config/plans";
 import { siteConfig } from "@/config/site";
 import ProcessTracker from "@/components/admin/ProcessTracker";
 import ActivityLog from "@/components/admin/ActivityLog";
+import CustomerMessages from "@/components/admin/CustomerMessages";
 import StageReceived from "@/components/admin/StageReceived";
 import StageSearching from "@/components/admin/StageSearching";
 import StageFound from "@/components/admin/StageFound";
@@ -82,6 +83,31 @@ export default function CaseDetail({
   const [stageMoving, setStageMoving] = useState(false);
   const [stageMsg, setStageMsg] = useState<StatusMsg | null>(null);
   const [shipping, setShipping] = useState(false);
+
+  // When the admin opens this case, flip any unread customer messages to
+  // read so the case-list badge clears. Server returns the updated row;
+  // we feed it back into the parent's report cache.
+  useEffect(() => {
+    const messages = Array.isArray(report.messages) ? report.messages : [];
+    const hasUnread = messages.some(
+      (m: any) => m && m.from === "customer" && !m.read
+    );
+    if (!hasUnread) return;
+    fetch("/api/admin/messages/mark-read", {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json",
+        "x-admin-password": password,
+      },
+      body: JSON.stringify({ caseNumber: report.case_number }),
+    })
+      .then((r) => (r.status === 401 ? null : r.json()))
+      .then((j) => {
+        if (j && j.ok && j.report) onUpdate(j.report);
+      })
+      .catch((err) => console.error("[mark-read] failed:", err));
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [report.id]);
 
   const currentStage = normalizeStageKey(report.process_stage);
   const plan = report.plan === "all_in_one" ? "all_in_one" : "recovery";
@@ -441,6 +467,8 @@ export default function CaseDetail({
       {!closed && currentStage === "completed" && <StageCompleted report={report} />}
 
       {closed && <StageClosed report={report} />}
+
+      <CustomerMessages report={report} />
 
       <ActivityLog
         entries={report.activity_log}

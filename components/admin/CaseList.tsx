@@ -113,6 +113,11 @@ type ReportCardProps = {
   onUpdate: (report: any) => void;
 };
 
+function unreadMessageCount(report: any): number {
+  const list: any[] = Array.isArray(report?.messages) ? report.messages : [];
+  return list.filter((m) => m && m.from === "customer" && !m.read).length;
+}
+
 function ReportCard({
   report,
   expanded,
@@ -122,13 +127,30 @@ function ReportCard({
   onUpdate,
 }: ReportCardProps) {
   const status = report.status || "pending";
+  const unread = unreadMessageCount(report);
   return (
-    <article className="rounded-2xl border border-border bg-card shadow-sm">
+    <article
+      className={`rounded-2xl border bg-card shadow-sm ${
+        unread > 0 ? "border-accent/40 ring-1 ring-accent/20" : "border-border"
+      }`}
+    >
       <button
         onClick={onToggle}
         className="flex w-full flex-wrap items-center justify-between gap-3 px-4 py-2.5 text-left"
       >
         <div className="flex flex-wrap items-center gap-x-3 gap-y-1">
+          {unread > 0 && (
+            <span
+              aria-label={`${unread} unread customer ${unread === 1 ? "message" : "messages"}`}
+              className="inline-flex items-center gap-1 rounded-full bg-accent px-2 py-0.5 text-[10px] font-semibold uppercase tracking-widest text-white"
+            >
+              <span
+                aria-hidden="true"
+                className="h-1.5 w-1.5 rounded-full bg-white"
+              />
+              {unread === 1 ? "New message" : `${unread} new`}
+            </span>
+          )}
           <span className="font-mono text-sm font-semibold text-foreground">
             {report.case_number || "—"}
           </span>
@@ -224,6 +246,19 @@ export default function CaseList({ password, onUnauthorized }: CaseListProps) {
   useEffect(() => {
     fetchReports();
   }, [fetchReports]);
+
+  // Auto-expand the case named in ?case=LFK-XXXXXX (used by admin
+  // notification emails) once reports have loaded. Reads from window
+  // directly rather than useSearchParams so the page stays statically
+  // rendered without an extra Suspense boundary.
+  useEffect(() => {
+    if (typeof window === "undefined" || reports.length === 0) return;
+    const params = new URLSearchParams(window.location.search);
+    const requested = params.get("case");
+    if (!requested) return;
+    const match = reports.find((r) => r.case_number === requested);
+    if (match) setExpandedId((current) => current ?? match.id);
+  }, [reports]);
 
   const stats = useMemo<Stats>(() => {
     const counts = { total: reports.length, pending: 0, found: 0, paid: 0 };

@@ -140,6 +140,7 @@ export async function POST(
       text,
       attachment_url: attachmentUrl,
       timestamp: new Date().toISOString(),
+      read: false,
     };
 
     const existingMessages = Array.isArray(report.messages) ? report.messages : [];

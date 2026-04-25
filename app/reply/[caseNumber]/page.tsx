@@ -1,6 +1,6 @@
 "use client";
 
-import { use, useEffect, useState } from "react";
+import { use, useEffect, useRef, useState } from "react";
 import Link from "next/link";
 import Header from "@/components/layout/Header";
 import { WHATSAPP_URL } from "@/components/WhatsApp";
@@ -26,6 +26,7 @@ export default function ReplyPage({
 
   const [text, setText] = useState("");
   const [file, setFile] = useState<File | null>(null);
+  const fileInputRef = useRef<HTMLInputElement>(null);
   const [submitting, setSubmitting] = useState(false);
   const [submitError, setSubmitError] = useState<string | null>(null);
   const [submitted, setSubmitted] = useState(false);
@@ -219,16 +220,42 @@ export default function ReplyPage({
                 Attachment (optional)
               </label>
               <input
+                ref={fileInputRef}
                 type="file"
                 accept="image/*,application/pdf,.heic,.heif"
                 onChange={onFile}
-                className="block text-sm text-foreground file:mr-4 file:rounded-full file:border file:border-border file:bg-alt file:px-4 file:py-2 file:text-sm file:font-medium file:text-foreground hover:file:bg-card"
+                className="sr-only"
               />
-              {file && (
-                <p className="mt-2 text-xs text-muted">
-                  {file.name} — {(file.size / 1024 / 1024).toFixed(1)} MB
-                </p>
-              )}
+              <div className="flex flex-wrap items-center gap-3">
+                <button
+                  type="button"
+                  onClick={() => fileInputRef.current?.click()}
+                  className="inline-flex items-center gap-2 rounded-full border border-border bg-card px-5 py-2.5 text-sm font-medium text-foreground transition-colors hover:bg-alt"
+                >
+                  <svg
+                    className="h-4 w-4 text-accent"
+                    viewBox="0 0 24 24"
+                    fill="none"
+                    stroke="currentColor"
+                    strokeWidth="2"
+                    strokeLinecap="round"
+                    strokeLinejoin="round"
+                    aria-hidden="true"
+                  >
+                    <path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4" />
+                    <polyline points="17 8 12 3 7 8" />
+                    <line x1="12" y1="3" x2="12" y2="15" />
+                  </svg>
+                  {file ? "Change file" : "Choose file"}
+                </button>
+                {file ? (
+                  <span className="truncate text-sm text-body" title={file.name}>
+                    {file.name} — {(file.size / 1024 / 1024).toFixed(1)} MB
+                  </span>
+                ) : (
+                  <span className="text-sm text-muted">No file chosen</span>
+                )}
+              </div>
             </div>
 
             {submitError && (
