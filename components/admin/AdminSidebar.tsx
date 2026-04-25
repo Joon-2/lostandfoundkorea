@@ -133,6 +133,9 @@ export default function AdminSidebar({
               </ul>
             </div>
           ))}
+
+          {/* Quick links — external sites we jump to during ops. */}
+          <QuickLinks />
         </nav>
 
         {/* User card */}
@@ -220,6 +223,84 @@ function SidebarItem({
         </span>
       )}
     </button>
+  );
+}
+
+// ─── Quick links ─────────────────────────────────────────────────────────
+//
+// Hardcoded for now — easier to add an entry than spin up a small CRUD
+// flow when the list is this short. If it grows or admins need to manage
+// it through the UI, move these to a `quick_links` table (id, name, url,
+// initial, sort_order, is_active) and fetch via /api/quick-links. The
+// component shape stays the same.
+
+type QuickLink = { name: string; url: string; initial: string };
+
+const QUICK_LINKS: QuickLink[] = [
+  { name: "Lost112", url: "https://www.lost112.go.kr", initial: "L" },
+  {
+    name: "Incheon Airport L&F",
+    url: "https://www.airport.kr/ap/ko/svc/lostFoundList.do",
+    initial: "I",
+  },
+  {
+    name: "Korean Air Lost Items",
+    url: "https://www.koreanair.com/contents/customer-support/lost-baggage",
+    initial: "K",
+  },
+  {
+    name: "Asiana Lost Items",
+    url: "https://flyasiana.com/C/KR/EN/customer/help/lostFoundCenter",
+    initial: "A",
+  },
+];
+
+function QuickLinks() {
+  return (
+    <div className="mb-5">
+      <div className="px-3 pb-1 text-[10px] font-semibold uppercase tracking-widest text-muted">
+        Quick Links
+      </div>
+      <ul className="space-y-0.5">
+        {QUICK_LINKS.map((link) => (
+          <li key={link.url}>
+            <a
+              href={link.url}
+              target="_blank"
+              rel="noopener noreferrer"
+              className="group flex w-full items-center gap-3 rounded-lg px-3 py-2 text-sm text-body transition-colors hover:bg-alt hover:text-foreground"
+            >
+              <span
+                aria-hidden="true"
+                className="inline-flex h-5 w-5 flex-none items-center justify-center rounded-full border border-border bg-alt text-[10px] font-semibold text-muted group-hover:border-accent/40 group-hover:text-accent"
+              >
+                {link.initial}
+              </span>
+              <span className="flex-1 truncate text-left">{link.name}</span>
+              <ExternalLinkIcon />
+            </a>
+          </li>
+        ))}
+      </ul>
+    </div>
+  );
+}
+
+function ExternalLinkIcon() {
+  return (
+    <svg
+      className="h-3 w-3 flex-none text-muted/60 transition-colors group-hover:text-muted"
+      viewBox="0 0 24 24"
+      fill="none"
+      stroke="currentColor"
+      strokeWidth="2"
+      strokeLinecap="round"
+      strokeLinejoin="round"
+      aria-hidden="true"
+    >
+      <path d="M7 17L17 7" />
+      <path d="M7 7h10v10" />
+    </svg>
   );
 }
 
