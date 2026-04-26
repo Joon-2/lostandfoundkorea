@@ -42,7 +42,7 @@ export default function Header({ variant = "marketing", action = null }: HeaderP
     { href: "/#pricing", label: t("pricing") },
     { href: "/coverage", label: t("infoBook") },
     { href: "/our-story", label: t("ourStory") },
-    { href: "/#faq", label: t("faq") },
+    { href: "/faq", label: t("faq") },
   ];
 
   useEffect(() => {
