@@ -1,10 +1,11 @@
 import type { EmailPayload } from "@/types/email";
-import * as templates from "./email-senders.js";
-
-// Re-export every existing named sender/builder from email-senders.js so
-// the many admin API routes that already import `buildConfirmationEmail`,
-// `sendConfirmationEmail`, etc. from "@/lib/email" keep working unchanged.
-export * from "./email-senders.js";
+import { sendConfirmationEmail } from "@/lib/email/templates/confirmation";
+import { sendPaymentEmail } from "@/lib/email/templates/payment-link";
+import { sendNotFoundEmail } from "@/lib/email/templates/not-found";
+import { sendInfoRequestEmail } from "@/lib/email/templates/info-request";
+import { sendReceiptEmail } from "@/lib/email/templates/receipt";
+import { sendShippingQuoteEmail } from "@/lib/email/templates/shipping-quote";
+import { sendTrackingEmail } from "@/lib/email/templates/tracking";
 
 // Unified dispatcher keyed on EmailPayload.type. Accepts the typed payload
 // and routes to the appropriate template+sender pair. All subjects include
@@ -14,7 +15,7 @@ export async function sendEmail(payload: EmailPayload) {
   const { type, to, caseNumber, data = {} } = payload;
   switch (type) {
     case "confirmation":
-      return templates.sendConfirmationEmail({
+      return sendConfirmationEmail({
         email: to,
         caseNumber,
         name: data.name,
@@ -23,7 +24,7 @@ export async function sendEmail(payload: EmailPayload) {
         location: data.location,
       });
     case "payment_link":
-      return templates.sendPaymentEmail({
+      return sendPaymentEmail({
         email: to,
         caseNumber,
         name: data.name,
@@ -31,7 +32,7 @@ export async function sendEmail(payload: EmailPayload) {
         planLabel: data.planLabel,
       });
     case "not_found":
-      return templates.sendNotFoundEmail({
+      return sendNotFoundEmail({
         email: to,
         caseNumber,
         name: data.name,
@@ -39,14 +40,14 @@ export async function sendEmail(payload: EmailPayload) {
         reason: data.reason,
       });
     case "info_request":
-      return templates.sendInfoRequestEmail({
+      return sendInfoRequestEmail({
         email: to,
         caseNumber,
         name: data.name,
         infoText: data.infoText,
       });
     case "receipt":
-      return templates.sendReceiptEmail({
+      return sendReceiptEmail({
         email: to,
         caseNumber,
         name: data.name,
@@ -56,7 +57,7 @@ export async function sendEmail(payload: EmailPayload) {
         planLabel: data.planLabel,
       });
     case "shipping_quote":
-      return templates.sendShippingQuoteEmail({
+      return sendShippingQuoteEmail({
         email: to,
         caseNumber,
         name: data.name,
@@ -65,7 +66,7 @@ export async function sendEmail(payload: EmailPayload) {
         shippingAddress: data.shippingAddress,
       });
     case "tracking":
-      return templates.sendTrackingEmail({
+      return sendTrackingEmail({
         email: to,
         caseNumber,
         name: data.name,
