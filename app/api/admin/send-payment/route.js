@@ -1,7 +1,7 @@
 import { sendPaymentEmail } from "@/lib/email";
 import { checkAdminAuth } from "@/lib/admin-auth";
 import { supabaseAdmin } from "@/lib/supabase-admin";
-import { REPORT_PLAN_LABELS, getReportPlanPrice } from "@/lib/report-plans";
+import { REPORT_PLAN_LABELS, getReportPlanPrice } from "@/config/plans";
 import { logToCaseByCaseNumber } from "@/lib/activity-log";
 
 export const runtime = "nodejs";

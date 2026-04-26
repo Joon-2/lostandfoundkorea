@@ -1,6 +1,6 @@
 import { capturePayPalOrder } from "@/lib/paypal";
 import { supabaseAdmin } from "@/lib/supabase-admin";
-import { getPlan } from "@/lib/checkout-plans";
+import { getPlan } from "@/config/plans";
 
 export const runtime = "nodejs";
 

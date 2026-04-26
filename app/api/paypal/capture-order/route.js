@@ -1,6 +1,6 @@
 import { capturePayPalOrder, refundPayPalCapture } from "@/lib/paypal";
 import { supabaseAdmin } from "@/lib/supabase-admin";
-import { getReportPlanPrice } from "@/lib/report-plans";
+import { getReportPlanPrice } from "@/config/plans";
 
 export const runtime = "nodejs";
 

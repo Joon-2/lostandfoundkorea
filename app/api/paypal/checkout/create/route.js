@@ -1,5 +1,5 @@
 import { createPayPalOrder } from "@/lib/paypal";
-import { getPlan } from "@/lib/checkout-plans";
+import { getPlan } from "@/config/plans";
 
 export const runtime = "nodejs";
 
