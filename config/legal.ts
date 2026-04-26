@@ -1,9 +1,6 @@
 // Centralized legal-page config. Update values here and they propagate
 // to /legal (Terms, Privacy, Refund). [TBD] values render with a
 // distinguishable amber pill so they're easy to find and replace.
-//
-// The registration banner shown on /legal auto-hides once both
-// businessRegistrationNumber and ecommerceRegistration are non-[TBD].
 
 export const LEGAL_INFO = {
   // Brand
@@ -31,10 +28,3 @@ export const LEGAL_INFO = {
 } as const;
 
 export type LegalInfo = typeof LEGAL_INFO;
-
-export function isRegistrationPending(): boolean {
-  return (
-    LEGAL_INFO.businessRegistrationNumber === "[TBD]" ||
-    LEGAL_INFO.ecommerceRegistration === "[TBD]"
-  );
-}
