@@ -2,6 +2,7 @@
 
 import { useState } from "react";
 import { inputCls } from "@/components/admin/styles";
+import { adminFetch } from "@/lib/admin-fetch";
 
 type NoteFormProps = {
   caseNumber: string;
@@ -32,20 +33,12 @@ export default function NoteForm({
     setSaving(true);
     setErr(null);
     try {
-      const res = await fetch("/api/admin/add-note", {
+      await adminFetch("/api/admin/add-note", {
         method: "POST",
-        headers: {
-          "Content-Type": "application/json",
-          "x-admin-password": password,
-        },
-        body: JSON.stringify({ caseNumber, note: trimmed }),
+        body: { caseNumber, note: trimmed },
+        password,
+        onUnauthorized,
       });
-      if (res.status === 401) {
-        onUnauthorized?.();
-        return;
-      }
-      const json = await res.json().catch(() => ({}));
-      if (!res.ok || !json.ok) throw new Error(json.error || "Failed");
       setText("");
       onAdded?.();
     } catch (error: any) {
