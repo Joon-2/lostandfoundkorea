@@ -29,15 +29,20 @@ export default function RequestInfoForm({
     setSending(true);
     setMsg(null);
     try {
+      const preview = trimmed.length > 140 ? `${trimmed.slice(0, 140)}…` : trimmed;
       const json = await adminFetch<{ ok: boolean; error?: string }>(
-        "/api/admin/request-info",
+        "/api/email",
         {
           method: "POST",
           body: {
-            name: report.name,
-            email: report.email,
+            type: "info_request",
+            to: report.email,
             caseNumber: report.case_number,
-            infoText: trimmed,
+            data: {
+              name: report.name,
+              infoText: trimmed,
+            },
+            logAction: `Info request sent to ${report.email}: "${preview}"`,
           },
           password,
           onUnauthorized,
