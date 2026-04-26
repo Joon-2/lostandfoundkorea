@@ -8,6 +8,7 @@ import NoteForm from "@/components/admin/NoteForm";
 import SearchPlan, { detectLocationType } from "@/components/admin/SearchPlan";
 import FacilityLinker from "@/components/admin/FacilityLinker";
 import { inputCls } from "@/components/admin/styles";
+import { adminFetch } from "@/lib/admin-fetch";
 
 type StageSearchingProps = {
   report: any;
@@ -46,31 +47,30 @@ export default function StageSearching({
     setClosing(true);
     setCloseMsg(null);
     try {
-      const res = await fetch("/api/admin/close-case", {
+      const json = await adminFetch<{
+        ok: boolean;
+        error?: string;
+        emailSent?: boolean;
+        emailError?: string;
+      }>("/api/admin/close-case", {
         method: "POST",
-        headers: {
-          "Content-Type": "application/json",
-          "x-admin-password": password,
-        },
-        body: JSON.stringify({
+        body: {
           caseNumber: report.case_number,
           reason: closeReason,
-        }),
+        },
+        password,
+        onUnauthorized,
       });
-      if (res.status === 401) {
-        onUnauthorized?.();
-        return;
-      }
-      const json = await res.json().catch(() => ({}));
-      if (!res.ok || !json.ok) throw new Error(json.error || "Close failed");
-      const refresh = await fetch(`/api/admin/reports`, {
-        headers: { "x-admin-password": password },
-        cache: "no-store",
-      });
-      if (refresh.ok) {
-        const fresh = await refresh.json();
+      if (!json.ok) throw new Error(json.error || "Close failed");
+      try {
+        const fresh = await adminFetch<{ ok: boolean; reports: any[] }>(
+          `/api/admin/reports`,
+          { password }
+        );
         const updated = (fresh.reports || []).find((r: any) => r.id === report.id);
         if (updated) onUpdate(updated);
+      } catch {
+        // Refresh failure shouldn't block the success message.
       }
       setCloseReason("");
       setCloseMsg({

@@ -11,6 +11,7 @@ import {
 import { inputCls } from "@/components/admin/styles";
 import Field from "@/components/admin/Field";
 import StatusPill, { type StatusMsg } from "@/components/admin/StatusPill";
+import { adminFetch } from "@/lib/admin-fetch";
 
 type FormState = {
   case_number: string; // create mode only
@@ -166,20 +167,17 @@ export default function DeliveryForm({
         ? `/api/deliveries/${delivery!.id}`
         : "/api/deliveries";
       const method = isEdit ? "PUT" : "POST";
-      const res = await fetch(url, {
+      const json = await adminFetch<{
+        ok: boolean;
+        delivery: DeliveryWithReport;
+        error?: string;
+      }>(url, {
         method,
-        headers: {
-          "Content-Type": "application/json",
-          "x-admin-password": password,
-        },
-        body: JSON.stringify(payload),
+        body: payload,
+        password,
+        onUnauthorized,
       });
-      if (res.status === 401) {
-        onUnauthorized?.();
-        return;
-      }
-      const json = await res.json().catch(() => ({}));
-      if (!res.ok || !json.ok) throw new Error(json.error || "Save failed");
+      if (!json.ok) throw new Error(json.error || "Save failed");
       onSaved(json.delivery);
     } catch (err: any) {
       setMsg({ kind: "err", text: err.message });
@@ -194,16 +192,15 @@ export default function DeliveryForm({
     setDeleting(true);
     setMsg(null);
     try {
-      const res = await fetch(`/api/deliveries/${delivery!.id}`, {
-        method: "DELETE",
-        headers: { "x-admin-password": password },
-      });
-      if (res.status === 401) {
-        onUnauthorized?.();
-        return;
-      }
-      const json = await res.json().catch(() => ({}));
-      if (!res.ok || !json.ok) throw new Error(json.error || "Delete failed");
+      const json = await adminFetch<{ ok: boolean; error?: string }>(
+        `/api/deliveries/${delivery!.id}`,
+        {
+          method: "DELETE",
+          password,
+          onUnauthorized,
+        }
+      );
+      if (!json.ok) throw new Error(json.error || "Delete failed");
       onDeleted?.(delivery!.id);
     } catch (err: any) {
       setMsg({ kind: "err", text: err.message });

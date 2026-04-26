@@ -2,6 +2,7 @@
 
 import { useState } from "react";
 import { formatDateTime } from "@/lib/format";
+import { adminFetch } from "@/lib/admin-fetch";
 
 type ActivityLogProps = {
   entries: any;
@@ -31,20 +32,16 @@ export default function ActivityLog({
     setSaving(true);
     setError(null);
     try {
-      const res = await fetch("/api/admin/add-note", {
-        method: "POST",
-        headers: {
-          "Content-Type": "application/json",
-          "x-admin-password": password,
-        },
-        body: JSON.stringify({ caseNumber, note: trimmed }),
-      });
-      if (res.status === 401) {
-        onUnauthorized?.();
-        return;
-      }
-      const json = await res.json().catch(() => ({}));
-      if (!res.ok || !json.ok) throw new Error(json.error || "Failed");
+      const json = await adminFetch<{ ok: boolean; error?: string }>(
+        "/api/admin/add-note",
+        {
+          method: "POST",
+          body: { caseNumber, note: trimmed },
+          password,
+          onUnauthorized,
+        }
+      );
+      if (!json.ok) throw new Error(json.error || "Failed");
       setNote("");
       onAdded?.();
     } catch (err: any) {

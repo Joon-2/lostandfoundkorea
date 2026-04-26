@@ -2,6 +2,7 @@
 
 import { useEffect, useState } from "react";
 import { processImage } from "@/lib/image-processing";
+import { adminFetch } from "@/lib/admin-fetch";
 
 type PhotoManagerProps = {
   caseNumber: string;
@@ -107,20 +108,17 @@ export default function PhotoManager({
     setDeletingUrl(url);
     setMsg(null);
     try {
-      const res = await fetch("/api/admin/delete-found-image", {
+      const json = await adminFetch<{
+        ok: boolean;
+        images: string[];
+        error?: string;
+      }>("/api/admin/delete-found-image", {
         method: "POST",
-        headers: {
-          "Content-Type": "application/json",
-          "x-admin-password": password,
-        },
-        body: JSON.stringify({ caseNumber, url }),
+        body: { caseNumber, url },
+        password,
+        onUnauthorized,
       });
-      if (res.status === 401) {
-        onUnauthorized?.();
-        return;
-      }
-      const json = await res.json().catch(() => ({}));
-      if (!res.ok || !json.ok) {
+      if (!json.ok) {
         throw new Error(json.error || "Delete failed");
       }
       onChange(json.images);

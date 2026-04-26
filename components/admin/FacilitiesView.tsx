@@ -4,6 +4,7 @@ import { useCallback, useEffect, useMemo, useState } from "react";
 import { CATEGORIES, getCategoryDef } from "@/config/categories";
 import FacilityForm from "@/components/admin/FacilityForm";
 import type { Facility } from "@/types/facility";
+import { adminFetch } from "@/lib/admin-fetch";
 
 type FacilitiesViewProps = {
   password: string;
@@ -26,16 +27,12 @@ export default function FacilitiesView({
     setLoading(true);
     setLoadError(null);
     try {
-      const res = await fetch("/api/facilities", {
-        headers: { "x-admin-password": password },
-        cache: "no-store",
-      });
-      if (res.status === 401) {
-        onUnauthorized?.();
-        return;
-      }
-      const json = await res.json().catch(() => ({}));
-      if (!res.ok || !json.ok) {
+      const json = await adminFetch<{
+        ok: boolean;
+        facilities: Facility[];
+        error?: string;
+      }>("/api/facilities", { password, onUnauthorized });
+      if (!json.ok) {
         throw new Error(json.error || "Failed to load facilities");
       }
       setFacilities(json.facilities || []);
@@ -88,20 +85,17 @@ export default function FacilitiesView({
 
   const handleToggleActive = async (f: Facility) => {
     try {
-      const res = await fetch(`/api/facilities/${f.id}`, {
+      const json = await adminFetch<{
+        ok: boolean;
+        facility: Facility;
+        error?: string;
+      }>(`/api/facilities/${f.id}`, {
         method: "PUT",
-        headers: {
-          "Content-Type": "application/json",
-          "x-admin-password": password,
-        },
-        body: JSON.stringify({ is_active: !f.is_active }),
+        body: { is_active: !f.is_active },
+        password,
+        onUnauthorized,
       });
-      if (res.status === 401) {
-        onUnauthorized?.();
-        return;
-      }
-      const json = await res.json().catch(() => ({}));
-      if (!res.ok || !json.ok) throw new Error(json.error || "Toggle failed");
+      if (!json.ok) throw new Error(json.error || "Toggle failed");
       onSaved(json.facility);
     } catch (err: any) {
       console.error("[facilities] toggle active failed:", err);

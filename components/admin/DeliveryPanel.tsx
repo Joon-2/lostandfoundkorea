@@ -9,6 +9,7 @@ import {
   type DeliveryWithReport,
 } from "@/types/delivery";
 import DeliveryForm from "@/components/admin/DeliveryForm";
+import { adminFetch } from "@/lib/admin-fetch";
 
 type DeliveryPanelProps = {
   report: any;
@@ -33,19 +34,14 @@ export default function DeliveryPanel({
   const load = useCallback(async () => {
     setLoading(true);
     try {
-      const res = await fetch(
+      const json = await adminFetch<{
+        ok: boolean;
+        deliveries?: DeliveryWithReport[];
+      }>(
         `/api/deliveries?report_id=${encodeURIComponent(report.id)}`,
-        {
-          headers: { "x-admin-password": password },
-          cache: "no-store",
-        }
+        { password, onUnauthorized }
       );
-      if (res.status === 401) {
-        onUnauthorized?.();
-        return;
-      }
-      const json = await res.json().catch(() => ({}));
-      if (res.ok && json.ok) setDeliveries(json.deliveries || []);
+      if (json.ok) setDeliveries(json.deliveries || []);
     } catch (err) {
       console.error("[DeliveryPanel] load failed:", err);
     } finally {

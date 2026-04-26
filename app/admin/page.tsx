@@ -8,6 +8,7 @@ import FacilitiesView from "@/components/admin/FacilitiesView";
 import DeliveriesView from "@/components/admin/DeliveriesView";
 import LeadsView from "@/components/admin/LeadsView";
 import ComingSoon from "@/components/admin/ComingSoon";
+import { adminFetch } from "@/lib/admin-fetch";
 
 const SESSION_KEY = "lfk_admin_password";
 
@@ -181,19 +182,10 @@ function AdminShell({
     setLoading(true);
     setLoadError(null);
     try {
-      const res = await fetch("/api/admin/reports", {
-        headers: { "x-admin-password": password },
-        cache: "no-store",
-      });
-      if (res.status === 401) {
-        onLogout();
-        return;
-      }
-      if (!res.ok) {
-        const json = await res.json().catch(() => ({}));
-        throw new Error(json.error || "Failed to load reports");
-      }
-      const json = await res.json();
+      const json = await adminFetch<{ ok: boolean; reports: any[] }>(
+        "/api/admin/reports",
+        { password, onUnauthorized: onLogout }
+      );
       setReports(json.reports || []);
     } catch (err: any) {
       setLoadError(err.message);
