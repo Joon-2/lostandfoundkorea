@@ -21,6 +21,7 @@ import StagePaid from "@/components/admin/StagePaid";
 import StageClosed from "@/components/admin/StageClosed";
 import StageCompleted from "@/components/admin/StageCompleted";
 import type { StatusMsg } from "@/components/admin/StatusPill";
+import { adminFetch } from "@/lib/admin-fetch";
 
 // Reports-page case detail. Owns search-phase state only — delivery
 // (pickup → ship → deliver) lives in DeliveriesView. When a case is
@@ -71,15 +72,11 @@ export default function CaseDetail({
       (m: any) => m && m.from === "customer" && !m.read
     );
     if (!hasUnread) return;
-    fetch("/api/admin/messages/mark-read", {
+    adminFetch<{ ok: boolean; report?: any }>("/api/admin/messages/mark-read", {
       method: "POST",
-      headers: {
-        "Content-Type": "application/json",
-        "x-admin-password": password,
-      },
-      body: JSON.stringify({ caseNumber: report.case_number }),
+      body: { caseNumber: report.case_number },
+      password,
     })
-      .then((r) => (r.status === 401 ? null : r.json()))
       .then((j) => {
         if (j && j.ok && j.report) onUpdate(j.report);
       })
@@ -108,12 +105,10 @@ export default function CaseDetail({
 
   const refreshThisCase = async () => {
     try {
-      const refresh = await fetch(`/api/admin/reports`, {
-        headers: { "x-admin-password": password },
-        cache: "no-store",
-      });
-      if (!refresh.ok) return;
-      const fresh = await refresh.json();
+      const fresh = await adminFetch<{ ok: boolean; reports: any[] }>(
+        `/api/admin/reports`,
+        { password }
+      );
       const updated = (fresh.reports || []).find((r: any) => r.id === report.id);
       if (updated) onUpdate(updated);
     } catch (err) {
@@ -128,23 +123,16 @@ export default function CaseDetail({
     setStageMoving(true);
     setStageMsg(null);
     try {
-      const res = await fetch(`/api/admin/reports/${report.id}`, {
-        method: "PATCH",
-        headers: {
-          "Content-Type": "application/json",
-          "x-admin-password": password,
-        },
-        body: JSON.stringify({
-          process_stage: stage.key,
-          status: stage.status,
-        }),
-      });
-      if (res.status === 401) {
-        onUnauthorized?.();
-        return;
-      }
-      const json = await res.json().catch(() => ({}));
-      if (!res.ok || !json.ok) throw new Error(json.error || "Failed");
+      const json = await adminFetch<{ ok: boolean; report: any; error?: string }>(
+        `/api/admin/reports/${report.id}`,
+        {
+          method: "PATCH",
+          body: { process_stage: stage.key, status: stage.status },
+          password,
+          onUnauthorized,
+        }
+      );
+      if (!json.ok) throw new Error(json.error || "Failed");
       onUpdate(json.report);
     } catch (err: any) {
       setStageMsg({ kind: "err", text: err.message });
@@ -158,25 +146,21 @@ export default function CaseDetail({
     setSaving(true);
     setSaveMsg(null);
     try {
-      const res = await fetch(`/api/admin/reports/${report.id}`, {
-        method: "PATCH",
-        headers: {
-          "Content-Type": "application/json",
-          "x-admin-password": password,
-        },
-        body: JSON.stringify({
-          recovery_location: recoveryLocation,
-          recovery_contact: recoveryContact,
-          recovery_hours: recoveryHours,
-          recovery_instructions: recoveryInstructions,
-        }),
-      });
-      if (res.status === 401) {
-        onUnauthorized?.();
-        return;
-      }
-      const json = await res.json();
-      if (!res.ok || !json.ok) throw new Error(json.error || "Save failed");
+      const json = await adminFetch<{ ok: boolean; report: any; error?: string }>(
+        `/api/admin/reports/${report.id}`,
+        {
+          method: "PATCH",
+          body: {
+            recovery_location: recoveryLocation,
+            recovery_contact: recoveryContact,
+            recovery_hours: recoveryHours,
+            recovery_instructions: recoveryInstructions,
+          },
+          password,
+          onUnauthorized,
+        }
+      );
+      if (!json.ok) throw new Error(json.error || "Save failed");
       onUpdate(json.report);
       setSaveMsg({ kind: "ok", text: "Saved." });
     } catch (err: any) {
@@ -201,27 +185,23 @@ export default function CaseDetail({
     setSendingConfirmation(true);
     setEmailMsg(null);
     try {
-      const res = await fetch("/api/admin/send-confirmation", {
-        method: "POST",
-        headers: {
-          "Content-Type": "application/json",
-          "x-admin-password": password,
-        },
-        body: JSON.stringify({
-          name: report.name,
-          email: report.email,
-          caseNumber: report.case_number,
-          category: report.category,
-          itemDescription: report.item_description,
-          location: report.location,
-        }),
-      });
-      if (res.status === 401) {
-        onUnauthorized?.();
-        return;
-      }
-      const json = await res.json().catch(() => ({}));
-      if (!res.ok || !json.ok) throw new Error(json.error || "Send failed");
+      const json = await adminFetch<{ ok: boolean; error?: string }>(
+        "/api/admin/send-confirmation",
+        {
+          method: "POST",
+          body: {
+            name: report.name,
+            email: report.email,
+            caseNumber: report.case_number,
+            category: report.category,
+            itemDescription: report.item_description,
+            location: report.location,
+          },
+          password,
+          onUnauthorized,
+        }
+      );
+      if (!json.ok) throw new Error(json.error || "Send failed");
       await refreshThisCase();
       flashEmail({
         kind: "ok",
@@ -242,24 +222,20 @@ export default function CaseDetail({
     setSendingPayment(true);
     setEmailMsg(null);
     try {
-      const res = await fetch("/api/admin/send-payment", {
-        method: "POST",
-        headers: {
-          "Content-Type": "application/json",
-          "x-admin-password": password,
-        },
-        body: JSON.stringify({
-          name: report.name,
-          email: report.email,
-          caseNumber: report.case_number,
-        }),
-      });
-      if (res.status === 401) {
-        onUnauthorized?.();
-        return;
-      }
-      const json = await res.json();
-      if (!res.ok || !json.ok) throw new Error(json.error || "Send failed");
+      const json = await adminFetch<{ ok: boolean; error?: string }>(
+        "/api/admin/send-payment",
+        {
+          method: "POST",
+          body: {
+            name: report.name,
+            email: report.email,
+            caseNumber: report.case_number,
+          },
+          password,
+          onUnauthorized,
+        }
+      );
+      if (!json.ok) throw new Error(json.error || "Send failed");
       await refreshThisCase();
       flashEmail({
         kind: "ok",

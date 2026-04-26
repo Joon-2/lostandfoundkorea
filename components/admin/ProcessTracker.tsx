@@ -7,6 +7,7 @@ import {
   getStagePhase,
   normalizeStageKey,
 } from "@/lib/process-stages";
+import { adminFetch } from "@/lib/admin-fetch";
 
 // Single PhaseBar that renders either the search or the delivery
 // progression. Caller picks via `phase`. Reports page uses "search";
@@ -54,23 +55,16 @@ export default function ProcessTracker({
     setChanging(true);
     setError(null);
     try {
-      const res = await fetch(`/api/admin/reports/${report.id}`, {
-        method: "PATCH",
-        headers: {
-          "Content-Type": "application/json",
-          "x-admin-password": password,
-        },
-        body: JSON.stringify({
-          process_stage: stage.key,
-          status: stage.status,
-        }),
-      });
-      if (res.status === 401) {
-        onUnauthorized?.();
-        return;
-      }
-      const json = await res.json().catch(() => ({}));
-      if (!res.ok || !json.ok) throw new Error(json.error || "Update failed");
+      const json = await adminFetch<{ ok: boolean; report: any; error?: string }>(
+        `/api/admin/reports/${report.id}`,
+        {
+          method: "PATCH",
+          body: { process_stage: stage.key, status: stage.status },
+          password,
+          onUnauthorized,
+        }
+      );
+      if (!json.ok) throw new Error(json.error || "Update failed");
       onUpdate(json.report);
     } catch (err: any) {
       setError(err.message);

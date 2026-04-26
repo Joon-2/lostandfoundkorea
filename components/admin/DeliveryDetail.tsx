@@ -9,6 +9,7 @@ import ProcessTracker from "@/components/admin/ProcessTracker";
 import StagePickup, { type SubStage } from "@/components/admin/StagePickup";
 import DeliveryPanel from "@/components/admin/DeliveryPanel";
 import type { StatusMsg } from "@/components/admin/StatusPill";
+import { adminFetch } from "@/lib/admin-fetch";
 
 // The phase-2 half of the old CaseDetail, lifted into Deliveries.
 // Owns delivery-specific form state (pickup time, shipping quote,
@@ -71,23 +72,16 @@ export default function DeliveryDetail({
     setStageMoving(true);
     setStageMsg(null);
     try {
-      const res = await fetch(`/api/admin/reports/${report.id}`, {
-        method: "PATCH",
-        headers: {
-          "Content-Type": "application/json",
-          "x-admin-password": password,
-        },
-        body: JSON.stringify({
-          process_stage: stage.key,
-          status: stage.status,
-        }),
-      });
-      if (res.status === 401) {
-        onUnauthorized?.();
-        return;
-      }
-      const json = await res.json().catch(() => ({}));
-      if (!res.ok || !json.ok) throw new Error(json.error || "Failed");
+      const json = await adminFetch<{ ok: boolean; report: any; error?: string }>(
+        `/api/admin/reports/${report.id}`,
+        {
+          method: "PATCH",
+          body: { process_stage: stage.key, status: stage.status },
+          password,
+          onUnauthorized,
+        }
+      );
+      if (!json.ok) throw new Error(json.error || "Failed");
       onUpdate(json.report);
     } catch (err: any) {
       setStageMsg({ kind: "err", text: err.message });
@@ -100,27 +94,23 @@ export default function DeliveryDetail({
     setSaving(true);
     setSaveMsg(null);
     try {
-      const res = await fetch(`/api/admin/reports/${report.id}`, {
-        method: "PATCH",
-        headers: {
-          "Content-Type": "application/json",
-          "x-admin-password": password,
-        },
-        body: JSON.stringify({
-          tracking_number: trackingNumber,
-          shipping_method: shippingMethod,
-          estimated_delivery: estimatedDelivery,
-          pickup_scheduled_at: pickupScheduledAt,
-          shipping_quote_amount: shippingQuoteAmount,
-          shipping_quote_notes: shippingQuoteNotes,
-        }),
-      });
-      if (res.status === 401) {
-        onUnauthorized?.();
-        return;
-      }
-      const json = await res.json();
-      if (!res.ok || !json.ok) throw new Error(json.error || "Save failed");
+      const json = await adminFetch<{ ok: boolean; report: any; error?: string }>(
+        `/api/admin/reports/${report.id}`,
+        {
+          method: "PATCH",
+          body: {
+            tracking_number: trackingNumber,
+            shipping_method: shippingMethod,
+            estimated_delivery: estimatedDelivery,
+            pickup_scheduled_at: pickupScheduledAt,
+            shipping_quote_amount: shippingQuoteAmount,
+            shipping_quote_notes: shippingQuoteNotes,
+          },
+          password,
+          onUnauthorized,
+        }
+      );
+      if (!json.ok) throw new Error(json.error || "Save failed");
       onUpdate(json.report);
       setSaveMsg({ kind: "ok", text: "Saved." });
     } catch (err: any) {
@@ -135,31 +125,28 @@ export default function DeliveryDetail({
     setShipping(true);
     setStageMsg(null);
     try {
-      const res = await fetch("/api/admin/mark-shipped", {
-        method: "POST",
-        headers: {
-          "Content-Type": "application/json",
-          "x-admin-password": password,
-        },
-        body: JSON.stringify({ caseNumber: report.case_number }),
-      });
-      if (res.status === 401) {
-        onUnauthorized?.();
-        return;
-      }
-      const json = await res.json().catch(() => ({}));
-      if (!res.ok || !json.ok) throw new Error(json.error || "Failed");
+      const json = await adminFetch<{ ok: boolean; error?: string }>(
+        "/api/admin/mark-shipped",
+        {
+          method: "POST",
+          body: { caseNumber: report.case_number },
+          password,
+          onUnauthorized,
+        }
+      );
+      if (!json.ok) throw new Error(json.error || "Failed");
       // Refresh just this case from the list endpoint.
-      const refresh = await fetch(`/api/admin/reports`, {
-        headers: { "x-admin-password": password },
-        cache: "no-store",
-      });
-      if (refresh.ok) {
-        const fresh = await refresh.json();
+      try {
+        const fresh = await adminFetch<{ ok: boolean; reports: any[] }>(
+          `/api/admin/reports`,
+          { password }
+        );
         const updated = (fresh.reports || []).find(
           (r: any) => r.id === report.id
         );
         if (updated) onUpdate(updated);
+      } catch {
+        // Refresh failure shouldn't block the success message.
       }
       setStageMsg({ kind: "ok", text: "Marked as shipped." });
     } catch (err: any) {

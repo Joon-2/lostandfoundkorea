@@ -4,6 +4,7 @@ import { useEffect, useState } from "react";
 import { CATEGORIES, getCategoryDef } from "@/config/categories";
 import StatusPill, { type StatusMsg } from "@/components/admin/StatusPill";
 import type { Facility } from "@/types/facility";
+import { adminFetch } from "@/lib/admin-fetch";
 
 type FacilityLinkerProps = {
   report: any;
@@ -35,16 +36,12 @@ export default function FacilityLinker({
       setLoading(true);
       setLoadError(null);
       try {
-        const res = await fetch("/api/facilities", {
-          headers: { "x-admin-password": password },
-          cache: "no-store",
-        });
-        if (res.status === 401) {
-          onUnauthorized?.();
-          return;
-        }
-        const json = await res.json().catch(() => ({}));
-        if (!res.ok || !json.ok) {
+        const json = await adminFetch<{
+          ok: boolean;
+          facilities: Facility[];
+          error?: string;
+        }>("/api/facilities", { password, onUnauthorized });
+        if (!json.ok) {
           throw new Error(json.error || "Failed to load facilities");
         }
         if (!cancelled) {
@@ -77,25 +74,21 @@ export default function FacilityLinker({
       f.how_to_report || f.description || "";
 
     try {
-      const res = await fetch(`/api/admin/reports/${report.id}`, {
-        method: "PATCH",
-        headers: {
-          "Content-Type": "application/json",
-          "x-admin-password": password,
-        },
-        body: JSON.stringify({
-          recovery_location: recoveryLocation,
-          recovery_contact: recoveryContact,
-          recovery_hours: recoveryHours,
-          recovery_instructions: recoveryInstructions,
-        }),
-      });
-      if (res.status === 401) {
-        onUnauthorized?.();
-        return;
-      }
-      const json = await res.json().catch(() => ({}));
-      if (!res.ok || !json.ok) throw new Error(json.error || "Link failed");
+      const json = await adminFetch<{ ok: boolean; report: any; error?: string }>(
+        `/api/admin/reports/${report.id}`,
+        {
+          method: "PATCH",
+          body: {
+            recovery_location: recoveryLocation,
+            recovery_contact: recoveryContact,
+            recovery_hours: recoveryHours,
+            recovery_instructions: recoveryInstructions,
+          },
+          password,
+          onUnauthorized,
+        }
+      );
+      if (!json.ok) throw new Error(json.error || "Link failed");
       onUpdate(json.report);
       setMsg({
         kind: "ok",
