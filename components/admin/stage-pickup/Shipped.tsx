@@ -41,17 +41,25 @@ export default function Shipped({
     setSendingTracking(true);
     setTrackingMsg(null);
     try {
+      const trimmedTracking = trackingNumber.trim();
+      const trimmedMethod = shippingMethod.trim();
       const json = await adminFetch<{ ok: boolean; error?: string }>(
-        "/api/admin/send-tracking",
+        "/api/email",
         {
           method: "POST",
           body: {
-            name: report.name,
-            email: report.email,
+            type: "tracking",
+            to: report.email,
             caseNumber: report.case_number,
-            trackingNumber: trackingNumber.trim(),
-            shippingMethod: shippingMethod.trim(),
-            estimatedDelivery,
+            data: {
+              name: report.name,
+              trackingNumber: trimmedTracking,
+              shippingMethod: trimmedMethod,
+              estimatedDelivery,
+            },
+            logAction: `Tracking info emailed to ${report.email} (${
+              trimmedMethod || "shipment"
+            }: ${trimmedTracking})`,
           },
           password,
           onUnauthorized,

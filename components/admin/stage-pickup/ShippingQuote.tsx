@@ -39,16 +39,20 @@ export default function ShippingQuote({
     setEmailMsg(null);
     try {
       const json = await adminFetch<{ ok: boolean; error?: string }>(
-        "/api/admin/send-shipping-quote",
+        "/api/email",
         {
           method: "POST",
           body: {
-            name: report.name,
-            email: report.email,
+            type: "shipping_quote",
+            to: report.email,
             caseNumber: report.case_number,
-            amount: trimmedAmount,
-            notes: shippingQuoteNotes,
-            shippingAddress: report.shipping_address,
+            data: {
+              name: report.name,
+              amount: trimmedAmount,
+              notes: shippingQuoteNotes,
+              shippingAddress: report.shipping_address,
+            },
+            logAction: `Shipping quote emailed to ${report.email}: $${trimmedAmount}`,
           },
           password,
           onUnauthorized,
