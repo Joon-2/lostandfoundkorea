@@ -5,20 +5,10 @@ import { siteConfig } from "@/config/site";
 export const runtime = "nodejs";
 
 export async function POST(request) {
-  console.log("Email API called");
-
   try {
     const body = await request.json().catch(() => ({}));
     const { name, email, caseNumber, category, itemDescription, location } =
       body || {};
-    console.log("Email API payload:", {
-      name,
-      email,
-      caseNumber,
-      category,
-      itemDescription,
-      location,
-    });
 
     if (!email || !caseNumber) {
       console.error("Email API missing fields", { email, caseNumber });
@@ -30,8 +20,6 @@ export async function POST(request) {
 
     const user = process.env.GMAIL_USER;
     const pass = process.env.GMAIL_APP_PASSWORD;
-    console.log("GMAIL_USER:", user);
-    console.log("GMAIL_APP_PASSWORD set?", Boolean(pass));
 
     if (!user || !pass) {
       console.error("Email API: GMAIL_USER or GMAIL_APP_PASSWORD not configured");
@@ -41,7 +29,6 @@ export async function POST(request) {
       );
     }
 
-    console.log("Creating transporter...");
     const transporter = nodemailer.createTransport({
       service: "gmail",
       auth: { user, pass },
@@ -55,7 +42,6 @@ export async function POST(request) {
       location,
     });
 
-    console.log("Sending email to:", email);
     const info = await transporter.sendMail({
       from: `"${siteConfig.name}" <${siteConfig.email}>`,
       replyTo: siteConfig.email,
@@ -63,10 +49,6 @@ export async function POST(request) {
       subject,
       text,
       html,
-    });
-    console.log("Email sent successfully", {
-      messageId: info?.messageId,
-      response: info?.response,
     });
 
     return Response.json({ ok: true, messageId: info?.messageId });
