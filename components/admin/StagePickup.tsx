@@ -16,6 +16,7 @@ import PhotoManager from "@/components/admin/PhotoManager";
 import Field from "@/components/admin/Field";
 import { inputCls } from "@/components/admin/styles";
 import { formatDate } from "@/lib/format";
+import { adminFetch } from "@/lib/admin-fetch";
 
 export type SubStage =
   | "pickup_scheduled"
@@ -215,27 +216,23 @@ function ShippingQuote({
     setSending(true);
     setEmailMsg(null);
     try {
-      const res = await fetch("/api/admin/send-shipping-quote", {
-        method: "POST",
-        headers: {
-          "Content-Type": "application/json",
-          "x-admin-password": password,
-        },
-        body: JSON.stringify({
-          name: report.name,
-          email: report.email,
-          caseNumber: report.case_number,
-          amount: trimmedAmount,
-          notes: shippingQuoteNotes,
-          shippingAddress: report.shipping_address,
-        }),
-      });
-      if (res.status === 401) {
-        onUnauthorized?.();
-        return;
-      }
-      const json = await res.json().catch(() => ({}));
-      if (!res.ok || !json.ok) throw new Error(json.error || "Send failed");
+      const json = await adminFetch<{ ok: boolean; error?: string }>(
+        "/api/admin/send-shipping-quote",
+        {
+          method: "POST",
+          body: {
+            name: report.name,
+            email: report.email,
+            caseNumber: report.case_number,
+            amount: trimmedAmount,
+            notes: shippingQuoteNotes,
+            shippingAddress: report.shipping_address,
+          },
+          password,
+          onUnauthorized,
+        }
+      );
+      if (!json.ok) throw new Error(json.error || "Send failed");
       onUpdate({
         ...report,
         shipping_quote_amount: trimmedAmount,
@@ -398,27 +395,23 @@ function Shipped({
     setSendingTracking(true);
     setTrackingMsg(null);
     try {
-      const res = await fetch("/api/admin/send-tracking", {
-        method: "POST",
-        headers: {
-          "Content-Type": "application/json",
-          "x-admin-password": password,
-        },
-        body: JSON.stringify({
-          name: report.name,
-          email: report.email,
-          caseNumber: report.case_number,
-          trackingNumber: trackingNumber.trim(),
-          shippingMethod: shippingMethod.trim(),
-          estimatedDelivery,
-        }),
-      });
-      if (res.status === 401) {
-        onUnauthorized?.();
-        return;
-      }
-      const json = await res.json().catch(() => ({}));
-      if (!res.ok || !json.ok) throw new Error(json.error || "Send failed");
+      const json = await adminFetch<{ ok: boolean; error?: string }>(
+        "/api/admin/send-tracking",
+        {
+          method: "POST",
+          body: {
+            name: report.name,
+            email: report.email,
+            caseNumber: report.case_number,
+            trackingNumber: trackingNumber.trim(),
+            shippingMethod: shippingMethod.trim(),
+            estimatedDelivery,
+          },
+          password,
+          onUnauthorized,
+        }
+      );
+      if (!json.ok) throw new Error(json.error || "Send failed");
       onUpdate({
         ...report,
         tracking_number: trackingNumber.trim(),

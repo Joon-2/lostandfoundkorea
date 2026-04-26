@@ -13,6 +13,7 @@ import {
 } from "@/types/lead";
 import LeadForm from "@/components/admin/LeadForm";
 import Pagination from "@/components/admin/Pagination";
+import { adminFetch } from "@/lib/admin-fetch";
 
 // Sales / Leads page. Self-contained data fetch (no shared state with
 // Reports). Same visual shell as CaseList: stats row → toolbar → table
@@ -46,17 +47,12 @@ export default function LeadsView({
     setLoading(true);
     setLoadError(null);
     try {
-      const res = await fetch("/api/leads", {
-        headers: { "x-admin-password": password },
-        cache: "no-store",
-      });
-      if (res.status === 401) {
-        onUnauthorized?.();
-        return;
-      }
-      const json = await res.json().catch(() => ({}));
-      if (!res.ok || !json.ok)
-        throw new Error(json.error || "Failed to load leads");
+      const json = await adminFetch<{
+        ok: boolean;
+        leads: Lead[];
+        error?: string;
+      }>("/api/leads", { password, onUnauthorized });
+      if (!json.ok) throw new Error(json.error || "Failed to load leads");
       setLeads(json.leads || []);
     } catch (err: any) {
       setLoadError(err.message);
@@ -426,20 +422,16 @@ function InlineEditor({
     setBusy(true);
     setMsg(null);
     try {
-      const res = await fetch(`/api/leads/${lead.id}`, {
-        method: "PUT",
-        headers: {
-          "Content-Type": "application/json",
-          "x-admin-password": password,
-        },
-        body: JSON.stringify(update),
-      });
-      if (res.status === 401) {
-        onUnauthorized?.();
-        return null;
-      }
-      const json = await res.json().catch(() => ({}));
-      if (!res.ok || !json.ok) throw new Error(json.error || "Save failed");
+      const json = await adminFetch<{ ok: boolean; lead: Lead; error?: string }>(
+        `/api/leads/${lead.id}`,
+        {
+          method: "PUT",
+          body: update,
+          password,
+          onUnauthorized,
+        }
+      );
+      if (!json.ok) throw new Error(json.error || "Save failed");
       onSaved(json.lead);
       return json.lead;
     } catch (err: any) {
@@ -486,16 +478,15 @@ function InlineEditor({
     setDeleting(true);
     setMsg(null);
     try {
-      const res = await fetch(`/api/leads/${lead.id}`, {
-        method: "DELETE",
-        headers: { "x-admin-password": password },
-      });
-      if (res.status === 401) {
-        onUnauthorized?.();
-        return;
-      }
-      const json = await res.json().catch(() => ({}));
-      if (!res.ok || !json.ok) throw new Error(json.error || "Delete failed");
+      const json = await adminFetch<{ ok: boolean; error?: string }>(
+        `/api/leads/${lead.id}`,
+        {
+          method: "DELETE",
+          password,
+          onUnauthorized,
+        }
+      );
+      if (!json.ok) throw new Error(json.error || "Delete failed");
       onDeleted(lead.id);
     } catch (err: any) {
       setMsg({ kind: "err", text: err.message });
