@@ -9,6 +9,7 @@ export type SidebarKey =
   | "reports"
   | "facilities"
   | "deliveries"
+  | "leads"
   | "payments"
   | "revenue"
   | "users"
@@ -53,6 +54,14 @@ function buildGroups(counts: SidebarProps["counts"]): Group[] {
         },
         { key: "facilities", label: "Facilities", icon: <PinIcon />, enabled: true },
         { key: "deliveries", label: "Deliveries", icon: <TruckIcon />, enabled: true },
+      ],
+    },
+    {
+      // First Sales sub-item is Leads. Future siblings (Airlines,
+      // Hotels, etc.) plug in by adding a SidebarKey + a row here.
+      label: "Sales",
+      items: [
+        { key: "leads", label: "Leads", icon: <BriefcaseIcon />, enabled: true },
       ],
     },
     {
@@ -351,6 +360,15 @@ function TruckIcon() {
       <path d="M16 8h4l3 3v5h-7" />
       <circle cx="5.5" cy="18.5" r="2" />
       <circle cx="18.5" cy="18.5" r="2" />
+    </svg>
+  );
+}
+function BriefcaseIcon() {
+  return (
+    <svg {...SVG_PROPS}>
+      <rect x="2" y="7" width="20" height="14" rx="2" />
+      <path d="M16 7V5a2 2 0 0 0-2-2h-4a2 2 0 0 0-2 2v2" />
+      <path d="M2 13h20" />
     </svg>
   );
 }

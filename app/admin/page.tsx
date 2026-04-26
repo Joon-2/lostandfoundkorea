@@ -6,6 +6,7 @@ import AdminTopBar from "@/components/admin/AdminTopBar";
 import CaseList from "@/components/admin/CaseList";
 import FacilitiesView from "@/components/admin/FacilitiesView";
 import DeliveriesView from "@/components/admin/DeliveriesView";
+import LeadsView from "@/components/admin/LeadsView";
 import ComingSoon from "@/components/admin/ComingSoon";
 
 const SESSION_KEY = "lfk_admin_password";
@@ -29,6 +30,7 @@ const SECTIONS: Record<
   reports: { section: "Operations", page: "Reports" },
   facilities: { section: "Operations", page: "Facilities" },
   deliveries: { section: "Operations", page: "Deliveries" },
+  leads: { section: "Sales", page: "Leads" },
   payments: { section: "Finance", page: "Payments", comingSoon: { title: "Payments" } },
   revenue: { section: "Finance", page: "Revenue", comingSoon: { title: "Revenue" } },
   users: { section: "System", page: "Users", comingSoon: { title: "Users" } },
@@ -149,6 +151,7 @@ function initialSection(): SidebarKey {
     "reports",
     "facilities",
     "deliveries",
+    "leads",
     "payments",
     "revenue",
     "users",
@@ -299,6 +302,9 @@ function AdminShell({
               onUnauthorized={onLogout}
               onUpdate={updateReport}
             />
+          )}
+          {section === "leads" && (
+            <LeadsView password={password} onUnauthorized={onLogout} />
           )}
           {meta.comingSoon && (
             <ComingSoon
