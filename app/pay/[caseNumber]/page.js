@@ -609,17 +609,20 @@ function FoundState({
         const transactionId = paypalData.orderID;
         onReceipt?.({ transactionId, amount, paidAt, planLabel });
 
-        fetch("/api/send-receipt", {
+        fetch("/api/email", {
           method: "POST",
           headers: { "Content-Type": "application/json" },
           body: JSON.stringify({
-            name: report.name,
-            email: report.email,
+            type: "receipt",
+            to: report.email,
             caseNumber: report.case_number,
-            amount,
-            transactionId,
-            paidAt,
-            planLabel,
+            data: {
+              name: report.name,
+              amount,
+              transactionId,
+              paidAt,
+              planLabel,
+            },
           }),
         }).catch((err) => console.error("send-receipt failed:", err));
 
