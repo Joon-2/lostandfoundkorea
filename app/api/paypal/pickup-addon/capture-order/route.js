@@ -1,4 +1,4 @@
-import { capturePayPalOrder } from "@/lib/paypal";
+import { capturePayPalOrder, refundPayPalCapture } from "@/lib/paypal";
 import { supabaseAdmin } from "@/lib/supabase-admin";
 import { logToCaseByCaseNumber } from "@/lib/activity-log";
 import { plans } from "@/config/plans";
@@ -16,6 +16,10 @@ export async function POST(request) {
       );
     }
 
+    // Pickup add-on is a single fixed-price product; price is sourced
+    // from the server-side plans config so the client can't change it.
+    const expectedAmount = plans.pickup_addon.price.toFixed(2);
+
     const captured = await capturePayPalOrder(orderId);
     const captureStatus = captured?.status;
     if (captureStatus !== "COMPLETED") {
@@ -27,6 +31,43 @@ export async function POST(request) {
       return Response.json(
         { ok: false, error: `Capture status: ${captureStatus}` },
         { status: 502 }
+      );
+    }
+
+    const captureNode =
+      captured?.purchase_units?.[0]?.payments?.captures?.[0];
+    const paidAmount = captureNode?.amount?.value;
+    const captureId = captureNode?.id;
+    if (!paidAmount) {
+      console.error(
+        "pickup-addon capture-order: capture amount missing",
+        captured
+      );
+      return Response.json(
+        { ok: false, error: "Capture amount missing in PayPal response" },
+        { status: 502 }
+      );
+    }
+    if (paidAmount !== expectedAmount) {
+      console.error("pickup-addon capture-order: amount mismatch", {
+        expected: expectedAmount,
+        got: paidAmount,
+      });
+      if (captureId) {
+        try {
+          await refundPayPalCapture(captureId, {
+            reason: `Amount mismatch (expected ${expectedAmount}, captured ${paidAmount})`,
+          });
+        } catch (refundErr) {
+          console.error(
+            "pickup-addon capture-order: refund failed",
+            refundErr
+          );
+        }
+      }
+      return Response.json(
+        { ok: false, error: "Captured amount does not match add-on price" },
+        { status: 400 }
       );
     }
 

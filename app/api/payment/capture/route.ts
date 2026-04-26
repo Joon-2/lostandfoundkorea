@@ -1,6 +1,7 @@
 import type { NextRequest } from "next/server";
-import { capturePayPalOrder } from "@/lib/paypal";
+import { capturePayPalOrder, refundPayPalCapture } from "@/lib/paypal";
 import { supabaseAdmin } from "@/lib/supabase-admin";
+import { getReportPlanPrice } from "@/lib/report-plans";
 
 export const runtime = "nodejs";
 export const dynamic = "force-dynamic";
@@ -23,6 +24,24 @@ export async function POST(request: NextRequest) {
       );
     }
 
+    // Look up the plan server-side so the expected amount can't be
+    // tampered with by the client.
+    let expectedAmount: string | null = null;
+    if (supabaseAdmin) {
+      const { data: report } = await supabaseAdmin
+        .from("reports")
+        .select("plan")
+        .eq("case_number", caseNumber)
+        .maybeSingle();
+      if (!report) {
+        return Response.json(
+          { ok: false, error: "Case not found" },
+          { status: 404 }
+        );
+      }
+      expectedAmount = getReportPlanPrice(report.plan);
+    }
+
     const captured = await capturePayPalOrder(orderId);
     const captureStatus = captured?.status;
     if (captureStatus !== "COMPLETED") {
@@ -34,6 +53,37 @@ export async function POST(request: NextRequest) {
       return Response.json(
         { ok: false, error: `Capture status: ${captureStatus}` },
         { status: 502 }
+      );
+    }
+
+    const captureNode =
+      captured?.purchase_units?.[0]?.payments?.captures?.[0];
+    const paidAmount: string | undefined = captureNode?.amount?.value;
+    const captureId: string | undefined = captureNode?.id;
+    if (!paidAmount) {
+      console.error("[payment/capture] capture amount missing", captured);
+      return Response.json(
+        { ok: false, error: "Capture amount missing in PayPal response" },
+        { status: 502 }
+      );
+    }
+    if (expectedAmount && paidAmount !== expectedAmount) {
+      console.error("[payment/capture] amount mismatch", {
+        expected: expectedAmount,
+        got: paidAmount,
+      });
+      if (captureId) {
+        try {
+          await refundPayPalCapture(captureId, {
+            reason: `Amount mismatch (expected ${expectedAmount}, captured ${paidAmount})`,
+          });
+        } catch (refundErr) {
+          console.error("[payment/capture] refund failed", refundErr);
+        }
+      }
+      return Response.json(
+        { ok: false, error: "Captured amount does not match plan price" },
+        { status: 400 }
       );
     }
 
