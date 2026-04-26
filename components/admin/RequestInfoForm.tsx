@@ -3,6 +3,7 @@
 import { useState } from "react";
 import { inputCls } from "@/components/admin/styles";
 import StatusPill, { type StatusMsg } from "@/components/admin/StatusPill";
+import { adminFetch } from "@/lib/admin-fetch";
 
 type RequestInfoFormProps = {
   report: any;
@@ -28,25 +29,21 @@ export default function RequestInfoForm({
     setSending(true);
     setMsg(null);
     try {
-      const res = await fetch("/api/admin/request-info", {
-        method: "POST",
-        headers: {
-          "Content-Type": "application/json",
-          "x-admin-password": password,
-        },
-        body: JSON.stringify({
-          name: report.name,
-          email: report.email,
-          caseNumber: report.case_number,
-          infoText: trimmed,
-        }),
-      });
-      if (res.status === 401) {
-        onUnauthorized?.();
-        return;
-      }
-      const json = await res.json().catch(() => ({}));
-      if (!res.ok || !json.ok) throw new Error(json.error || "Send failed");
+      const json = await adminFetch<{ ok: boolean; error?: string }>(
+        "/api/admin/request-info",
+        {
+          method: "POST",
+          body: {
+            name: report.name,
+            email: report.email,
+            caseNumber: report.case_number,
+            infoText: trimmed,
+          },
+          password,
+          onUnauthorized,
+        }
+      );
+      if (!json.ok) throw new Error(json.error || "Send failed");
       setText("");
       setMsg({ kind: "ok", text: `Request sent to ${report.email}.` });
       onSent?.();

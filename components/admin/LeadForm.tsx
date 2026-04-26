@@ -6,6 +6,7 @@ import {
   PARTNER_TYPE_LABELS,
   type Lead,
 } from "@/types/lead";
+import { adminFetch } from "@/lib/admin-fetch";
 
 // New-lead modal. Editing existing leads happens inline in LeadsView's
 // expanded row (matching the Reports edit-in-place pattern), so this
@@ -69,25 +70,21 @@ export default function LeadForm({
     try {
       const url = isEdit ? `/api/leads/${lead!.id}` : "/api/leads";
       const method = isEdit ? "PUT" : "POST";
-      const res = await fetch(url, {
-        method,
-        headers: {
-          "Content-Type": "application/json",
-          "x-admin-password": password,
-        },
-        body: JSON.stringify({
-          company_name: companyName,
-          contact_person: contactPerson,
-          email,
-          partner_type: partnerType,
-        }),
-      });
-      if (res.status === 401) {
-        onUnauthorized?.();
-        return;
-      }
-      const json = await res.json().catch(() => ({}));
-      if (!res.ok || !json.ok) throw new Error(json.error || "Save failed");
+      const json = await adminFetch<{ ok: boolean; lead: Lead; error?: string }>(
+        url,
+        {
+          method,
+          body: {
+            company_name: companyName,
+            contact_person: contactPerson,
+            email,
+            partner_type: partnerType,
+          },
+          password,
+          onUnauthorized,
+        }
+      );
+      if (!json.ok) throw new Error(json.error || "Save failed");
       onSaved(json.lead);
     } catch (err: any) {
       setError(err.message);

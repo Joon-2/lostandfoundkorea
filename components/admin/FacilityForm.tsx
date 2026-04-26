@@ -11,6 +11,7 @@ import type {
   FacilityCategory,
   FacilityTranslationFields,
 } from "@/types/facility";
+import { adminFetch } from "@/lib/admin-fetch";
 
 type FacilityFormProps = {
   facility: Facility | null; // null = create mode
@@ -200,20 +201,17 @@ export default function FacilityForm({
 
       const url = isEdit ? `/api/facilities/${facility!.id}` : "/api/facilities";
       const method = isEdit ? "PUT" : "POST";
-      const res = await fetch(url, {
+      const json = await adminFetch<{
+        ok: boolean;
+        facility: Facility;
+        error?: string;
+      }>(url, {
         method,
-        headers: {
-          "Content-Type": "application/json",
-          "x-admin-password": password,
-        },
-        body: JSON.stringify(payload),
+        body: payload,
+        password,
+        onUnauthorized,
       });
-      if (res.status === 401) {
-        onUnauthorized?.();
-        return;
-      }
-      const json = await res.json().catch(() => ({}));
-      if (!res.ok || !json.ok) throw new Error(json.error || "Save failed");
+      if (!json.ok) throw new Error(json.error || "Save failed");
       onSaved(json.facility);
     } catch (err: any) {
       setMsg({ kind: "err", text: err.message });
@@ -234,16 +232,15 @@ export default function FacilityForm({
     setDeleting(true);
     setMsg(null);
     try {
-      const res = await fetch(`/api/facilities/${facility!.id}`, {
-        method: "DELETE",
-        headers: { "x-admin-password": password },
-      });
-      if (res.status === 401) {
-        onUnauthorized?.();
-        return;
-      }
-      const json = await res.json().catch(() => ({}));
-      if (!res.ok || !json.ok) throw new Error(json.error || "Delete failed");
+      const json = await adminFetch<{ ok: boolean; error?: string }>(
+        `/api/facilities/${facility!.id}`,
+        {
+          method: "DELETE",
+          password,
+          onUnauthorized,
+        }
+      );
+      if (!json.ok) throw new Error(json.error || "Delete failed");
       onDeleted?.(facility!.id);
     } catch (err: any) {
       setMsg({ kind: "err", text: err.message });
