@@ -17,45 +17,12 @@ import Field from "@/components/admin/Field";
 import { inputCls } from "@/components/admin/styles";
 import { formatDate } from "@/lib/format";
 import { adminFetch } from "@/lib/admin-fetch";
+import type { StagePickupProps } from "@/components/admin/stage-pickup/shared";
 
-export type SubStage =
-  | "pickup_scheduled"
-  | "picked_up"
-  | "shipping_quote"
-  | "quote_accepted"
-  | "shipped"
-  | "delivered";
-
-type Common = {
-  report: any;
-  password: string;
-  onUnauthorized?: () => void;
-  onUpdate: (report: any) => void;
-  onAdvance: () => void;
-  stageMoving: boolean;
-  stageMsg: StatusMsg | null;
-};
-
-type StagePickupProps = Common & {
-  subStage: SubStage;
-  pickupScheduledAt: string;
-  setPickupScheduledAt: (v: string) => void;
-  shippingQuoteAmount: string;
-  setShippingQuoteAmount: (v: string) => void;
-  shippingQuoteNotes: string;
-  setShippingQuoteNotes: (v: string) => void;
-  trackingNumber: string;
-  setTrackingNumber: (v: string) => void;
-  shippingMethod: string;
-  setShippingMethod: (v: string) => void;
-  estimatedDelivery: string;
-  setEstimatedDelivery: (v: string) => void;
-  onSave: () => void;
-  saving: boolean;
-  saveMsg: StatusMsg | null;
-  onMarkShipped: () => void;
-  shipping: boolean;
-};
+// SubStage is re-exported for back-compat with existing importers
+// (DeliveryDetail). Once all sub-stages migrate to the new folder this
+// file becomes a thin dispatcher and the type lives in stage-pickup/shared.
+export type { SubStage } from "@/components/admin/stage-pickup/shared";
 
 export default function StagePickup(props: StagePickupProps) {
   switch (props.subStage) {
