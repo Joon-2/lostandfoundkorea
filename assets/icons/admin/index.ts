@@ -1,0 +1,9 @@
+export { default as DashboardIcon } from "./DashboardIcon";
+export { default as ClipboardIcon } from "./ClipboardIcon";
+export { default as PinIcon } from "./PinIcon";
+export { default as TruckIcon } from "./TruckIcon";
+export { default as BriefcaseIcon } from "./BriefcaseIcon";
+export { default as DollarIcon } from "./DollarIcon";
+export { default as ChartIcon } from "./ChartIcon";
+export { default as UsersIcon } from "./UsersIcon";
+export { default as GearIcon } from "./GearIcon";
