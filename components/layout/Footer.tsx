@@ -3,6 +3,7 @@ import { getTranslations } from "next-intl/server";
 import { siteConfig } from "@/config/site";
 
 const LEGAL_LINKS = [
+  { href: "/our-story", label: "Our Story" },
   { href: "/legal?tab=terms", label: "Terms" },
   { href: "/legal?tab=privacy", label: "Privacy" },
   { href: "/legal?tab=refund", label: "Refund" },

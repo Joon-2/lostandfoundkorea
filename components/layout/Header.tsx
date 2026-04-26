@@ -41,6 +41,7 @@ export default function Header({ variant = "marketing", action = null }: HeaderP
     { href: "/#how-it-works", label: t("howItWorks") },
     { href: "/#pricing", label: t("pricing") },
     { href: "/coverage", label: t("infoBook") },
+    { href: "/our-story", label: t("ourStory") },
     { href: "/#faq", label: t("faq") },
   ];
 
