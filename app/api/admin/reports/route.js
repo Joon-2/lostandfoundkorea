@@ -30,19 +30,5 @@ export async function GET(request) {
     );
   }
 
-  const rows = data || [];
-  console.log(
-    "[admin/reports] rows:",
-    rows.length,
-    "— found_images summary:",
-    rows.map((r) => ({
-      id: r.id,
-      case_number: r.case_number,
-      found_images: Array.isArray(r.found_images)
-        ? r.found_images.length
-        : typeof r.found_images,
-    }))
-  );
-
-  return Response.json({ ok: true, reports: rows }, { headers });
+  return Response.json({ ok: true, reports: data || [] }, { headers });
 }
