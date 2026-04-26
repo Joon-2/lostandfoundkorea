@@ -15,14 +15,14 @@ export default function FaqPage() {
   return (
     <div className="flex flex-1 flex-col">
       <Header />
-      <main className="mx-auto w-full max-w-3xl flex-1 px-5 py-12 sm:px-8 sm:py-16">
+      <main className="mx-auto w-full max-w-6xl flex-1 px-5 py-10 sm:px-8 sm:py-14">
         <header className="mb-10">
           <h1 className="font-serif text-4xl tracking-tight text-foreground sm:text-5xl">
             Frequently asked questions
           </h1>
-          <p className="mt-3 text-[17px] leading-relaxed text-body">
+          <p className="mt-3 max-w-2xl text-[17px] leading-relaxed text-body">
             Everything we get asked about how Lost &amp; Found Korea works.
-            Search below or browse by category.
+            Search or browse by category.
           </p>
         </header>
         <FaqClient />

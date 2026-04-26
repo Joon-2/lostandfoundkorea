@@ -3,21 +3,35 @@
 import { useEffect, useMemo, useRef, useState } from "react";
 import { FAQ_CATEGORIES } from "./FaqContent";
 
-// Search-and-accordion FAQ. Multiple items can be open at once. Items
-// expand/collapse on click and on direct hash navigation
-// (/faq#how-much-does-it-cost). Search filters case-insensitively
-// against question text only.
+// Two-column FAQ. Left rail is a sticky category nav with active-section
+// tracking via IntersectionObserver. Right column has a compact search
+// box at the top and the categorized accordion below.
+//
+// Per item:
+//   - all collapsed by default; multiple can be open at once
+//   - smooth expand via grid-template-rows trick (no JS height math)
+//   - hash anchors (/faq#how-much-does-it-cost) auto-open + scroll
+//
+// Search filters question text only and reports a count under the input.
+
+const HEADER_OFFSET = 88; // sticky site header (60px) + breathing room
 
 export default function FaqClient() {
   const [query, setQuery] = useState("");
   const [open, setOpen] = useState<Record<string, boolean>>({});
+  const [activeCategory, setActiveCategory] = useState<string>(
+    FAQ_CATEGORIES[0].id
+  );
+
   const itemRefs = useRef<Record<string, HTMLDivElement | null>>({});
+  const sectionRefs = useRef<Record<string, HTMLElement | null>>({});
 
   const toggle = (id: string) => {
     setOpen((prev) => ({ ...prev, [id]: !prev[id] }));
   };
 
-  // On mount + on hashchange: open the matching question and scroll to it.
+  // Hash → open + scroll. Runs on mount and on hashchange (back/forward,
+  // pasted link).
   useEffect(() => {
     const openFromHash = () => {
       const id = window.location.hash.replace(/^#/, "");
@@ -27,7 +41,6 @@ export default function FaqClient() {
       );
       if (!exists) return;
       setOpen((prev) => ({ ...prev, [id]: true }));
-      // Defer scroll until after the panel mounts so the offset is right.
       requestAnimationFrame(() => {
         const el = itemRefs.current[id];
         if (el) el.scrollIntoView({ behavior: "smooth", block: "start" });
@@ -37,6 +50,37 @@ export default function FaqClient() {
     window.addEventListener("hashchange", openFromHash);
     return () => window.removeEventListener("hashchange", openFromHash);
   }, []);
+
+  // Active-category tracking: highlight whichever section's header is
+  // closest to the top of the viewport (just below the sticky header).
+  useEffect(() => {
+    const observer = new IntersectionObserver(
+      (entries) => {
+        // Use the topmost intersecting entry. Falls back to whatever
+        // entry is currently intersecting if multiple do.
+        const visible = entries
+          .filter((e) => e.isIntersecting)
+          .sort((a, b) => a.boundingClientRect.top - b.boundingClientRect.top);
+        if (visible[0]) {
+          setActiveCategory(visible[0].target.id.replace(/^cat-/, ""));
+        }
+      },
+      {
+        rootMargin: `-${HEADER_OFFSET + 8}px 0px -55% 0px`,
+        threshold: 0,
+      }
+    );
+    Object.values(sectionRefs.current).forEach((el) => {
+      if (el) observer.observe(el);
+    });
+    return () => observer.disconnect();
+  }, []);
+
+  const scrollToCategory = (id: string) => {
+    const el = sectionRefs.current[id];
+    if (el) el.scrollIntoView({ behavior: "smooth", block: "start" });
+    setActiveCategory(id);
+  };
 
   const normalizedQuery = query.trim().toLowerCase();
   const filtered = useMemo(() => {
@@ -50,64 +94,162 @@ export default function FaqClient() {
   }, [normalizedQuery]);
 
   const totalShown = filtered.reduce((n, c) => n + c.items.length, 0);
+  const isSearching = normalizedQuery.length > 0;
 
   return (
-    <div>
-      <SearchBox value={query} onChange={setQuery} />
+    <div className="grid grid-cols-1 gap-8 md:grid-cols-[240px_1fr] md:gap-12 lg:gap-16">
+      {/* Mobile: horizontal-scroll category nav */}
+      <nav
+        aria-label="FAQ categories"
+        className="-mx-5 flex gap-1 overflow-x-auto border-b border-border px-5 md:hidden"
+      >
+        {FAQ_CATEGORIES.map((cat) => {
+          const isActive = cat.id === activeCategory;
+          return (
+            <button
+              key={cat.id}
+              type="button"
+              onClick={() => scrollToCategory(cat.id)}
+              className={`relative -mb-px whitespace-nowrap border-b-2 px-3 py-3 text-sm font-medium transition-colors ${
+                isActive
+                  ? "border-accent text-accent"
+                  : "border-transparent text-muted hover:text-foreground"
+              }`}
+            >
+              {cat.title}
+            </button>
+          );
+        })}
+      </nav>
 
-      {totalShown === 0 ? (
-        <div className="mt-10 rounded-xl border border-border bg-alt px-5 py-8 text-center text-sm text-muted">
-          No questions match "{query}". Try a different search.
-        </div>
-      ) : (
-        <div className="mt-10 space-y-12">
-          {filtered.map((cat) => (
-            <section key={cat.title}>
-              <h2 className="font-serif text-2xl tracking-tight text-foreground">
+      {/* Desktop: sticky vertical nav */}
+      <aside className="hidden md:block">
+        <nav
+          aria-label="FAQ categories"
+          className="sticky top-[88px] flex flex-col gap-1"
+        >
+          <p className="mb-3 text-xs font-semibold uppercase tracking-widest text-muted">
+            Categories
+          </p>
+          {FAQ_CATEGORIES.map((cat) => {
+            const isActive = cat.id === activeCategory;
+            return (
+              <button
+                key={cat.id}
+                type="button"
+                onClick={() => scrollToCategory(cat.id)}
+                className={`group flex flex-col items-start gap-0.5 rounded-r-md border-l-2 py-2 pl-3 pr-2 text-left text-[14px] leading-snug transition-colors ${
+                  isActive
+                    ? "border-accent bg-alt font-semibold text-foreground"
+                    : "border-transparent text-body hover:border-border hover:bg-alt hover:text-foreground"
+                }`}
+              >
                 {cat.title}
-              </h2>
-              <div className="mt-5 divide-y divide-border overflow-hidden rounded-2xl border border-border bg-card shadow-card">
-                {cat.items.map((item) => {
-                  const isOpen = !!open[item.id];
-                  return (
-                    <div
-                      key={item.id}
-                      ref={(el) => {
-                        itemRefs.current[item.id] = el;
-                      }}
-                      id={item.id}
-                      className="scroll-mt-24"
-                    >
-                      <button
-                        type="button"
-                        onClick={() => toggle(item.id)}
-                        aria-expanded={isOpen}
-                        aria-controls={`${item.id}-panel`}
-                        className="flex w-full items-start justify-between gap-4 px-5 py-4 text-left transition-colors hover:bg-alt sm:px-6"
+              </button>
+            );
+          })}
+        </nav>
+      </aside>
+
+      <div className="min-w-0">
+        {/* Search */}
+        <div className="mb-2 max-w-md">
+          <SearchBox value={query} onChange={setQuery} />
+        </div>
+        <p
+          className="mb-8 text-xs text-muted"
+          aria-live="polite"
+          role="status"
+        >
+          {isSearching
+            ? totalShown === 0
+              ? "No results found"
+              : `${totalShown} ${totalShown === 1 ? "result" : "results"}`
+            : " "}
+        </p>
+
+        {totalShown === 0 ? (
+          <div className="rounded-xl border border-border bg-alt px-5 py-8 text-center text-sm text-muted">
+            No questions match "{query}". Try a different search.
+          </div>
+        ) : (
+          <div className="divide-y divide-border">
+            {filtered.map((cat, catIdx) => (
+              <section
+                key={cat.id}
+                id={`cat-${cat.id}`}
+                ref={(el) => {
+                  sectionRefs.current[cat.id] = el;
+                }}
+                className={`scroll-mt-24 ${catIdx === 0 ? "pb-10" : "py-10"}`}
+              >
+                <CategoryHeader
+                  index={
+                    // Keep canonical numbering (01..05) even when search
+                    // hides categories.
+                    FAQ_CATEGORIES.findIndex((c) => c.id === cat.id) + 1
+                  }
+                  title={cat.title}
+                  description={cat.description}
+                />
+
+                <div className="mt-5 space-y-2">
+                  {cat.items.map((item) => {
+                    const isOpen = !!open[item.id];
+                    return (
+                      <div
+                        key={item.id}
+                        ref={(el) => {
+                          itemRefs.current[item.id] = el;
+                        }}
+                        id={item.id}
+                        className={`scroll-mt-24 rounded-xl border transition-colors ${
+                          isOpen
+                            ? "border-accent/30 bg-alt"
+                            : "border-border bg-card hover:border-border"
+                        }`}
                       >
-                        <span className="text-[15px] font-medium leading-snug text-foreground sm:text-base">
-                          {item.q}
-                        </span>
-                        <ChevronIcon open={isOpen} />
-                      </button>
-                      {isOpen && (
+                        <button
+                          type="button"
+                          onClick={() => toggle(item.id)}
+                          aria-expanded={isOpen}
+                          aria-controls={`${item.id}-panel`}
+                          className="flex w-full items-start justify-between gap-4 px-4 py-3 text-left sm:px-5"
+                        >
+                          <span
+                            className={`text-[15px] leading-snug ${
+                              isOpen
+                                ? "font-semibold text-foreground"
+                                : "font-medium text-foreground"
+                            }`}
+                          >
+                            {item.q}
+                          </span>
+                          <ChevronIcon open={isOpen} />
+                        </button>
                         <div
                           id={`${item.id}-panel`}
-                          className="px-5 pb-5 sm:px-6 sm:pb-6"
+                          className="grid transition-[grid-template-rows] duration-200 ease-out"
+                          style={{
+                            gridTemplateRows: isOpen ? "1fr" : "0fr",
+                          }}
+                          aria-hidden={!isOpen}
                         >
-                          <div className="faq-prose text-[15px] leading-relaxed text-body">
-                            {item.a}
+                          <div className="overflow-hidden">
+                            <div className="faq-prose px-4 pb-4 text-[15px] leading-relaxed text-body sm:px-5 sm:pb-5">
+                              {item.a}
+                            </div>
                           </div>
                         </div>
-                      )}
-                    </div>
-                  );
-                })}
-              </div>
-            </section>
-          ))}
-        </div>
-      )}
+                      </div>
+                    );
+                  })}
+                </div>
+              </section>
+            ))}
+          </div>
+        )}
+      </div>
 
       <style jsx global>{`
         .faq-prose p + p,
@@ -134,6 +276,34 @@ export default function FaqClient() {
   );
 }
 
+function CategoryHeader({
+  index,
+  title,
+  description,
+}: {
+  index: number;
+  title: string;
+  description: string;
+}) {
+  const num = String(index).padStart(2, "0");
+  return (
+    <div className="flex items-start gap-3">
+      <span
+        aria-hidden="true"
+        className="mt-1 inline-flex h-6 min-w-[28px] items-center justify-center rounded-md bg-accent/10 px-1.5 text-[11px] font-semibold tracking-wider text-accent"
+      >
+        {num}
+      </span>
+      <div>
+        <h2 className="font-serif text-2xl tracking-tight text-foreground">
+          {title}
+        </h2>
+        <p className="mt-1 text-sm text-muted">{description}</p>
+      </div>
+    </div>
+  );
+}
+
 function SearchBox({
   value,
   onChange,
@@ -149,8 +319,8 @@ function SearchBox({
         type="search"
         value={value}
         onChange={(e) => onChange(e.target.value)}
-        placeholder="Search questions…"
-        className="w-full rounded-xl border border-border bg-card py-3 pl-11 pr-4 text-[15px] text-foreground placeholder:text-muted focus:border-accent focus:outline-none focus:ring-2 focus:ring-accent/30"
+        placeholder="Search questions"
+        className="w-full rounded-lg border border-border bg-card py-2 pl-9 pr-3 text-sm text-foreground placeholder:text-muted focus:border-accent focus:outline-none focus:ring-2 focus:ring-accent/30"
       />
     </label>
   );
@@ -159,7 +329,7 @@ function SearchBox({
 function SearchIcon() {
   return (
     <svg
-      className="pointer-events-none absolute left-3.5 top-1/2 h-4 w-4 -translate-y-1/2 text-muted"
+      className="pointer-events-none absolute left-3 top-1/2 h-4 w-4 -translate-y-1/2 text-muted"
       viewBox="0 0 24 24"
       fill="none"
       stroke="currentColor"
@@ -177,7 +347,7 @@ function SearchIcon() {
 function ChevronIcon({ open }: { open: boolean }) {
   return (
     <svg
-      className={`mt-1 h-4 w-4 flex-shrink-0 text-muted transition-transform ${
+      className={`mt-1 h-4 w-4 flex-shrink-0 text-muted transition-transform duration-200 ease-out ${
         open ? "rotate-180" : ""
       }`}
       viewBox="0 0 24 24"

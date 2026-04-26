@@ -11,13 +11,17 @@ export type FaqItem = {
 };
 
 export type FaqCategory = {
+  id: string;
   title: string;
+  description: string;
   items: FaqItem[];
 };
 
 export const FAQ_CATEGORIES: FaqCategory[] = [
   {
+    id: "about",
     title: "About the Service",
+    description: "What we do and how we work",
     items: [
       {
         id: "what-does-lfk-do",
@@ -73,7 +77,9 @@ export const FAQ_CATEGORIES: FaqCategory[] = [
     ],
   },
   {
+    id: "pricing",
     title: "Pricing & Payment",
+    description: "Fees, currencies, and how to pay",
     items: [
       {
         id: "how-much-does-it-cost",
@@ -156,7 +162,9 @@ export const FAQ_CATEGORIES: FaqCategory[] = [
     ],
   },
   {
+    id: "process",
     title: "Recovery & Shipping Process",
+    description: "From report to delivery",
     items: [
       {
         id: "how-to-report",
@@ -261,7 +269,9 @@ export const FAQ_CATEGORIES: FaqCategory[] = [
     ],
   },
   {
+    id: "safety",
     title: "Safety, Insurance & Refunds",
+    description: "Protection and policies",
     items: [
       {
         id: "insurance",
@@ -344,7 +354,9 @@ export const FAQ_CATEGORIES: FaqCategory[] = [
     ],
   },
   {
+    id: "trust",
     title: "Trust & Verification",
+    description: "Why you can rely on us",
     items: [
       {
         id: "not-scam",
