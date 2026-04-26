@@ -179,24 +179,21 @@ function ReportPageInner() {
       return;
     }
 
-    console.log("Calling email API for case:", result.caseNumber);
     try {
-      const emailRes = await fetch("/api/send-email", {
+      await fetch("/api/email", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({
-          name: data.fullName.trim(),
-          email: data.email.trim(),
+          type: "confirmation",
+          to: data.email.trim(),
           caseNumber: result.caseNumber,
-          category: data.itemCategory,
-          itemDescription: data.itemDescription.trim(),
-          location: data.locationType,
+          data: {
+            name: data.fullName.trim(),
+            category: data.itemCategory,
+            itemDescription: data.itemDescription.trim(),
+            location: data.locationType,
+          },
         }),
-      });
-      const emailJson = await emailRes.json().catch(() => ({}));
-      console.log("Email API response:", {
-        status: emailRes.status,
-        body: emailJson,
       });
     } catch (emailErr) {
       console.error("Email API request failed:", emailErr);
