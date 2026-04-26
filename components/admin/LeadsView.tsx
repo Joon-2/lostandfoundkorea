@@ -12,6 +12,7 @@ import {
   type LeadStatus,
 } from "@/types/lead";
 import LeadForm from "@/components/admin/LeadForm";
+import Pagination from "@/components/admin/Pagination";
 
 // Sales / Leads page. Self-contained data fetch (no shared state with
 // Reports). Same visual shell as CaseList: stats row → toolbar → table
@@ -297,10 +298,12 @@ export default function LeadsView({
 
         <Pagination
           page={safePage}
-          pageCount={pageCount}
+          pageSize={PAGE_SIZE}
           total={filtered.length}
-          onPrev={() => setPage((p) => Math.max(1, p - 1))}
-          onNext={() => setPage((p) => Math.min(pageCount, p + 1))}
+          onPageChange={(p) => {
+            setExpandedId(null);
+            setPage(p);
+          }}
         />
       </div>
 
@@ -725,48 +728,3 @@ function StatCard({
   );
 }
 
-function Pagination({
-  page,
-  pageCount,
-  total,
-  onPrev,
-  onNext,
-}: {
-  page: number;
-  pageCount: number;
-  total: number;
-  onPrev: () => void;
-  onNext: () => void;
-}) {
-  if (total <= PAGE_SIZE) return null;
-  const start = (page - 1) * PAGE_SIZE + 1;
-  const end = Math.min(total, page * PAGE_SIZE);
-  return (
-    <div className="flex items-center justify-between border-t border-border bg-alt px-4 py-3 text-sm">
-      <span className="text-muted">
-        {start}–{end} of {total}
-      </span>
-      <div className="flex items-center gap-2">
-        <button
-          type="button"
-          onClick={onPrev}
-          disabled={page <= 1}
-          className="rounded-lg border border-border bg-card px-3 py-1 text-xs font-medium text-foreground transition-colors hover:bg-alt disabled:cursor-not-allowed disabled:opacity-50"
-        >
-          ← Prev
-        </button>
-        <span className="text-xs text-muted">
-          Page {page} of {pageCount}
-        </span>
-        <button
-          type="button"
-          onClick={onNext}
-          disabled={page >= pageCount}
-          className="rounded-lg border border-border bg-card px-3 py-1 text-xs font-medium text-foreground transition-colors hover:bg-alt disabled:cursor-not-allowed disabled:opacity-50"
-        >
-          Next →
-        </button>
-      </div>
-    </div>
-  );
-}

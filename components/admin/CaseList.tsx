@@ -4,6 +4,7 @@ import { useEffect, useMemo, useState } from "react";
 import { formatDate } from "@/lib/format";
 import { plans } from "@/config/plans";
 import CaseDetail from "@/components/admin/CaseDetail";
+import Pagination from "@/components/admin/Pagination";
 
 const STATUS_OPTIONS = ["pending", "found", "paid", "closed"] as const;
 const STATUS_LABELS: Record<string, string> = {
@@ -20,7 +21,8 @@ const STATUS_BADGE: Record<string, string> = {
 };
 
 const PRICE = plans.recovery.paymentPrice;
-const PAGE_SIZE = 20;
+const DEFAULT_PAGE_SIZE = 5;
+const PAGE_SIZE_OPTIONS = [5, 10, 25];
 
 type Stats = {
   total: number;
@@ -203,6 +205,20 @@ export default function CaseList({
   const [dateTo, setDateTo] = useState("");
   const [expandedId, setExpandedId] = useState<string | null>(null);
   const [page, setPage] = useState(1);
+  const [pageSize, setPageSize] = useState<number>(DEFAULT_PAGE_SIZE);
+
+  // Collapse any expanded row when paging or resizing — the row may
+  // not be on the new page anyway and leaving it expanded creates a
+  // disorienting layout shift.
+  const goToPage = (next: number) => {
+    setExpandedId(null);
+    setPage(next);
+  };
+  const changePageSize = (next: number) => {
+    setExpandedId(null);
+    setPageSize(next);
+    setPage(1);
+  };
 
   // Auto-expand the case named in ?case=LFK-XXXXXX (used by admin
   // notification emails) once reports have loaded.
@@ -253,11 +269,11 @@ export default function CaseList({
     setPage(1);
   }, [search, statusFilter, dateFrom, dateTo]);
 
-  const pageCount = Math.max(1, Math.ceil(filtered.length / PAGE_SIZE));
+  const pageCount = Math.max(1, Math.ceil(filtered.length / pageSize));
   const safePage = Math.min(page, pageCount);
   const visible = filtered.slice(
-    (safePage - 1) * PAGE_SIZE,
-    safePage * PAGE_SIZE
+    (safePage - 1) * pageSize,
+    safePage * pageSize
   );
 
   return (
@@ -358,10 +374,11 @@ export default function CaseList({
 
         <Pagination
           page={safePage}
-          pageCount={pageCount}
+          pageSize={pageSize}
           total={filtered.length}
-          onPrev={() => setPage((p) => Math.max(1, p - 1))}
-          onNext={() => setPage((p) => Math.min(pageCount, p + 1))}
+          onPageChange={goToPage}
+          onPageSizeChange={changePageSize}
+          pageSizeOptions={PAGE_SIZE_OPTIONS}
         />
       </div>
     </>
@@ -439,48 +456,3 @@ function Row({
   );
 }
 
-function Pagination({
-  page,
-  pageCount,
-  total,
-  onPrev,
-  onNext,
-}: {
-  page: number;
-  pageCount: number;
-  total: number;
-  onPrev: () => void;
-  onNext: () => void;
-}) {
-  if (total <= PAGE_SIZE) return null;
-  const start = (page - 1) * PAGE_SIZE + 1;
-  const end = Math.min(total, page * PAGE_SIZE);
-  return (
-    <div className="flex items-center justify-between border-t border-border bg-alt px-4 py-3 text-sm">
-      <span className="text-muted">
-        {start}–{end} of {total}
-      </span>
-      <div className="flex items-center gap-2">
-        <button
-          type="button"
-          onClick={onPrev}
-          disabled={page <= 1}
-          className="rounded-lg border border-border bg-card px-3 py-1 text-xs font-medium text-foreground transition-colors hover:bg-alt disabled:cursor-not-allowed disabled:opacity-50"
-        >
-          ← Prev
-        </button>
-        <span className="text-xs text-muted">
-          Page {page} of {pageCount}
-        </span>
-        <button
-          type="button"
-          onClick={onNext}
-          disabled={page >= pageCount}
-          className="rounded-lg border border-border bg-card px-3 py-1 text-xs font-medium text-foreground transition-colors hover:bg-alt disabled:cursor-not-allowed disabled:opacity-50"
-        >
-          Next →
-        </button>
-      </div>
-    </div>
-  );
-}
