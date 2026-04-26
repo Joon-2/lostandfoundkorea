@@ -186,16 +186,20 @@ export default function CaseDetail({
     setEmailMsg(null);
     try {
       const json = await adminFetch<{ ok: boolean; error?: string }>(
-        "/api/admin/send-confirmation",
+        "/api/email",
         {
           method: "POST",
           body: {
-            name: report.name,
-            email: report.email,
+            type: "confirmation",
+            to: report.email,
             caseNumber: report.case_number,
-            category: report.category,
-            itemDescription: report.item_description,
-            location: report.location,
+            data: {
+              name: report.name,
+              category: report.category,
+              itemDescription: report.item_description,
+              location: report.location,
+            },
+            logAction: `Confirmation email sent to ${report.email}`,
           },
           password,
           onUnauthorized,
@@ -222,14 +226,21 @@ export default function CaseDetail({
     setSendingPayment(true);
     setEmailMsg(null);
     try {
+      const planLabel = plans[plan].name;
       const json = await adminFetch<{ ok: boolean; error?: string }>(
-        "/api/admin/send-payment",
+        "/api/email",
         {
           method: "POST",
           body: {
-            name: report.name,
-            email: report.email,
+            type: "payment_link",
+            to: report.email,
             caseNumber: report.case_number,
+            data: {
+              name: report.name,
+              amount: String(amount),
+              planLabel,
+            },
+            logAction: "Payment link email sent",
           },
           password,
           onUnauthorized,
