@@ -6,7 +6,7 @@ import {
   normalizeStageKey,
 } from "@/lib/process-stages";
 import ProcessTracker from "@/components/admin/ProcessTracker";
-import StagePickup, { type SubStage } from "@/components/admin/StagePickup";
+import StagePickup, { type SubStage } from "@/components/admin/stage-pickup";
 import DeliveryPanel from "@/components/admin/DeliveryPanel";
 import type { StatusMsg } from "@/components/admin/StatusPill";
 import { adminFetch } from "@/lib/admin-fetch";
