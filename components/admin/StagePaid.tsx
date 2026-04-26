@@ -9,16 +9,19 @@ import { plans } from "@/config/plans";
 type StagePaidProps = {
   report: any;
   deliveryRequired: boolean;
-  onAdvanceToPhase2: () => void;
   onComplete: () => void;
   stageMoving: boolean;
   stageMsg: StatusMsg | null;
 };
 
+// On the Reports page this is the last action surface for a paid case.
+// For non-delivery cases admin still closes them out here. For delivery
+// cases the next step (pickup → ship → deliver) lives on the Deliveries
+// page; CaseDetail renders a "View delivery" link separately.
+
 export default function StagePaid({
   report,
   deliveryRequired,
-  onAdvanceToPhase2,
   onComplete,
   stageMoving,
   stageMsg,
@@ -67,25 +70,14 @@ export default function StagePaid({
         </div>
       )}
       {deliveryRequired ? (
-        <div className="rounded-2xl border border-border bg-card p-5 sm:p-6">
-          <h3 className="font-serif text-lg tracking-tight">
-            Delivery required
-          </h3>
-          <p className="mt-2 text-sm text-body">
-            {report.plan === "all_in_one"
-              ? "All-in-One plan — we pick up and deliver."
-              : report.pickup_addon_transaction_id
-              ? `Pickup add-on purchased (+$${plans.pickup_addon.price}).`
-              : "Delivery Only case."}{" "}
-            Advance to Phase 2 to coordinate pickup.
-          </p>
-          <button
-            onClick={onAdvanceToPhase2}
-            disabled={stageMoving}
-            className="mt-4 inline-flex items-center rounded-full bg-accent px-5 py-2.5 text-sm font-semibold text-white transition-colors hover:bg-accent-hover disabled:opacity-60"
-          >
-            {stageMoving ? "Advancing…" : "Advance to Phase 2 →"}
-          </button>
+        <div className="rounded-2xl border border-border bg-alt p-5 text-sm text-body">
+          {report.plan === "all_in_one"
+            ? "All-in-One plan — we pick up and deliver."
+            : report.pickup_addon_transaction_id
+            ? `Pickup add-on purchased (+$${plans.pickup_addon.price}).`
+            : "Delivery Only case."}{" "}
+          The next steps (pickup, shipping quote, tracking) live in the
+          Deliveries section.
         </div>
       ) : (
         <div className="rounded-2xl border border-border bg-alt p-5 text-sm text-body">

@@ -1,7 +1,9 @@
 "use client";
 
+import Link from "next/link";
 import { useEffect, useState } from "react";
 import {
+  PHASE2_STAGES,
   PROCESS_STAGES,
   isDeliveryRequired,
   normalizeStageKey,
@@ -11,25 +13,21 @@ import { siteConfig } from "@/config/site";
 import ProcessTracker from "@/components/admin/ProcessTracker";
 import ActivityLog from "@/components/admin/ActivityLog";
 import CustomerMessages from "@/components/admin/CustomerMessages";
-import DeliveryPanel from "@/components/admin/DeliveryPanel";
 import StageReceived from "@/components/admin/StageReceived";
 import StageSearching from "@/components/admin/StageSearching";
 import StageFound from "@/components/admin/StageFound";
 import StagePaymentSent from "@/components/admin/StagePaymentSent";
 import StagePaid from "@/components/admin/StagePaid";
-import StagePickup, { type SubStage } from "@/components/admin/StagePickup";
 import StageClosed from "@/components/admin/StageClosed";
 import StageCompleted from "@/components/admin/StageCompleted";
 import type { StatusMsg } from "@/components/admin/StatusPill";
 
-const PICKUP_STAGES: SubStage[] = [
-  "pickup_scheduled",
-  "picked_up",
-  "shipping_quote",
-  "quote_accepted",
-  "shipped",
-  "delivered",
-];
+// Reports-page case detail. Owns search-phase state only — delivery
+// (pickup → ship → deliver) lives in DeliveriesView. When a case is
+// in delivery, this view shows the "View delivery" link instead of
+// rendering the phase-2 stepper inline.
+
+const PHASE2_KEYS = new Set<string>(PHASE2_STAGES.map((s: any) => s.key));
 
 type CaseDetailProps = {
   report: any;
@@ -56,24 +54,6 @@ export default function CaseDetail({
   const [recoveryInstructions, setRecoveryInstructions] = useState(
     report.recovery_instructions || ""
   );
-  const [trackingNumber, setTrackingNumber] = useState(
-    report.tracking_number || ""
-  );
-  const [shippingMethod, setShippingMethod] = useState(
-    report.shipping_method || ""
-  );
-  const [estimatedDelivery, setEstimatedDelivery] = useState(
-    report.estimated_delivery || ""
-  );
-  const [pickupScheduledAt, setPickupScheduledAt] = useState(
-    report.pickup_scheduled_at || ""
-  );
-  const [shippingQuoteAmount, setShippingQuoteAmount] = useState(
-    report.shipping_quote_amount || ""
-  );
-  const [shippingQuoteNotes, setShippingQuoteNotes] = useState(
-    report.shipping_quote_notes || ""
-  );
 
   const [saving, setSaving] = useState(false);
   const [saveMsg, setSaveMsg] = useState<StatusMsg | null>(null);
@@ -83,11 +63,8 @@ export default function CaseDetail({
   const [sendingPayment, setSendingPayment] = useState(false);
   const [stageMoving, setStageMoving] = useState(false);
   const [stageMsg, setStageMsg] = useState<StatusMsg | null>(null);
-  const [shipping, setShipping] = useState(false);
 
-  // When the admin opens this case, flip any unread customer messages to
-  // read so the case-list badge clears. Server returns the updated row;
-  // we feed it back into the parent's report cache.
+  // Mark unread customer messages as read when admin opens the case.
   useEffect(() => {
     const messages = Array.isArray(report.messages) ? report.messages : [];
     const hasUnread = messages.some(
@@ -119,6 +96,8 @@ export default function CaseDetail({
   const paymentLink = `${siteConfig.url}/pay/${report.case_number || ""}`;
   const deliveryRequired = isDeliveryRequired(report);
   const closed = (report.status || "") === "closed";
+  const inDelivery =
+    deliveryRequired && (currentStage === "paid" || PHASE2_KEYS.has(currentStage));
 
   const flashEmail = (msg: StatusMsg) => {
     setEmailMsg(msg);
@@ -174,6 +153,7 @@ export default function CaseDetail({
     }
   };
 
+  // Search-phase save only; delivery fields are saved from DeliveryDetail.
   const handleSave = async () => {
     setSaving(true);
     setSaveMsg(null);
@@ -189,12 +169,6 @@ export default function CaseDetail({
           recovery_contact: recoveryContact,
           recovery_hours: recoveryHours,
           recovery_instructions: recoveryInstructions,
-          tracking_number: trackingNumber,
-          shipping_method: shippingMethod,
-          estimated_delivery: estimatedDelivery,
-          pickup_scheduled_at: pickupScheduledAt,
-          shipping_quote_amount: shippingQuoteAmount,
-          shipping_quote_notes: shippingQuoteNotes,
         }),
       });
       if (res.status === 401) {
@@ -304,34 +278,6 @@ export default function CaseDetail({
     }
   };
 
-  const handleMarkShipped = async () => {
-    if (shipping) return;
-    setShipping(true);
-    setStageMsg(null);
-    try {
-      const res = await fetch("/api/admin/mark-shipped", {
-        method: "POST",
-        headers: {
-          "Content-Type": "application/json",
-          "x-admin-password": password,
-        },
-        body: JSON.stringify({ caseNumber: report.case_number }),
-      });
-      if (res.status === 401) {
-        onUnauthorized?.();
-        return;
-      }
-      const json = await res.json().catch(() => ({}));
-      if (!res.ok || !json.ok) throw new Error(json.error || "Failed");
-      await refreshThisCase();
-      setStageMsg({ kind: "ok", text: "Marked as shipped." });
-    } catch (err: any) {
-      setStageMsg({ kind: "err", text: err.message });
-    } finally {
-      setShipping(false);
-    }
-  };
-
   const recoveryState = {
     recoveryLocation,
     setRecoveryLocation,
@@ -343,17 +289,6 @@ export default function CaseDetail({
     setRecoveryInstructions,
   };
 
-  const pickupAdvanceMap: Record<SubStage, string> = {
-    pickup_scheduled: "picked_up",
-    picked_up: "shipping_quote",
-    shipping_quote: "quote_accepted",
-    quote_accepted: "shipped",
-    shipped: "delivered",
-    delivered: "completed",
-  };
-
-  const isPickupStage = (PICKUP_STAGES as string[]).includes(currentStage);
-
   return (
     <div className="border-t border-border px-5 py-5 sm:px-6 sm:py-6">
       <ProcessTracker
@@ -361,6 +296,7 @@ export default function CaseDetail({
         password={password}
         onUnauthorized={onUnauthorized}
         onUpdate={onUpdate}
+        phase="search"
       />
 
       {!closed && currentStage === "received" && (
@@ -428,53 +364,20 @@ export default function CaseDetail({
         <StagePaid
           report={report}
           deliveryRequired={deliveryRequired}
-          onAdvanceToPhase2={() => advanceToStage("pickup_scheduled")}
           onComplete={() => advanceToStage("completed")}
           stageMoving={stageMoving}
           stageMsg={stageMsg}
         />
       )}
 
-      {!closed && isPickupStage && (
-        <StagePickup
-          subStage={currentStage as SubStage}
-          report={report}
-          password={password}
-          onUnauthorized={onUnauthorized}
-          onUpdate={onUpdate}
-          pickupScheduledAt={pickupScheduledAt}
-          setPickupScheduledAt={setPickupScheduledAt}
-          shippingQuoteAmount={shippingQuoteAmount}
-          setShippingQuoteAmount={setShippingQuoteAmount}
-          shippingQuoteNotes={shippingQuoteNotes}
-          setShippingQuoteNotes={setShippingQuoteNotes}
-          trackingNumber={trackingNumber}
-          setTrackingNumber={setTrackingNumber}
-          shippingMethod={shippingMethod}
-          setShippingMethod={setShippingMethod}
-          estimatedDelivery={estimatedDelivery}
-          setEstimatedDelivery={setEstimatedDelivery}
-          onSave={handleSave}
-          saving={saving}
-          saveMsg={saveMsg}
-          onMarkShipped={handleMarkShipped}
-          shipping={shipping}
-          onAdvance={() => advanceToStage(pickupAdvanceMap[currentStage as SubStage])}
-          stageMoving={stageMoving}
-          stageMsg={stageMsg}
-        />
+      {!closed && currentStage === "completed" && (
+        <StageCompleted report={report} />
       )}
-
-      {!closed && currentStage === "completed" && <StageCompleted report={report} />}
 
       {closed && <StageClosed report={report} />}
 
-      {deliveryRequired && (
-        <DeliveryPanel
-          report={report}
-          password={password}
-          onUnauthorized={onUnauthorized}
-        />
+      {!closed && inDelivery && (
+        <ViewDeliveryLink caseNumber={report.case_number} stage={currentStage} />
       )}
 
       <CustomerMessages report={report} />
@@ -487,5 +390,36 @@ export default function CaseDetail({
         onAdded={refreshThisCase}
       />
     </div>
+  );
+}
+
+function ViewDeliveryLink({
+  caseNumber,
+  stage,
+}: {
+  caseNumber: string;
+  stage: string;
+}) {
+  const subtitle =
+    stage === "paid"
+      ? "Ready for pickup."
+      : `Currently in delivery (${stage.replace(/_/g, " ")}).`;
+  return (
+    <section className="mt-6 rounded-2xl border border-accent/30 bg-emerald-50/40 p-5 sm:p-6">
+      <div className="flex flex-wrap items-center justify-between gap-3">
+        <div>
+          <h3 className="font-serif text-lg tracking-tight text-foreground">
+            Delivery
+          </h3>
+          <p className="mt-1 text-sm text-body">{subtitle}</p>
+        </div>
+        <Link
+          href={`/admin?section=deliveries&case=${encodeURIComponent(caseNumber)}`}
+          className="inline-flex items-center gap-1 rounded-full bg-accent px-4 py-2 text-sm font-semibold text-white transition-colors hover:bg-accent-hover"
+        >
+          View delivery →
+        </Link>
+      </div>
+    </section>
   );
 }

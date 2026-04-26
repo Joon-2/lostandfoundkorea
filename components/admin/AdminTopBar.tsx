@@ -10,6 +10,7 @@ type AdminTopBarProps = {
   onRefresh?: () => void;
   onExport?: () => void;
   showActions?: boolean;
+  showNewReport?: boolean;
   newReportHref?: string;
 };
 
@@ -24,6 +25,7 @@ export default function AdminTopBar({
   onRefresh,
   onExport,
   showActions = true,
+  showNewReport = true,
   newReportHref = "/report",
 }: AdminTopBarProps) {
   return (
@@ -86,14 +88,16 @@ export default function AdminTopBar({
               Export
             </button>
           )}
-          <Link
-            href={newReportHref}
-            className="inline-flex items-center gap-1.5 rounded-full bg-accent px-4 py-1.5 text-sm font-semibold text-white transition-colors hover:bg-accent-hover"
-          >
-            <PlusIcon />
-            <span className="hidden sm:inline">New report</span>
-            <span className="sm:hidden">New</span>
-          </Link>
+          {showNewReport && (
+            <Link
+              href={newReportHref}
+              className="inline-flex items-center gap-1.5 rounded-full bg-accent px-4 py-1.5 text-sm font-semibold text-white transition-colors hover:bg-accent-hover"
+            >
+              <PlusIcon />
+              <span className="hidden sm:inline">New report</span>
+              <span className="sm:hidden">New</span>
+            </Link>
+          )}
         </div>
       )}
     </header>

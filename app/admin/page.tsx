@@ -138,6 +138,27 @@ function SignInScreen({
   );
 }
 
+// Read ?section=deliveries from the URL on first paint so the
+// "View delivery →" link in CaseDetail lands on the right tab.
+function initialSection(): SidebarKey {
+  if (typeof window === "undefined") return "reports";
+  const params = new URLSearchParams(window.location.search);
+  const requested = params.get("section");
+  const valid: SidebarKey[] = [
+    "dashboard",
+    "reports",
+    "facilities",
+    "deliveries",
+    "payments",
+    "revenue",
+    "users",
+    "settings",
+  ];
+  return valid.includes(requested as SidebarKey)
+    ? (requested as SidebarKey)
+    : "reports";
+}
+
 // ─── Authenticated shell ────────────────────────────────────────────────
 
 function AdminShell({
@@ -147,7 +168,7 @@ function AdminShell({
   password: string;
   onLogout: () => void;
 }) {
-  const [section, setSection] = useState<SidebarKey>("reports");
+  const [section, setSection] = useState<SidebarKey>(() => initialSection());
   const [mobileNavOpen, setMobileNavOpen] = useState(false);
   const [reports, setReports] = useState<any[]>([]);
   const [loading, setLoading] = useState(false);
@@ -194,6 +215,11 @@ function AdminShell({
 
   const meta = SECTIONS[section];
   const isReports = section === "reports";
+  const isDeliveries = section === "deliveries";
+  // Reports + Deliveries both read from the lifted `reports` list, so the
+  // top-bar Refresh button is meaningful on either. Export + New Report
+  // stay scoped to Reports.
+  const showTopActions = isReports || isDeliveries;
 
   const handleExport = () => {
     if (!isReports) return;
@@ -244,9 +270,10 @@ function AdminShell({
           page={meta.page}
           onMobileMenuOpen={() => setMobileNavOpen(true)}
           refreshing={loading}
-          onRefresh={isReports ? fetchReports : undefined}
+          onRefresh={showTopActions ? fetchReports : undefined}
           onExport={isReports ? handleExport : undefined}
-          showActions={isReports}
+          showActions={showTopActions}
+          showNewReport={isReports}
         />
 
         <main className="flex-1 px-5 py-6 sm:px-8 sm:py-8">
@@ -264,7 +291,14 @@ function AdminShell({
             <FacilitiesView password={password} onUnauthorized={onLogout} />
           )}
           {section === "deliveries" && (
-            <DeliveriesView password={password} onUnauthorized={onLogout} />
+            <DeliveriesView
+              reports={reports}
+              loading={loading}
+              loadError={loadError}
+              password={password}
+              onUnauthorized={onLogout}
+              onUpdate={updateReport}
+            />
           )}
           {meta.comingSoon && (
             <ComingSoon

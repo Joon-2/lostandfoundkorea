@@ -1,266 +1,196 @@
 "use client";
 
-import { useCallback, useEffect, useMemo, useState } from "react";
-import { formatDate, formatDateTime } from "@/lib/format";
+import { useEffect, useMemo, useState } from "react";
+import { formatDate } from "@/lib/format";
 import {
-  DELIVERY_STATUSES,
-  DELIVERY_STATUS_BADGE,
-  DELIVERY_STATUS_LABELS,
-  type DeliveryStatus,
-  type DeliveryWithReport,
-} from "@/types/delivery";
-import DeliveryForm from "@/components/admin/DeliveryForm";
+  PHASE2_STAGES,
+  isDeliveryRequired,
+  normalizeStageKey,
+} from "@/lib/process-stages";
+import DeliveryDetail from "@/components/admin/DeliveryDetail";
 
-type DeliveriesViewProps = {
-  password: string;
-  onUnauthorized?: () => void;
+// Case-centric Deliveries view. Shows every delivery-required case
+// from `paid` onward and lets the admin click into any one to see
+// (and drive) its phase-2 stepper.
+//
+// State is lifted from admin/page.tsx so refreshes from the top bar
+// flow into both this view and the Reports view.
+
+const PHASE2_KEYS = new Set<string>(PHASE2_STAGES.map((s: any) => s.key));
+const PAGE_SIZE = 20;
+
+const STAGE_LABELS: Record<string, string> = {
+  paid: "Awaiting pickup",
+  pickup_scheduled: "Pickup scheduled",
+  picked_up: "Picked up",
+  shipping_quote: "Shipping quote",
+  quote_accepted: "Quote accepted",
+  shipped: "Shipped",
+  delivered: "Delivered",
+  completed: "Completed",
 };
 
-const compactInput =
-  "w-full rounded-lg border border-border bg-card px-3 py-2 text-sm text-foreground placeholder:text-muted focus:border-accent focus:outline-none focus:ring-2 focus:ring-accent/30";
+const STAGE_BADGE: Record<string, string> = {
+  paid: "bg-amber-50 text-amber-700 border-amber-200",
+  pickup_scheduled: "bg-amber-50 text-amber-700 border-amber-200",
+  picked_up: "bg-sky-50 text-sky-700 border-sky-200",
+  shipping_quote: "bg-sky-50 text-sky-700 border-sky-200",
+  quote_accepted: "bg-sky-50 text-sky-700 border-sky-200",
+  shipped: "bg-sky-50 text-sky-700 border-sky-200",
+  delivered: "bg-emerald-50 text-accent border-emerald-200",
+  completed: "bg-emerald-50 text-accent border-emerald-200",
+};
+
+type DeliveriesViewProps = {
+  reports: any[];
+  loading: boolean;
+  loadError: string | null;
+  password: string;
+  onUnauthorized?: () => void;
+  onUpdate: (report: any) => void;
+};
 
 export default function DeliveriesView({
+  reports,
+  loading,
+  loadError,
   password,
   onUnauthorized,
+  onUpdate,
 }: DeliveriesViewProps) {
-  const [deliveries, setDeliveries] = useState<DeliveryWithReport[]>([]);
-  const [loading, setLoading] = useState(false);
-  const [loadError, setLoadError] = useState<string | null>(null);
   const [search, setSearch] = useState("");
-  const [statusFilter, setStatusFilter] = useState<string>("all");
-  const [carrierFilter, setCarrierFilter] = useState<string>("all");
-  const [dateFrom, setDateFrom] = useState("");
-  const [dateTo, setDateTo] = useState("");
-  const [editing, setEditing] = useState<DeliveryWithReport | null>(null);
-  const [creating, setCreating] = useState(false);
+  const [stageFilter, setStageFilter] = useState("all");
+  const [expandedId, setExpandedId] = useState<string | null>(null);
+  const [page, setPage] = useState(1);
 
-  const fetchDeliveries = useCallback(async () => {
-    setLoading(true);
-    setLoadError(null);
-    try {
-      const res = await fetch("/api/deliveries", {
-        headers: { "x-admin-password": password },
-        cache: "no-store",
-      });
-      if (res.status === 401) {
-        onUnauthorized?.();
-        return;
-      }
-      const json = await res.json().catch(() => ({}));
-      if (!res.ok || !json.ok) {
-        throw new Error(json.error || "Failed to load deliveries");
-      }
-      setDeliveries(json.deliveries || []);
-    } catch (err: any) {
-      setLoadError(err.message);
-    } finally {
-      setLoading(false);
-    }
-  }, [password, onUnauthorized]);
+  // Cases are delivery-required AND past payment.
+  const deliveryCases = useMemo(() => {
+    return reports.filter((r) => {
+      if (!isDeliveryRequired(r)) return false;
+      const stage = normalizeStageKey(r.process_stage);
+      return stage === "paid" || PHASE2_KEYS.has(stage);
+    });
+  }, [reports]);
 
+  // Auto-expand the case named in ?case=LFK-XXXXXX. Used by the
+  // "View delivery →" link in CaseDetail.
   useEffect(() => {
-    fetchDeliveries();
-  }, [fetchDeliveries]);
-
-  // Distinct carrier values for the filter dropdown.
-  const carriers = useMemo(() => {
-    const set = new Set<string>();
-    for (const d of deliveries) {
-      if (d.carrier && d.carrier.trim()) set.add(d.carrier.trim());
-    }
-    return Array.from(set).sort();
-  }, [deliveries]);
+    if (typeof window === "undefined" || deliveryCases.length === 0) return;
+    const params = new URLSearchParams(window.location.search);
+    const requested = params.get("case");
+    if (!requested) return;
+    const match = deliveryCases.find((r) => r.case_number === requested);
+    if (match) setExpandedId((current) => current ?? match.id);
+  }, [deliveryCases]);
 
   const stats = useMemo(() => {
-    const today = new Date();
-    today.setHours(0, 0, 0, 0);
-    const tStart = today.getTime();
-    let pending = 0;
-    let inTransit = 0;
-    let deliveredToday = 0;
-    let failed = 0;
-    for (const d of deliveries) {
-      switch (d.status) {
-        case "pending":
-          pending += 1;
-          break;
-        case "shipped":
-        case "in_transit":
-          inTransit += 1;
-          break;
-        case "delivered": {
-          if (
-            d.delivered_at &&
-            new Date(d.delivered_at).getTime() >= tStart
-          ) {
-            deliveredToday += 1;
-          }
-          break;
-        }
-        case "failed":
-          failed += 1;
-          break;
-      }
+    let awaitingPickup = 0;
+    let inProgress = 0;
+    let delivered = 0;
+    let completed = 0;
+    for (const r of deliveryCases) {
+      const stage = normalizeStageKey(r.process_stage);
+      if (stage === "paid") awaitingPickup += 1;
+      else if (stage === "completed") completed += 1;
+      else if (stage === "delivered") delivered += 1;
+      else inProgress += 1;
     }
-    return { pending, inTransit, deliveredToday, failed };
-  }, [deliveries]);
+    return { awaitingPickup, inProgress, delivered, completed };
+  }, [deliveryCases]);
 
   const filtered = useMemo(() => {
-    let arr = deliveries;
-    if (statusFilter !== "all") {
-      arr = arr.filter((d) => d.status === statusFilter);
-    }
-    if (carrierFilter !== "all") {
-      arr = arr.filter((d) => (d.carrier || "") === carrierFilter);
-    }
-    if (dateFrom) {
-      const cutoff = new Date(dateFrom).getTime();
-      arr = arr.filter((d) =>
-        d.created_at ? Date.parse(d.created_at) >= cutoff : false
-      );
-    }
-    if (dateTo) {
-      const cutoff = new Date(dateTo).getTime() + 24 * 60 * 60 * 1000 - 1;
-      arr = arr.filter((d) =>
-        d.created_at ? Date.parse(d.created_at) <= cutoff : false
+    let arr = deliveryCases;
+    if (stageFilter !== "all") {
+      arr = arr.filter(
+        (r) => normalizeStageKey(r.process_stage) === stageFilter
       );
     }
     if (search.trim()) {
       const q = search.trim().toLowerCase();
       arr = arr.filter(
-        (d) =>
-          (d.tracking_number || "").toLowerCase().includes(q) ||
-          (d.recipient_name || "").toLowerCase().includes(q) ||
-          (d.report?.case_number || "").toLowerCase().includes(q) ||
-          (d.report?.name || "").toLowerCase().includes(q)
+        (r) =>
+          (r.case_number || "").toLowerCase().includes(q) ||
+          (r.name || "").toLowerCase().includes(q) ||
+          (r.email || "").toLowerCase().includes(q) ||
+          (r.tracking_number || "").toLowerCase().includes(q)
       );
     }
     return arr;
-  }, [deliveries, search, statusFilter, carrierFilter, dateFrom, dateTo]);
+  }, [deliveryCases, search, stageFilter]);
 
-  const onSaved = (saved: DeliveryWithReport) => {
-    setDeliveries((prev) => {
-      const idx = prev.findIndex((d) => d.id === saved.id);
-      if (idx >= 0) {
-        const next = [...prev];
-        next[idx] = saved;
-        return next;
-      }
-      return [saved, ...prev];
-    });
-    setEditing(null);
-    setCreating(false);
-  };
+  useEffect(() => {
+    setPage(1);
+  }, [search, stageFilter]);
 
-  const onDeleted = (id: string) => {
-    setDeliveries((prev) => prev.filter((d) => d.id !== id));
-    setEditing(null);
-  };
+  const pageCount = Math.max(1, Math.ceil(filtered.length / PAGE_SIZE));
+  const safePage = Math.min(page, pageCount);
+  const visible = filtered.slice(
+    (safePage - 1) * PAGE_SIZE,
+    safePage * PAGE_SIZE
+  );
+
+  const compact =
+    "rounded-lg border border-border bg-card px-3 py-2 text-sm text-foreground placeholder:text-muted focus:border-accent focus:outline-none focus:ring-2 focus:ring-accent/30";
 
   return (
     <>
       <header className="mb-6">
-        <div className="flex flex-wrap items-end justify-between gap-3">
-          <div>
-            <h1 className="font-serif text-3xl tracking-tight text-foreground sm:text-4xl">
-              Deliveries
-            </h1>
-            <p className="mt-1 text-sm text-muted">
-              Shipments tied to recovered cases. Mark a delivery as
-              delivered to close its source case automatically.
-            </p>
-          </div>
-          <div className="flex items-center gap-2">
-            <button
-              onClick={fetchDeliveries}
-              disabled={loading}
-              className="inline-flex items-center gap-2 rounded-full border border-border bg-card px-3.5 py-1.5 text-sm font-medium text-foreground transition-colors hover:bg-alt disabled:opacity-60"
-            >
-              {loading ? "Refreshing…" : "Refresh"}
-            </button>
-            <button
-              onClick={() => setCreating(true)}
-              className="inline-flex items-center gap-2 rounded-full bg-accent px-4 py-1.5 text-sm font-semibold text-white transition-colors hover:bg-accent-hover"
-            >
-              + New delivery
-            </button>
-          </div>
-        </div>
+        <h1 className="font-serif text-3xl tracking-tight text-foreground sm:text-4xl">
+          Deliveries
+        </h1>
+        <p className="mt-1 text-sm text-muted">
+          Pickup, ship, and deliver paid cases. Click a row to drive the
+          stepper.
+        </p>
       </header>
 
       <div className="grid grid-cols-2 gap-3 sm:grid-cols-4">
         <StatCard
-          label="Pending shipment"
-          value={stats.pending}
+          label="Awaiting pickup"
+          value={stats.awaitingPickup}
           tone="amber"
-          helper="Awaiting carrier handoff"
+          helper="Paid; ready to schedule"
         />
         <StatCard
-          label="In transit"
-          value={stats.inTransit}
+          label="In progress"
+          value={stats.inProgress}
           tone="sky"
-          helper="Shipped or moving"
+          helper="Pickup → ship pipeline"
         />
         <StatCard
-          label="Delivered today"
-          value={stats.deliveredToday}
+          label="Delivered"
+          value={stats.delivered}
           tone="emerald"
-          helper="Closed today via delivery"
+          helper="Awaiting case close"
         />
         <StatCard
-          label="Failed"
-          value={stats.failed}
-          tone="red"
-          helper="Needs intervention"
+          label="Completed"
+          value={stats.completed}
+          tone="emerald"
+          helper="Closed and done"
         />
       </div>
 
-      <div className="mt-6 grid gap-2 sm:grid-cols-[1fr_auto_auto_auto_auto] sm:items-end">
+      <div className="mt-6 grid gap-2 sm:grid-cols-[1fr_auto] sm:items-end">
         <input
           type="search"
           value={search}
           onChange={(e) => setSearch(e.target.value)}
-          placeholder="Search tracking, recipient, or case number"
-          className={compactInput}
+          placeholder="Search case number, name, email, or tracking"
+          className={compact}
         />
         <select
-          value={statusFilter}
-          onChange={(e) => setStatusFilter(e.target.value)}
-          className={`${compactInput} sm:w-40`}
+          value={stageFilter}
+          onChange={(e) => setStageFilter(e.target.value)}
+          className={`${compact} sm:w-48`}
         >
-          <option value="all">All statuses</option>
-          {DELIVERY_STATUSES.map((s) => (
-            <option key={s} value={s}>
-              {DELIVERY_STATUS_LABELS[s]}
+          <option value="all">All stages</option>
+          {Object.entries(STAGE_LABELS).map(([key, label]) => (
+            <option key={key} value={key}>
+              {label}
             </option>
           ))}
         </select>
-        <select
-          value={carrierFilter}
-          onChange={(e) => setCarrierFilter(e.target.value)}
-          className={`${compactInput} sm:w-40`}
-        >
-          <option value="all">All carriers</option>
-          {carriers.map((c) => (
-            <option key={c} value={c}>
-              {c}
-            </option>
-          ))}
-        </select>
-        <input
-          type="date"
-          value={dateFrom}
-          onChange={(e) => setDateFrom(e.target.value)}
-          aria-label="From date"
-          className={`${compactInput} sm:w-40`}
-        />
-        <input
-          type="date"
-          value={dateTo}
-          onChange={(e) => setDateTo(e.target.value)}
-          aria-label="To date"
-          className={`${compactInput} sm:w-40`}
-        />
       </div>
 
       {loadError && (
@@ -275,141 +205,192 @@ export default function DeliveriesView({
             <thead className="border-b border-border bg-alt text-xs uppercase tracking-widest text-muted">
               <tr>
                 <th className="px-4 py-3 text-left font-semibold">Case</th>
-                <th className="px-4 py-3 text-left font-semibold">Recipient</th>
+                <th className="px-4 py-3 text-left font-semibold">Name</th>
                 <th className="hidden px-4 py-3 text-left font-semibold sm:table-cell">
-                  Carrier
+                  Stage
                 </th>
                 <th className="hidden px-4 py-3 text-left font-semibold md:table-cell">
                   Tracking
                 </th>
-                <th className="px-4 py-3 text-left font-semibold">Status</th>
                 <th className="hidden px-4 py-3 text-left font-semibold md:table-cell">
-                  Shipped
+                  Date
                 </th>
-                <th className="px-4 py-3 text-right font-semibold">Edit</th>
               </tr>
             </thead>
             <tbody>
-              {loading && deliveries.length === 0 && (
+              {loading && deliveryCases.length === 0 && (
                 <tr>
                   <td
-                    colSpan={7}
+                    colSpan={5}
                     className="px-4 py-12 text-center text-sm text-muted"
                   >
-                    Loading deliveries…
+                    Loading…
                   </td>
                 </tr>
               )}
-              {!loading && deliveries.length === 0 && (
+              {!loading && deliveryCases.length === 0 && (
                 <tr>
                   <td
-                    colSpan={7}
+                    colSpan={5}
                     className="px-4 py-12 text-center text-sm text-muted"
                   >
-                    No deliveries yet. Create one from a Report's detail
-                    page or use "+ New delivery".
+                    No cases need delivery yet. Cases show up here once
+                    they&rsquo;re paid and require shipping.
                   </td>
                 </tr>
               )}
               {!loading &&
-                deliveries.length > 0 &&
+                deliveryCases.length > 0 &&
                 filtered.length === 0 && (
                   <tr>
                     <td
-                      colSpan={7}
+                      colSpan={5}
                       className="px-4 py-12 text-center text-sm text-muted"
                     >
-                      No deliveries match the current filter.
+                      No cases match the current filter.
                     </td>
                   </tr>
                 )}
-              {filtered.map((d) => (
+              {visible.map((r) => (
                 <Row
-                  key={d.id}
-                  delivery={d}
-                  onClick={() => setEditing(d)}
+                  key={r.id}
+                  report={r}
+                  expanded={expandedId === r.id}
+                  onToggle={() =>
+                    setExpandedId(expandedId === r.id ? null : r.id)
+                  }
+                  password={password}
+                  onUnauthorized={onUnauthorized}
+                  onUpdate={onUpdate}
                 />
               ))}
             </tbody>
           </table>
         </div>
-      </div>
 
-      {(editing || creating) && (
-        <DeliveryForm
-          delivery={editing}
-          password={password}
-          onUnauthorized={onUnauthorized}
-          onSaved={onSaved}
-          onDeleted={onDeleted}
-          onClose={() => {
-            setEditing(null);
-            setCreating(false);
-          }}
+        <Pagination
+          page={safePage}
+          pageCount={pageCount}
+          total={filtered.length}
+          onPrev={() => setPage((p) => Math.max(1, p - 1))}
+          onNext={() => setPage((p) => Math.min(pageCount, p + 1))}
         />
-      )}
+      </div>
     </>
   );
 }
 
 function Row({
-  delivery: d,
-  onClick,
+  report,
+  expanded,
+  onToggle,
+  password,
+  onUnauthorized,
+  onUpdate,
 }: {
-  delivery: DeliveryWithReport;
-  onClick: () => void;
+  report: any;
+  expanded: boolean;
+  onToggle: () => void;
+  password: string;
+  onUnauthorized?: () => void;
+  onUpdate: (r: any) => void;
 }) {
-  const caseNumber = d.report?.case_number;
+  const stage = normalizeStageKey(report.process_stage);
+  const stageLabel = STAGE_LABELS[stage] || stage;
   return (
-    <tr className="border-b border-border hover:bg-alt/60">
-      <td className="px-4 py-3">
-        {caseNumber ? (
-          <a
-            href={`/admin?case=${encodeURIComponent(caseNumber)}`}
-            className="font-mono text-sm font-semibold text-accent hover:underline"
+    <>
+      <tr
+        onClick={onToggle}
+        className={`cursor-pointer border-b border-border transition-colors hover:bg-alt/60 ${
+          expanded ? "bg-alt/40" : ""
+        }`}
+      >
+        <td className="px-4 py-3">
+          <span className="font-mono text-sm font-semibold text-foreground">
+            {report.case_number || "—"}
+          </span>
+        </td>
+        <td className="px-4 py-3 text-sm text-foreground">
+          {report.name || <span className="text-muted/60">—</span>}
+          {report.email && (
+            <div className="text-xs text-muted">{report.email}</div>
+          )}
+        </td>
+        <td className="hidden px-4 py-3 sm:table-cell">
+          <span
+            className={`inline-flex rounded-full border px-2 py-0.5 text-[11px] font-medium ${STAGE_BADGE[stage] || ""}`}
           >
-            {caseNumber}
-          </a>
-        ) : (
-          <span className="text-muted/60">—</span>
-        )}
-        {d.report?.name && (
-          <div className="mt-0.5 text-xs text-muted">{d.report.name}</div>
-        )}
-      </td>
-      <td className="px-4 py-3 text-foreground">
-        {d.recipient_name || <span className="text-muted/60">—</span>}
-        {d.recipient_country && (
-          <div className="text-xs text-muted">{d.recipient_country}</div>
-        )}
-      </td>
-      <td className="hidden px-4 py-3 text-body sm:table-cell">
-        {d.carrier || <span className="text-muted/60">—</span>}
-      </td>
-      <td className="hidden px-4 py-3 font-mono text-xs text-body md:table-cell">
-        {d.tracking_number || <span className="text-muted/60">—</span>}
-      </td>
-      <td className="px-4 py-3">
-        <span
-          className={`inline-flex rounded-full border px-2 py-0.5 text-[11px] font-medium ${DELIVERY_STATUS_BADGE[d.status as DeliveryStatus]}`}
-        >
-          {DELIVERY_STATUS_LABELS[d.status as DeliveryStatus]}
-        </span>
-      </td>
-      <td className="hidden px-4 py-3 text-xs text-muted md:table-cell">
-        {d.shipped_at
-          ? formatDateTime(d.shipped_at) || formatDate(d.shipped_at)
-          : <span className="text-muted/60">—</span>}
-      </td>
-      <td className="px-4 py-3 text-right">
+            {stageLabel}
+          </span>
+        </td>
+        <td className="hidden px-4 py-3 font-mono text-xs text-body md:table-cell">
+          {report.tracking_number || (
+            <span className="text-muted/60">—</span>
+          )}
+        </td>
+        <td className="hidden px-4 py-3 text-xs text-muted md:table-cell">
+          {formatDate(report.date_lost) || "—"}
+        </td>
+      </tr>
+      {expanded && (
+        <tr className="border-b border-border bg-card">
+          <td colSpan={5} className="p-0">
+            <DeliveryDetail
+              report={report}
+              password={password}
+              onUnauthorized={onUnauthorized}
+              onUpdate={onUpdate}
+            />
+          </td>
+        </tr>
+      )}
+    </>
+  );
+}
+
+function Pagination({
+  page,
+  pageCount,
+  total,
+  onPrev,
+  onNext,
+}: {
+  page: number;
+  pageCount: number;
+  total: number;
+  onPrev: () => void;
+  onNext: () => void;
+}) {
+  if (total <= PAGE_SIZE) return null;
+  const start = (page - 1) * PAGE_SIZE + 1;
+  const end = Math.min(total, page * PAGE_SIZE);
+  return (
+    <div className="flex items-center justify-between border-t border-border bg-alt px-4 py-3 text-sm">
+      <span className="text-muted">
+        {start}–{end} of {total}
+      </span>
+      <div className="flex items-center gap-2">
         <button
-          onClick={onClick}
-          className="inline-flex items-center rounded-full border border-border bg-card px-3 py-1 text-xs font-medium text-foreground transition-colors hover:bg-alt"
+          type="button"
+          onClick={onPrev}
+          disabled={page <= 1}
+          className="rounded-lg border border-border bg-card px-3 py-1 text-xs font-medium text-foreground transition-colors hover:bg-alt disabled:cursor-not-allowed disabled:opacity-50"
         >
-          Edit
+          ← Prev
         </button>
-      </td>
-    </tr>
+        <span className="text-xs text-muted">
+          Page {page} of {pageCount}
+        </span>
+        <button
+          type="button"
+          onClick={onNext}
+          disabled={page >= pageCount}
+          className="rounded-lg border border-border bg-card px-3 py-1 text-xs font-medium text-foreground transition-colors hover:bg-alt disabled:cursor-not-allowed disabled:opacity-50"
+        >
+          Next →
+        </button>
+      </div>
+    </div>
   );
 }
 
