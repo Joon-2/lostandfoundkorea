@@ -10,7 +10,8 @@
   /app/pay/delivery-only/page.tsx — Delivery only form
   /app/admin/page.tsx             — Admin dashboard
   /app/api/
-    /api/reports/                 — Report CRUD (GET all, GET by case)
+    /api/admin/reports/           — Admin report CRUD (GET all; PATCH /[id] to update)
+    /api/reports/[caseNumber]/    — Customer-facing case lookup (no admin auth)
     /api/upload/                  — Image upload to Supabase Storage
     /api/email/                   — All email types (single handler)
     /api/payment/                 — PayPal capture
