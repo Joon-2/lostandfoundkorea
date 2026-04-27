@@ -14,6 +14,10 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
     { url: `${base}/report`, lastModified: now, changeFrequency: "monthly", priority: 0.9 },
     { url: `${base}/pay/delivery-only`, lastModified: now, changeFrequency: "monthly", priority: 0.6 },
     { url: `${base}/coverage`, lastModified: now, changeFrequency: "weekly", priority: 0.7 },
+    { url: `${base}/our-story`, lastModified: now, changeFrequency: "monthly", priority: 0.7 },
+    { url: `${base}/faq`, lastModified: now, changeFrequency: "monthly", priority: 0.7 },
+    { url: `${base}/legal`, lastModified: now, changeFrequency: "yearly", priority: 0.3 },
+    { url: `${base}/business-info`, lastModified: now, changeFrequency: "yearly", priority: 0.3 },
   ];
 
   // Only emit a category entry when there's at least one active facility in
