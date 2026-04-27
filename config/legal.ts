@@ -7,6 +7,10 @@ export const LEGAL_INFO = {
   businessName: "Lost & Found Korea",
   businessNameKorean: "로스트앤드파운드코리아",
 
+  // Legal entity. LFK is the service brand; Kustody is the operating
+  // company. Always spell "Kustody" — never KUSTODY or kustody.
+  operatingCompany: "Kustody",
+
   // Contact
   supportEmail: "support@lostandfoundkorea.com",
   privacyContactName: "Sim Hanjoon",
@@ -22,8 +26,9 @@ export const LEGAL_INFO = {
     "17-11 Yongsu-ro, Cheoin-gu, Yongin-si, Gyeonggi-do, Republic of Korea",
   addressKorean: "경기도 용인시 처인구 용수로 17-11",
 
-  // Business registration (fill in once registration completes)
-  businessRegistrationNumber: "[TBD]",
+  // Business registration. E-commerce registration is still pending and
+  // renders via TbdValue as an amber pill until issued.
+  businessRegistrationNumber: "756-08-03111",
   ecommerceRegistration: "[TBD]",
 } as const;
 

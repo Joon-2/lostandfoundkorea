@@ -261,13 +261,19 @@ export default function Privacy() {
         <li>Postal Address: {L.address}</li>
       </UL>
       <P>
-        <Strong>Lost &amp; Found Korea</Strong>
+        <Strong>{L.businessName}</Strong> ("LFK") is a service operated by{" "}
+        {L.operatingCompany}.
       </P>
       <UL>
-        <li>Business Name: {L.businessName}</li>
+        <li>Service Name: {L.businessName}</li>
+        <li>Operating Company: {L.operatingCompany}</li>
         <li>
           Business Registration Number:{" "}
           <TbdValue value={L.businessRegistrationNumber} />
+        </li>
+        <li>
+          E-Commerce Registration:{" "}
+          <TbdValue value={L.ecommerceRegistration} />
         </li>
         <li>Address: {L.address}</li>
       </UL>

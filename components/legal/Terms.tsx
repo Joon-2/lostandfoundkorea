@@ -324,7 +324,8 @@ export default function Terms() {
 
       <H2>15. Contact</H2>
       <P>
-        <Strong>Lost &amp; Found Korea</Strong>
+        <Strong>{L.businessName}</Strong> ("LFK") is a service operated by{" "}
+        {L.operatingCompany}.
       </P>
       <UL>
         <li>
@@ -336,7 +337,8 @@ export default function Terms() {
             {L.supportEmail}
           </a>
         </li>
-        <li>Business Name: {L.businessName}</li>
+        <li>Service Name: {L.businessName}</li>
+        <li>Operating Company: {L.operatingCompany}</li>
         <li>
           Business Registration Number:{" "}
           <TbdValue value={L.businessRegistrationNumber} />
