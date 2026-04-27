@@ -5,9 +5,11 @@ import StoryTabs from "@/components/story/StoryTabs";
 import { siteConfig } from "@/config/site";
 
 export const metadata: Metadata = {
-  title: `Our Story | ${siteConfig.name}`,
+  title: {
+    absolute: "Our Story — Lost & Found Korea | Why We Built This Service",
+  },
   description:
-    "Why we built Lost & Found Korea — what we noticed, what stopped lost items from making it home, and what changed.",
+    "We saw too many foreigner items sitting unclaimed in Korean lost and found offices. We built LFK to bridge the language gap and bring lost belongings home.",
   alternates: { canonical: `${siteConfig.url}/our-story` },
 };
 

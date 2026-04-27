@@ -5,7 +5,7 @@ import LegalTabs from "@/components/legal/LegalTabs";
 import { siteConfig } from "@/config/site";
 
 export const metadata: Metadata = {
-  title: `Legal · ${siteConfig.name}`,
+  title: { absolute: `Legal · ${siteConfig.name}` },
   description:
     "Terms of Service, Privacy Policy, and Refund Policy for Lost & Found Korea.",
   alternates: { canonical: `${siteConfig.url}/legal` },

@@ -5,7 +5,7 @@ import BusinessInfo from "@/components/business-info/BusinessInfo";
 import { siteConfig } from "@/config/site";
 
 export const metadata: Metadata = {
-  title: `Business Info · ${siteConfig.name}`,
+  title: { absolute: `Business Info · ${siteConfig.name}` },
   description:
     "Operating company, business registration, and contact details for Lost & Found Korea, in accordance with the Korean Act on the Consumer Protection in Electronic Commerce.",
   alternates: { canonical: `${siteConfig.url}/business-info` },

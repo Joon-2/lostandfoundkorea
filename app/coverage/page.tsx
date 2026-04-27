@@ -11,7 +11,7 @@ import type { Facility, FacilityCategory } from "@/types/facility";
 export const revalidate = 60;
 
 export const metadata: Metadata = {
-  title: `Lost & Found Info Book — ${siteConfig.name}`,
+  title: { absolute: `Lost & Found Info Book — ${siteConfig.name}` },
   description:
     "A directory of phone numbers, hours, and policies for the places that handle lost items in Korea — airports, subways, taxis, hotels, police, and more.",
   alternates: { canonical: `${siteConfig.url}/coverage` },

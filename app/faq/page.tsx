@@ -5,9 +5,11 @@ import FaqClient from "@/components/faq/FaqClient";
 import { siteConfig } from "@/config/site";
 
 export const metadata: Metadata = {
-  title: `FAQ | ${siteConfig.name}`,
+  title: {
+    absolute: "FAQ — Lost & Found Korea | How Lost Item Recovery Works",
+  },
   description:
-    "Answers to common questions about Lost & Found Korea — pricing, recovery process, shipping, insurance, and how the service works.",
+    "Answers about pricing, payment, shipping, refunds, safety, and how we recover lost items in Korea for foreign travelers.",
   alternates: { canonical: `${siteConfig.url}/faq` },
 };
 
