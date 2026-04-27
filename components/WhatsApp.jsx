@@ -1,6 +1,7 @@
 "use client";
 
 import { useTranslations } from "next-intl";
+import { sendGAEvent } from "@next/third-parties/google";
 import { siteConfig } from "@/config/site";
 
 export const WHATSAPP_URL = `${siteConfig.whatsapp}?text=${encodeURIComponent(siteConfig.whatsappMessage)}`;
@@ -25,6 +26,7 @@ export function FloatingWhatsApp() {
       href={WHATSAPP_URL}
       target="_blank"
       rel="noopener noreferrer"
+      onClick={() => sendGAEvent("event", "chat_opened", { channel: "whatsapp" })}
       aria-label={t("ariaLabel")}
       className="fixed bottom-5 right-5 z-[9999] flex items-center gap-3"
       style={{ zIndex: 9999 }}

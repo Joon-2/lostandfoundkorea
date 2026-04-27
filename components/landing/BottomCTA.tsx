@@ -1,5 +1,5 @@
-import Link from "next/link";
 import { getTranslations } from "next-intl/server";
+import TrackedReportLink from "@/components/analytics/TrackedReportLink";
 
 export default async function BottomCTA() {
   const t = await getTranslations("bottomCTA");
@@ -13,12 +13,13 @@ export default async function BottomCTA() {
           <p className="mt-3 max-w-xl text-base text-emerald-50/90">
             {t("body")}
           </p>
-          <Link
+          <TrackedReportLink
             href="/report"
+            location="footer_cta"
             className="mt-6 inline-flex items-center justify-center rounded-full bg-white px-7 py-3.5 text-base font-semibold text-accent shadow-sm transition-colors hover:bg-emerald-50"
           >
             {t("cta")}
-          </Link>
+          </TrackedReportLink>
         </div>
       </div>
     </section>

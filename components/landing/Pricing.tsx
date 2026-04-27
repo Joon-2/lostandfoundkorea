@@ -1,7 +1,7 @@
-import Link from "next/link";
 import type { ReactNode } from "react";
 import { getTranslations } from "next-intl/server";
 import { plans } from "@/config/plans";
+import TrackedReportLink from "@/components/analytics/TrackedReportLink";
 
 type Tone = "free" | "popular" | "muted";
 
@@ -28,7 +28,7 @@ const TONE_STYLES: Record<Tone, { card: string; badge: string; price: string; ct
 
 const FEATURES_PER_CARD = 4;
 
-type Cta = { label: string; href: string };
+type Cta = { label: string; href: string; trackingLocation: string };
 
 type PricingCardProps = {
   tone: Tone;
@@ -54,8 +54,6 @@ function PricingCard({
   cta,
 }: PricingCardProps) {
   const t = TONE_STYLES[tone];
-  const isExternal = cta.href.startsWith("mailto:") || cta.href.startsWith("http");
-  const CtaTag = (isExternal ? "a" : Link) as React.ElementType;
   const padded: (string | null)[] = features.slice(0, FEATURES_PER_CARD);
   while (padded.length < FEATURES_PER_CARD) padded.push(null);
   return (
@@ -100,12 +98,13 @@ function PricingCard({
         ))}
       </ul>
       <p className="text-xs text-muted">{bottomNote || " "}</p>
-      <CtaTag
+      <TrackedReportLink
         href={cta.href}
+        location={cta.trackingLocation}
         className={`inline-flex w-full items-center justify-center rounded-full px-6 py-3 text-sm font-medium transition-colors ${t.cta}`}
       >
         {cta.label}
-      </CtaTag>
+      </TrackedReportLink>
     </div>
   );
 }
@@ -137,7 +136,11 @@ export default async function Pricing() {
               footnote: plans.recovery.footnote,
               surcharge: plans.all_in_one.surcharge,
             })}
-            cta={{ label: t("recoveryCta"), href: "/report" }}
+            cta={{
+              label: t("recoveryCta"),
+              href: "/report",
+              trackingLocation: "pricing_recovery",
+            }}
           />
           <PricingCard
             tone="popular"
@@ -150,6 +153,7 @@ export default async function Pricing() {
             cta={{
               label: t("allInOneCta", { planName: plans.all_in_one.name }),
               href: "/report?plan=all_in_one",
+              trackingLocation: "pricing_all_in_one",
             }}
           />
           <PricingCard
@@ -160,7 +164,11 @@ export default async function Pricing() {
             priceNote={plans.delivery_only.description}
             features={plans.delivery_only.features}
             bottomNote={plans.delivery_only.footnote}
-            cta={{ label: t("deliveryCta"), href: "/pay/delivery-only" }}
+            cta={{
+              label: t("deliveryCta"),
+              href: "/pay/delivery-only",
+              trackingLocation: "pricing_delivery",
+            }}
           />
         </div>
 

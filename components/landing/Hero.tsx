@@ -1,5 +1,5 @@
-import Link from "next/link";
 import { getTranslations } from "next-intl/server";
+import TrackedReportLink from "@/components/analytics/TrackedReportLink";
 
 const ITEM_KEYS = [
   "phones",
@@ -45,12 +45,13 @@ export default async function Hero() {
             </span>
           </p>
           <div className="mt-4 flex flex-col gap-3 sm:flex-row">
-            <Link
+            <TrackedReportLink
               href="/report"
+              location="homepage_hero"
               className="inline-flex items-center justify-center rounded-full bg-accent px-7 py-3.5 text-base font-medium text-white shadow-sm transition-colors hover:bg-accent-hover"
             >
               {t("ctaStart")}
-            </Link>
+            </TrackedReportLink>
             <a
               href="#how-it-works"
               className="inline-flex items-center justify-center rounded-full border border-border bg-card px-7 py-3.5 text-base font-medium text-foreground transition-colors hover:bg-alt"
