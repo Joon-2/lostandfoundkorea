@@ -18,33 +18,67 @@ const dmSerif = DM_Serif_Display({
   subsets: ["latin"],
 });
 
+// Explicit metadata for icons, OpenGraph, and Twitter cards. We do NOT
+// rely on Next.js's file-based icon convention (app/favicon.ico,
+// app/icon.*, app/apple-icon.*) because the auto-detected files would
+// silently override the ones in /public. The ?v=2 query is a cache-bust
+// for browsers that cached an earlier (incorrect) favicon.
+
 export const metadata = {
   metadataBase: new URL(siteConfig.url),
-  title: "Lost & Found Korea — We'll find it.",
+  title: {
+    default: "Lost & Found Korea — We'll find it.",
+    template: "%s | Lost & Found Korea",
+  },
   description:
-    "English-speaking lost item recovery service in Korea.",
+    "English-speaking lost item recovery service in Korea. Free to start. Pay only when found.",
   icons: {
     icon: [
-      { url: "/favicon.ico", type: "image/x-icon" },
-      { url: "/favicon.svg", type: "image/svg+xml" },
-      { url: "/favicon-96x96.png", type: "image/png", sizes: "96x96" },
+      { url: "/favicon.ico?v=2", sizes: "any" },
+      { url: "/favicon.svg?v=2", type: "image/svg+xml" },
+      { url: "/favicon-96x96.png?v=2", type: "image/png", sizes: "96x96" },
     ],
-    apple: [{ url: "/apple-touch-icon.png", sizes: "180x180" }],
+    apple: [{ url: "/apple-touch-icon.png?v=2", sizes: "180x180" }],
+    other: [
+      {
+        rel: "icon",
+        url: "/web-app-manifest-192x192.png?v=2",
+        sizes: "192x192",
+      },
+      {
+        rel: "icon",
+        url: "/web-app-manifest-512x512.png?v=2",
+        sizes: "512x512",
+      },
+    ],
   },
   manifest: "/site.webmanifest",
   openGraph: {
     title: "Lost & Found Korea — We'll find it.",
     description:
-      "English-speaking lost item recovery service in Korea. Free to start. Pay only when we find it.",
+      "English-speaking lost item recovery service in Korea. Free to start. Pay only when found.",
     url: siteConfig.url,
-    images: ["/og-image.png"],
+    siteName: "Lost & Found Korea",
+    images: [
+      {
+        url: "/og-image.png?v=2",
+        width: 1200,
+        height: 630,
+        alt: "Lost & Found Korea — We'll find it.",
+      },
+    ],
+    locale: "en_US",
     type: "website",
   },
   twitter: {
     card: "summary_large_image",
     title: "Lost & Found Korea — We'll find it.",
     description: "English-speaking lost item recovery service in Korea.",
-    images: ["/og-image.png"],
+    images: ["/og-image.png?v=2"],
+  },
+  robots: {
+    index: true,
+    follow: true,
   },
 };
 
