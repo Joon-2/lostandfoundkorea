@@ -1,6 +1,5 @@
 // Centralized legal-page config. Update values here and they propagate
-// to /legal (Terms, Privacy, Refund). [TBD] values render with a
-// distinguishable amber pill so they're easy to find and replace.
+// to /legal (Terms, Privacy, Refund) and /business-info.
 
 export const LEGAL_INFO = {
   // Brand
@@ -10,6 +9,7 @@ export const LEGAL_INFO = {
   // Legal entity. LFK is the service brand; Kustody is the operating
   // company. Always spell "Kustody" — never KUSTODY or kustody.
   operatingCompany: "Kustody",
+  ceo: "Sim Hanjoon",
 
   // Contact
   supportEmail: "support@lostandfoundkorea.com",
@@ -26,10 +26,10 @@ export const LEGAL_INFO = {
     "17-11 Yongsu-ro, Cheoin-gu, Yongin-si, Gyeonggi-do, Republic of Korea",
   addressKorean: "경기도 용인시 처인구 용수로 17-11",
 
-  // Business registration. E-commerce registration is still pending and
-  // renders via TbdValue as an amber pill until issued.
+  // Business registration. E-commerce registration is still pending; the
+  // wording "To be issued" is shown verbatim until a number is assigned.
   businessRegistrationNumber: "756-08-03111",
-  ecommerceRegistration: "[TBD]",
+  ecommerceRegistration: "To be issued",
 } as const;
 
 export type LegalInfo = typeof LEGAL_INFO;

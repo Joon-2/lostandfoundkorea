@@ -1,5 +1,4 @@
 import { LEGAL_INFO } from "@/config/legal";
-import TbdValue from "@/components/legal/TbdValue";
 import { H1, H2, H3, P, UL, HR, Meta, Strong } from "@/components/legal/prose";
 
 export default function Privacy() {
@@ -267,14 +266,9 @@ export default function Privacy() {
       <UL>
         <li>Service Name: {L.businessName}</li>
         <li>Operating Company: {L.operatingCompany}</li>
-        <li>
-          Business Registration Number:{" "}
-          <TbdValue value={L.businessRegistrationNumber} />
-        </li>
-        <li>
-          E-Commerce Registration:{" "}
-          <TbdValue value={L.ecommerceRegistration} />
-        </li>
+        <li>CEO: {L.ceo}</li>
+        <li>Business Registration Number: {L.businessRegistrationNumber}</li>
+        <li>E-Commerce Registration: {L.ecommerceRegistration}</li>
         <li>Address: {L.address}</li>
       </UL>
 

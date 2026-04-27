@@ -7,6 +7,7 @@ const LEGAL_LINKS = [
   { href: "/legal?tab=terms", label: "Terms" },
   { href: "/legal?tab=privacy", label: "Privacy" },
   { href: "/legal?tab=refund", label: "Refund" },
+  { href: "/business-info", label: "Business Info" },
 ];
 
 export default async function Footer() {
