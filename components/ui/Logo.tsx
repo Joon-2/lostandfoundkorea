@@ -1,5 +1,4 @@
 import Link from "next/link";
-import LogoIcon from "@/assets/icons/LogoIcon";
 
 type LogoProps = {
   name: string;
@@ -9,20 +8,26 @@ type LogoProps = {
   iconClassName?: string;
 };
 
-// Wordmark + pin icon. Wraps the icon and site name in a Link by default;
-// pass href={null} by omitting it for contexts that don't need navigation
-// (e.g. a plain heading use).
+// Wordmark + brand mark. The mark is the same image used as the site
+// favicon, served from /public so it stays in sync with whatever icon
+// the favicon points at.
 export default function Logo({
   name,
   href = "/",
   onClick,
   className,
-  iconClassName = "h-[18px] w-[18px] text-accent",
+  iconClassName = "h-[22px] w-[22px]",
 }: LogoProps) {
   const cls = `inline-flex items-center gap-2 text-[17px] font-bold tracking-tight text-black ${className ?? ""}`.trim();
   const content = (
     <>
-      <LogoIcon className={iconClassName} />
+      {/* eslint-disable-next-line @next/next/no-img-element */}
+      <img
+        src="/web-app-manifest-192x192.png?v=2"
+        alt=""
+        aria-hidden="true"
+        className={iconClassName}
+      />
       <span>{name}</span>
     </>
   );
