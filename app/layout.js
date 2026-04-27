@@ -19,9 +19,33 @@ const dmSerif = DM_Serif_Display({
 });
 
 export const metadata = {
-  title: `${siteConfig.name} - We Find Your Lost Items`,
+  metadataBase: new URL(siteConfig.url),
+  title: "Lost & Found Korea — We'll find it.",
   description:
-    "Lost something while traveling in Korea? Report it in 4 simple steps and our local team will help recover it. Fast, trustworthy, English-speaking support.",
+    "English-speaking lost item recovery service in Korea.",
+  icons: {
+    icon: [
+      { url: "/favicon.ico", type: "image/x-icon" },
+      { url: "/favicon.svg", type: "image/svg+xml" },
+      { url: "/favicon-96x96.png", type: "image/png", sizes: "96x96" },
+    ],
+    apple: [{ url: "/apple-touch-icon.png", sizes: "180x180" }],
+  },
+  manifest: "/site.webmanifest",
+  openGraph: {
+    title: "Lost & Found Korea — We'll find it.",
+    description:
+      "English-speaking lost item recovery service in Korea. Free to start. Pay only when we find it.",
+    url: siteConfig.url,
+    images: ["/og-image.png"],
+    type: "website",
+  },
+  twitter: {
+    card: "summary_large_image",
+    title: "Lost & Found Korea — We'll find it.",
+    description: "English-speaking lost item recovery service in Korea.",
+    images: ["/og-image.png"],
+  },
 };
 
 export default async function RootLayout({ children }) {
