@@ -7,6 +7,7 @@ import { WHATSAPP_URL } from "@/components/WhatsApp";
 import MobileMenu, { type NavLink } from "@/components/layout/MobileMenu";
 import Logo from "@/components/ui/Logo";
 import { Link } from "@/i18n/navigation";
+import LanguageSwitcher from "@/components/layout/LanguageSwitcher";
 
 function HamburgerIcon() {
   return (
@@ -80,6 +81,9 @@ export default function Header({ variant = "marketing", action = null }: HeaderP
           <div className="flex items-center gap-4">
             {isMarketing ? (
               <>
+                <span className="hidden md:inline">
+                  <LanguageSwitcher />
+                </span>
                 <a
                   href={WHATSAPP_URL}
                   target="_blank"

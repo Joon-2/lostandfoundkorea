@@ -3,6 +3,7 @@
 import type { ReactNode } from "react";
 import { useTranslations } from "next-intl";
 import { Link } from "@/i18n/navigation";
+import LanguageSwitcher from "@/components/layout/LanguageSwitcher";
 
 export type NavLink = { href: string; label: string };
 
@@ -81,6 +82,14 @@ export default function MobileMenu({
         >
           {t("report")}
         </Link>
+        <div className="mt-6 border-t border-[#e5e7eb] pt-4">
+          <p className="mb-2 px-2 text-xs font-semibold uppercase tracking-widest text-muted">
+            Language
+          </p>
+          <div className="px-2">
+            <LanguageSwitcher />
+          </div>
+        </div>
       </nav>
     </div>
   );
