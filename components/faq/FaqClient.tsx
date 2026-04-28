@@ -1,7 +1,8 @@
 "use client";
 
 import { useEffect, useMemo, useRef, useState } from "react";
-import { FAQ_CATEGORIES } from "./FaqContent";
+import type { ReactNode } from "react";
+import { useFaqCategories } from "./FaqContent";
 
 // Two-column FAQ. Left rail is a sticky category nav with active-section
 // tracking via IntersectionObserver. Right column has a compact search
@@ -17,6 +18,7 @@ import { FAQ_CATEGORIES } from "./FaqContent";
 const HEADER_OFFSET = 88; // sticky site header (60px) + breathing room
 
 export default function FaqClient() {
+  const FAQ_CATEGORIES = useFaqCategories();
   const [query, setQuery] = useState("");
   const [open, setOpen] = useState<Record<string, boolean>>({});
   const [activeCategory, setActiveCategory] = useState<string>(
@@ -37,7 +39,7 @@ export default function FaqClient() {
       const id = window.location.hash.replace(/^#/, "");
       if (!id) return;
       const exists = FAQ_CATEGORIES.some((c) =>
-        c.items.some((i) => i.id === id)
+        c.questions.some((i) => i.id === id)
       );
       if (!exists) return;
       setOpen((prev) => ({ ...prev, [id]: true }));
@@ -87,13 +89,13 @@ export default function FaqClient() {
     if (!normalizedQuery) return FAQ_CATEGORIES;
     return FAQ_CATEGORIES.map((cat) => ({
       ...cat,
-      items: cat.items.filter((i) =>
+      questions: cat.questions.filter((i) =>
         i.q.toLowerCase().includes(normalizedQuery)
       ),
-    })).filter((cat) => cat.items.length > 0);
-  }, [normalizedQuery]);
+    })).filter((cat) => cat.questions.length > 0);
+  }, [FAQ_CATEGORIES, normalizedQuery]);
 
-  const totalShown = filtered.reduce((n, c) => n + c.items.length, 0);
+  const totalShown = filtered.reduce((n, c) => n + c.questions.length, 0);
   const isSearching = normalizedQuery.length > 0;
 
   return (
@@ -194,7 +196,7 @@ export default function FaqClient() {
                 />
 
                 <div className="mt-5 space-y-2">
-                  {cat.items.map((item) => {
+                  {cat.questions.map((item) => {
                     const isOpen = !!open[item.id];
                     return (
                       <div
@@ -237,7 +239,7 @@ export default function FaqClient() {
                         >
                           <div className="overflow-hidden">
                             <div className="faq-prose px-4 pb-4 text-[15px] leading-relaxed text-body sm:px-5 sm:pb-5">
-                              {item.a}
+                              <FaqAnswer text={item.a} />
                             </div>
                           </div>
                         </div>
@@ -342,6 +344,63 @@ function SearchIcon() {
       <line x1="21" y1="21" x2="16.65" y2="16.65" />
     </svg>
   );
+}
+
+// Render an FAQ answer string with these conventions:
+//   - "\n\n"           paragraph break
+//   - line "• …"       bullet item (consecutive bullet lines become a <ul>)
+//   - "**bold**"       inline bold
+//   - "[text](url)"    inline link (className matches the rest of the page)
+function FaqAnswer({ text }: { text: string }) {
+  const paragraphs = text.split("\n\n");
+  return (
+    <>
+      {paragraphs.map((para, i) => {
+        const lines = para.split("\n");
+        const isBulletList =
+          lines.length > 0 && lines.every((l) => l.startsWith("• "));
+        if (isBulletList) {
+          return (
+            <ul key={i}>
+              {lines.map((l, j) => (
+                <li key={j}>{renderInline(l.slice(2))}</li>
+              ))}
+            </ul>
+          );
+        }
+        return <p key={i}>{renderInline(para)}</p>;
+      })}
+    </>
+  );
+}
+
+// Tokenize on **bold** and [text](url); other text passes through.
+const INLINE_RE = /\*\*([^*]+)\*\*|\[([^\]]+)\]\(([^)]+)\)/g;
+function renderInline(text: string): ReactNode[] {
+  const out: ReactNode[] = [];
+  let last = 0;
+  let key = 0;
+  let m: RegExpExecArray | null;
+  INLINE_RE.lastIndex = 0;
+  while ((m = INLINE_RE.exec(text))) {
+    if (m.index > last) out.push(text.slice(last, m.index));
+    if (m[1] !== undefined) {
+      out.push(<strong key={key++}>{m[1]}</strong>);
+    } else {
+      out.push(
+        <a
+          key={key++}
+          href={m[3]}
+          className="text-accent hover:underline"
+        >
+          {m[2]}
+        </a>
+      );
+    }
+    last = m.index + m[0].length;
+  }
+  if (last < text.length) out.push(text.slice(last));
+  return out;
 }
 
 function ChevronIcon({ open }: { open: boolean }) {
