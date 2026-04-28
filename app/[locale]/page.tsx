@@ -1,5 +1,6 @@
 import type { Metadata } from "next";
 import Script from "next/script";
+import { getTranslations } from "next-intl/server";
 import Header from "@/components/layout/Header";
 import Footer from "@/components/layout/Footer";
 import Hero from "@/components/landing/Hero";
@@ -10,7 +11,7 @@ import Pricing from "@/components/landing/Pricing";
 import BottomCTA from "@/components/landing/BottomCTA";
 import { siteConfig } from "@/config/site";
 import type { Locale } from "@/config/locales";
-import { languageAlternates, ogLocale, urlFor } from "@/lib/seo";
+import { pageMetadata, urlFor } from "@/lib/seo";
 
 export async function generateMetadata({
   params,
@@ -18,54 +19,49 @@ export async function generateMetadata({
   params: Promise<{ locale: Locale }>;
 }): Promise<Metadata> {
   const { locale } = await params;
+  const meta = await pageMetadata({
+    locale,
+    namespace: "meta.home",
+    path: "",
+  });
+  // Add OG image — page-level merge with the layout/root defaults.
   return {
-    title: {
-      absolute:
-        "Lost & Found Korea | English Lost Item Recovery in Seoul, Busan, Jeju",
-    },
-    description:
-      "Lost something in Korea? We help foreigners recover lost passports, wallets, phones, and luggage. Free to start — pay only when found. Bilingual support in Seoul, Busan, Jeju.",
-    keywords: [
-      "lost and found korea",
-      "lost passport korea",
-      "lost item seoul",
-      "korea lost luggage",
-      "incheon airport lost",
-      "lost wallet korea",
-      "foreigner lost item recovery",
-    ],
-    alternates: {
-      canonical: urlFor(locale, ""),
-      languages: languageAlternates(""),
-    },
+    ...meta,
     openGraph: {
-      title: "Lost & Found Korea — We'll find it.",
-      description:
-        "English-speaking lost item recovery service in Korea. Free to start. Pay only when found.",
-      url: urlFor(locale, ""),
+      ...meta.openGraph,
       siteName: "Lost & Found Korea",
       images: [
         {
           url: "/og-image.png?v=2",
           width: 1200,
           height: 630,
-          alt: "Lost & Found Korea — We'll find it.",
+          alt:
+            (await getTranslations({ locale, namespace: "meta.home" }))(
+              "ogAlt"
+            ) || "Lost & Found Korea",
         },
       ],
-      locale: ogLocale(locale),
-      type: "website",
     },
   };
 }
 
-export default function Home() {
-  const jsonLd = {
+export default async function Home({
+  params,
+}: {
+  params: Promise<{ locale: Locale }>;
+}) {
+  const { locale } = await params;
+  const t = await getTranslations({ locale, namespace: "meta.home" });
+
+  // LocalBusiness schema. Strings come from the meta.home namespace so
+  // both locales emit JSON-LD in the user's language.
+  const localBusinessLd = {
     "@context": "https://schema.org",
     "@type": "LocalBusiness",
-    name: "Lost & Found Korea",
+    name: t("schemaBusinessName"),
     alternateName: "LFK",
-    description: "English-speaking lost item recovery service in Korea",
-    url: siteConfig.url,
+    description: t("schemaBusinessDescription"),
+    url: urlFor(locale, ""),
     image: `${siteConfig.url}/og-image.png`,
     logo: `${siteConfig.url}/web-app-manifest-512x512.png`,
     priceRange: "$$",
@@ -80,7 +76,25 @@ export default function Home() {
       addressRegion: "Gyeonggi-do",
       addressLocality: "Yongin-si",
     },
-    availableLanguage: ["English", "Korean", "Japanese"],
+    availableLanguage: ["en", "ja"],
+  };
+
+  // Service schema — describes the recovery service itself, separate
+  // from the LocalBusiness entity. Helps rich-results show "service
+  // offered" snippets.
+  const serviceLd = {
+    "@context": "https://schema.org",
+    "@type": "Service",
+    name: t("schemaServiceName"),
+    description: t("schemaServiceDescription"),
+    provider: {
+      "@type": "LocalBusiness",
+      name: t("schemaBusinessName"),
+      url: urlFor(locale, ""),
+    },
+    areaServed: t("schemaAreaServed"),
+    availableLanguage: ["en", "ja"],
+    serviceType: "Lost item recovery and international shipping",
   };
 
   return (
@@ -88,7 +102,12 @@ export default function Home() {
       <Script
         id="schema-organization"
         type="application/ld+json"
-        dangerouslySetInnerHTML={{ __html: JSON.stringify(jsonLd) }}
+        dangerouslySetInnerHTML={{ __html: JSON.stringify(localBusinessLd) }}
+      />
+      <Script
+        id="schema-service"
+        type="application/ld+json"
+        dangerouslySetInnerHTML={{ __html: JSON.stringify(serviceLd) }}
       />
       <Header />
 

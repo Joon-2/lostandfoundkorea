@@ -1,12 +1,17 @@
 import CheckoutForm from "@/components/CheckoutForm";
 import { plans } from "@/config/plans";
-import { siteConfig } from "@/config/site";
+import { pageMetadata } from "@/lib/seo";
 
 const deliveryPrice = plans.delivery_only.priceSeoul;
 
-export const metadata = {
-  title: `${plans.delivery_only.name} — ${siteConfig.name}`,
-};
+export async function generateMetadata({ params }) {
+  const { locale } = await params;
+  return pageMetadata({
+    locale,
+    namespace: "meta.payDeliveryOnly",
+    path: "/pay/delivery-only",
+  });
+}
 
 const FIELDS = [
   {

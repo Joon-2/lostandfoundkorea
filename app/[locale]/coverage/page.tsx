@@ -1,14 +1,13 @@
 import type { Metadata } from "next";
 import { getTranslations } from "next-intl/server";
 import { supabase } from "@/lib/supabase";
-import { siteConfig } from "@/config/site";
 import { CATEGORIES } from "@/config/categories";
 import Header from "@/components/layout/Header";
 import Footer from "@/components/layout/Footer";
 import { Link } from "@/i18n/navigation";
 import type { Facility, FacilityCategory } from "@/types/facility";
 import type { Locale } from "@/config/locales";
-import { languageAlternates, ogLocale, urlFor } from "@/lib/seo";
+import { pageMetadata } from "@/lib/seo";
 
 export const revalidate = 60;
 
@@ -18,23 +17,11 @@ export async function generateMetadata({
   params: Promise<{ locale: Locale }>;
 }): Promise<Metadata> {
   const { locale } = await params;
-  return {
-    title: { absolute: `Lost & Found Info Book — ${siteConfig.name}` },
-    description:
-      "A directory of phone numbers, hours, and policies for the places that handle lost items in Korea — airports, subways, taxis, hotels, police, and more.",
-    alternates: {
-      canonical: urlFor(locale, "/coverage"),
-      languages: languageAlternates("/coverage"),
-    },
-    openGraph: {
-      title: `Lost & Found Info Book — ${siteConfig.name}`,
-      description:
-        "Phone numbers, hours, and policies for handling lost items in Korea.",
-      url: urlFor(locale, "/coverage"),
-      locale: ogLocale(locale),
-      type: "website",
-    },
-  };
+  return pageMetadata({
+    locale,
+    namespace: "meta.coverage",
+    path: "/coverage",
+  });
 }
 
 async function getCounts(): Promise<Record<FacilityCategory, number>> {

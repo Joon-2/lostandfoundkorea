@@ -288,5 +288,75 @@
     "optional": "(optional)",
     "needHelp": "Need help?",
     "errorGeneric": "Something went wrong, please try again."
+  },
+  "meta": {
+    "home": {
+      "title": "Lost & Found Korea | English Lost Item Recovery in Seoul, Busan, Jeju",
+      "description": "Lost something in Korea? We help foreigners recover lost passports, wallets, phones, and luggage. Free to start — pay only when found. Bilingual support in Seoul, Busan, Jeju.",
+      "keywords": "lost and found korea, lost passport korea, lost item seoul, korea lost luggage, incheon airport lost, lost wallet korea, foreigner lost item recovery",
+      "ogTitle": "Lost & Found Korea — We'll find it.",
+      "ogDescription": "English-speaking lost item recovery service in Korea. Free to start. Pay only when found.",
+      "ogAlt": "Lost & Found Korea — We'll find it.",
+      "schemaBusinessName": "Lost & Found Korea",
+      "schemaBusinessDescription": "English-speaking lost item recovery service in Korea",
+      "schemaServiceName": "Lost item recovery in Korea",
+      "schemaServiceDescription": "We help international travelers recover items lost in Korea — at hotels, airports, taxis, subway, and other facilities. Bilingual support, transparent pricing.",
+      "schemaAreaServed": "South Korea"
+    },
+    "ourStory": {
+      "title": "Our Story — Lost & Found Korea | Why We Built This Service",
+      "description": "We saw too many foreigner items sitting unclaimed in Korean lost and found offices. We built LFK to bridge the language gap and bring lost belongings home.",
+      "keywords": "lost and found korea about, why lost and found korea, korean lost item service story",
+      "ogTitle": "Our Story — Why we built Lost & Found Korea",
+      "ogDescription": "We built LFK to bridge the language gap and bring lost belongings home."
+    },
+    "faq": {
+      "title": "FAQ — Lost & Found Korea | How Lost Item Recovery Works",
+      "description": "Answers about pricing, payment, shipping, refunds, safety, and how we recover lost items in Korea for foreign travelers.",
+      "keywords": "lost and found korea faq, korea lost item recovery questions, korea lost item shipping, korea lost item refund",
+      "ogTitle": "FAQ — Lost & Found Korea",
+      "ogDescription": "Pricing, payment, shipping, refunds, and safety — answered."
+    },
+    "businessInfo": {
+      "title": "Business Info · Lost and Found Korea",
+      "description": "Operating company, business registration, and contact details for Lost & Found Korea, in accordance with the Korean Act on the Consumer Protection in Electronic Commerce.",
+      "keywords": "lost and found korea business info, kustody lost and found korea, business registration korea",
+      "ogTitle": "Business Info · Lost & Found Korea",
+      "ogDescription": "Operating company and business registration for Lost & Found Korea."
+    },
+    "legal": {
+      "title": "Legal · Lost and Found Korea",
+      "description": "Terms of Service, Privacy Policy, and Refund Policy for Lost & Found Korea.",
+      "keywords": "lost and found korea terms, lost and found korea privacy, lost and found korea refund policy",
+      "ogTitle": "Legal · Lost & Found Korea",
+      "ogDescription": "Terms of Service, Privacy Policy, and Refund Policy."
+    },
+    "coverage": {
+      "title": "Lost & Found Info Book — Lost and Found Korea",
+      "description": "A directory of phone numbers, hours, and policies for the places that handle lost items in Korea — airports, subways, taxis, hotels, police, and more.",
+      "keywords": "korea lost and found phone numbers, lost112, korea airport lost and found, korea subway lost and found, korea taxi lost and found, korea hotel lost and found",
+      "ogTitle": "Lost & Found Info Book — Korea",
+      "ogDescription": "Phone numbers, hours, and policies for handling lost items in Korea."
+    },
+    "coverageCategory": {
+      "titleSuffix": "— Lost & Found Korea Info Book",
+      "descriptionPrefix": "Phone numbers, hours, and policies for",
+      "descriptionSuffix": "in Korea — for foreign travelers searching for lost items.",
+      "keywordsTemplate": "korea {category} lost and found, lost item {category} korea, {category} contact korea"
+    },
+    "report": {
+      "title": "Report a lost item in Korea | Lost & Found Korea",
+      "description": "Free 30-second report. Our bilingual team contacts Korean lost & found offices on your behalf. Pay only if we find your item.",
+      "keywords": "report lost item korea, korea lost item form, korea lost passport report, korea lost wallet report",
+      "ogTitle": "Report your lost item in Korea — free to start",
+      "ogDescription": "Tell us what you lost. We'll search in Korean. You only pay if we find it."
+    },
+    "payDeliveryOnly": {
+      "title": "Delivery-only checkout | Lost & Found Korea",
+      "description": "Already know where your item is held in Korea? We'll pick it up and ship it to you, anywhere in the world.",
+      "keywords": "korea lost item delivery, korea lost item shipping service, korea pickup and ship",
+      "ogTitle": "Delivery-only — we pick up and ship",
+      "ogDescription": "Already located? We pick it up and ship it to you."
+    }
   }
 }

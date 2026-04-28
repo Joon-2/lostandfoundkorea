@@ -14,6 +14,7 @@ import {
   resolveFacility,
   indexTranslations,
 } from "@/lib/facility-i18n";
+import { languageAlternates, ogLocale, urlFor } from "@/lib/seo";
 import Header from "@/components/layout/Header";
 import Footer from "@/components/layout/Footer";
 import type {
@@ -24,22 +25,46 @@ import type {
 
 export const revalidate = 60;
 
-type RouteParams = { params: Promise<{ category: string }> };
+type RouteParams = {
+  params: Promise<{ locale: Locale; category: string }>;
+};
 
 export async function generateMetadata({
   params,
 }: RouteParams): Promise<Metadata> {
-  const { category } = await params;
+  const { locale, category } = await params;
   const def = getCategoryDef(category);
   if (!def) return {};
-  const title = `${def.label} — Lost & Found Info Book — ${siteConfig.name}`;
-  const description = def.description;
-  const url = `${siteConfig.url}/coverage/${def.key}`;
+  const t = await getTranslations({
+    locale,
+    namespace: "meta.coverageCategory",
+  });
+  const path = `/coverage/${def.key}`;
+  const title = `${def.label} ${t("titleSuffix")}`;
+  const description = `${t("descriptionPrefix")} ${def.label.toLowerCase()} ${t(
+    "descriptionSuffix"
+  )}`;
+  const keywords = t("keywordsTemplate")
+    .replace(/\{category\}/g, def.label.toLowerCase())
+    .split(",")
+    .map((k) => k.trim())
+    .filter(Boolean);
+  const url = urlFor(locale, path);
   return {
-    title,
+    title: { absolute: title },
     description,
-    alternates: { canonical: url },
-    openGraph: { title, description, url, type: "website" },
+    keywords,
+    alternates: {
+      canonical: url,
+      languages: languageAlternates(path),
+    },
+    openGraph: {
+      title,
+      description,
+      url,
+      locale: ogLocale(locale),
+      type: "website",
+    },
   };
 }
 
