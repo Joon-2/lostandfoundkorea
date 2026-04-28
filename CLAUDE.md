@@ -64,6 +64,16 @@
 - User-facing strings: use t('key') from /locales, no hardcoded text
 - Admin dashboard: English only, no i18n
 
+## i18n / Localization
+
+All multi-language work follows `I18N.md`. Read it before adding, modifying, or restructuring any localized content.
+
+- Categorize new content into one of 4 types per I18N.md §1: shared data / both translated / Japan-only / English-only
+- Choose the correct storage layer per I18N.md §2: config or DB / locales JSON / locale-specific namespace
+- Follow the tone guide per I18N.md §5: English friendly + clear; Japanese polite です・ます style
+- Never machine-translate without review; never mix Japanese values with English placeholders in the same JSON
+- Admin UI, backend logs, and internal-facing emails stay English-only
+
 ## Security Rules
 
 - Supabase anon key: INSERT only on reports table
@@ -101,3 +111,14 @@ ADMIN_PASSWORD
 - Upload via server-side API with SERVICE_ROLE_KEY
 - Buckets: "report-images" (user), "found-images" (admin)
 - Save immediately, no Save button
+
+## Reference docs
+
+When working on a specific domain, read the relevant doc first:
+
+- `API.md` — API endpoints (auth, routes, request/response)
+- `DESIGN.md` — design tokens (colors, typography, spacing)
+- `EMAILS.md` — email template rules and per-type specs
+- `SCHEMA.md` — Supabase DB schema
+- `I18N.md` — i18n content strategy and tone guide
+- `CHANGELOG.md` — version history
