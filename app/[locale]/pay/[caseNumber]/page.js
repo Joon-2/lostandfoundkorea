@@ -154,6 +154,7 @@ export default function PayPage({ params }) {
 }
 
 function AuthorizationUpload({ caseNumber, authorizationUrl, shippingAddress, onUploaded }) {
+  const t = useTranslations("pay");
   const fileInputRef = useRef(null);
   const [legalName, setLegalName] = useState("");
   const [idNumber, setIdNumber] = useState("");
@@ -200,9 +201,9 @@ function AuthorizationUpload({ caseNumber, authorizationUrl, shippingAddress, on
       const json = await res.json().catch(() => ({}));
       if (!res.ok || !json.ok) {
         console.error("upload failed:", json);
-        throw new Error(json.error || "Upload failed");
+        throw new Error(json.error || t("uploadFailed"));
       }
-      setMsg({ kind: "ok", text: "Authorization submitted." });
+      setMsg({ kind: "ok", text: t("authorizationSubmittedToast") });
       setFile(null);
       setLegalName("");
       setIdNumber("");
@@ -225,30 +226,29 @@ function AuthorizationUpload({ caseNumber, authorizationUrl, shippingAddress, on
   return (
     <div className="mt-6 rounded-2xl border border-border bg-card p-5 shadow-sm sm:p-6">
       <h3 className="font-serif text-lg tracking-tight text-foreground">
-        Authorization form
+        {t("authorizationFormHeading")}
       </h3>
       <p className="mt-2 text-sm text-body">
-        Provide your details and upload your ID so we can collect your item
-        on your behalf. JPG, PNG, or PDF; up to 10 MB.
+        {t("authorizationFormDescription")}
       </p>
 
       {authorizationUrl && (
         <p className="mt-3 rounded-lg bg-emerald-50 px-3 py-2 text-sm text-accent">
-          Authorization on file.{" "}
+          {t("authorizationOnFile")}{" "}
           <a
             href={authorizationUrl}
             target="_blank"
             rel="noopener noreferrer"
             className="underline"
           >
-            View
+            {t("authorizationView")}
           </a>
         </p>
       )}
       {shippingAddress && (
         <div className="mt-3 rounded-lg bg-alt px-3 py-2 text-sm text-body">
           <span className="text-xs font-semibold uppercase tracking-widest text-muted">
-            Shipping to
+            {t("shippingTo")}
           </span>
           <p className="mt-1 whitespace-pre-wrap text-foreground">
             {shippingAddress}
@@ -262,7 +262,7 @@ function AuthorizationUpload({ caseNumber, authorizationUrl, shippingAddress, on
             htmlFor="auth-legal-name"
             className="mb-1.5 block text-sm font-medium text-foreground"
           >
-            Full legal name (as shown on ID)
+            {t("fullLegalName")}
           </label>
           <input
             id="auth-legal-name"
@@ -271,7 +271,7 @@ function AuthorizationUpload({ caseNumber, authorizationUrl, shippingAddress, on
             autoComplete="name"
             value={legalName}
             onChange={(e) => setLegalName(e.target.value)}
-            placeholder="e.g. Jane Alice Doe"
+            placeholder={t("fullLegalNamePlaceholder")}
             className={fieldCls}
           />
         </div>
@@ -281,7 +281,7 @@ function AuthorizationUpload({ caseNumber, authorizationUrl, shippingAddress, on
             htmlFor="auth-id-number"
             className="mb-1.5 block text-sm font-medium text-foreground"
           >
-            Passport / ID number
+            {t("passportIdNumber")}
           </label>
           <input
             id="auth-id-number"
@@ -290,14 +290,14 @@ function AuthorizationUpload({ caseNumber, authorizationUrl, shippingAddress, on
             autoComplete="off"
             value={idNumber}
             onChange={(e) => setIdNumber(e.target.value)}
-            placeholder="e.g. M12345678"
+            placeholder={t("passportIdNumberPlaceholder")}
             className={fieldCls}
           />
         </div>
 
         <div>
           <span className="mb-1.5 block text-sm font-medium text-foreground">
-            ID photo
+            {t("idPhoto")}
           </span>
           <input
             ref={fileInputRef}
@@ -326,24 +326,24 @@ function AuthorizationUpload({ caseNumber, authorizationUrl, shippingAddress, on
                 <polyline points="17 8 12 3 7 8" />
                 <line x1="12" y1="3" x2="12" y2="15" />
               </svg>
-              {file ? "Change file" : "Upload passport or ID photo"}
+              {file ? t("changeFile") : t("uploadIdPhoto")}
             </button>
             {file ? (
               <span className="truncate text-sm text-body" title={file.name}>
                 {file.name}
               </span>
             ) : (
-              <span className="text-sm text-muted">No file selected</span>
+              <span className="text-sm text-muted">{t("noFileSelected")}</span>
             )}
           </div>
         </div>
 
         <div className="rounded-xl border border-border bg-alt p-4">
           <span className="text-xs font-semibold uppercase tracking-widest text-muted">
-            Shipping address
+            {t("shippingAddress")}
           </span>
           <p className="mt-1 text-sm text-body">
-            Where should we ship your item once we collect it?
+            {t("shippingAddressDescription")}
           </p>
           <div className="mt-3 grid gap-3 sm:grid-cols-2">
             <div className="sm:col-span-2">
@@ -351,7 +351,7 @@ function AuthorizationUpload({ caseNumber, authorizationUrl, shippingAddress, on
                 htmlFor="ship-street"
                 className="mb-1 block text-sm font-medium text-foreground"
               >
-                Street address
+                {t("streetAddress")}
               </label>
               <input
                 id="ship-street"
@@ -360,7 +360,7 @@ function AuthorizationUpload({ caseNumber, authorizationUrl, shippingAddress, on
                 autoComplete="street-address"
                 value={street}
                 onChange={(e) => setStreet(e.target.value)}
-                placeholder="e.g. 123 Main Street, Apt 4B"
+                placeholder={t("streetAddressPlaceholder")}
                 className={fieldCls}
               />
             </div>
@@ -369,7 +369,7 @@ function AuthorizationUpload({ caseNumber, authorizationUrl, shippingAddress, on
                 htmlFor="ship-city"
                 className="mb-1 block text-sm font-medium text-foreground"
               >
-                City
+                {t("city")}
               </label>
               <input
                 id="ship-city"
@@ -378,7 +378,7 @@ function AuthorizationUpload({ caseNumber, authorizationUrl, shippingAddress, on
                 autoComplete="address-level2"
                 value={city}
                 onChange={(e) => setCity(e.target.value)}
-                placeholder="e.g. Tokyo"
+                placeholder={t("cityPlaceholder")}
                 className={fieldCls}
               />
             </div>
@@ -387,7 +387,7 @@ function AuthorizationUpload({ caseNumber, authorizationUrl, shippingAddress, on
                 htmlFor="ship-postal"
                 className="mb-1 block text-sm font-medium text-foreground"
               >
-                Postal code
+                {t("postalCode")}
               </label>
               <input
                 id="ship-postal"
@@ -396,7 +396,7 @@ function AuthorizationUpload({ caseNumber, authorizationUrl, shippingAddress, on
                 autoComplete="postal-code"
                 value={postal}
                 onChange={(e) => setPostal(e.target.value)}
-                placeholder="e.g. 100-0001"
+                placeholder={t("postalCodePlaceholder")}
                 className={fieldCls}
               />
             </div>
@@ -405,7 +405,7 @@ function AuthorizationUpload({ caseNumber, authorizationUrl, shippingAddress, on
                 htmlFor="ship-country"
                 className="mb-1 block text-sm font-medium text-foreground"
               >
-                Country
+                {t("country")}
               </label>
               <input
                 id="ship-country"
@@ -414,7 +414,7 @@ function AuthorizationUpload({ caseNumber, authorizationUrl, shippingAddress, on
                 autoComplete="country-name"
                 value={country}
                 onChange={(e) => setCountry(e.target.value)}
-                placeholder="e.g. Japan"
+                placeholder={t("countryPlaceholder")}
                 className={fieldCls}
               />
             </div>
@@ -429,7 +429,7 @@ function AuthorizationUpload({ caseNumber, authorizationUrl, shippingAddress, on
             className="mt-0.5 h-4 w-4 flex-none rounded border-border text-accent focus:ring-accent/30"
           />
           <span className="leading-snug">
-            I authorize {siteConfig.name} to collect this item on my behalf.
+            {t("authorizationConsent", { siteName: siteConfig.name })}
           </span>
         </label>
 
@@ -438,7 +438,7 @@ function AuthorizationUpload({ caseNumber, authorizationUrl, shippingAddress, on
           disabled={!canSubmit}
           className="inline-flex items-center justify-center rounded-full bg-accent px-6 py-3 text-sm font-semibold text-white transition-colors hover:bg-accent-hover disabled:opacity-60"
         >
-          {uploading ? "Submitting…" : "Submit authorization"}
+          {uploading ? t("authorizationSubmitting") : t("authorizationSubmit")}
         </button>
       </form>
 
@@ -502,16 +502,17 @@ function Panel({ children, tone }) {
 }
 
 function SummaryCard({ report }) {
+  const t = useTranslations("pay");
   const rows = [
-    ["Item", report.category],
-    ["Description", report.item_description],
-    ["Last seen", report.location],
-    ["Date lost", formatDate(report.date_lost)],
+    [t("summaryItem"), report.category],
+    [t("summaryDescription"), report.item_description],
+    [t("summaryLastSeen"), report.location],
+    [t("summaryDateLost"), formatDate(report.date_lost)],
   ];
   return (
     <div className="mt-6 rounded-2xl border border-border bg-alt p-5 sm:p-6">
       <h3 className="text-xs font-semibold uppercase tracking-widest text-muted">
-        Your submission
+        {t("summaryYourSubmission")}
       </h3>
       <dl className="mt-3 divide-y divide-border">
         {rows.map(([k, v]) => (
@@ -790,7 +791,7 @@ function PaidState({ report, onRefresh, receipt }) {
     : null;
   const photos = Array.isArray(report.found_images) ? report.found_images : [];
   const helpWhatsApp = `${siteConfig.whatsapp}?text=${encodeURIComponent(
-    `Hi, I have a question about picking up my item. Case ${report.case_number}.`
+    t("whatsappPrefillPickupQuestion", { caseNumber: report.case_number })
   )}`;
   const addonPaid = Boolean(report.pickup_addon_transaction_id);
   const needsAuth = report.plan === "all_in_one" || addonPaid;
@@ -900,7 +901,7 @@ function PaidState({ report, onRefresh, receipt }) {
 
       <div className="mt-6 rounded-2xl border border-border bg-alt p-5 sm:p-6">
         <h3 className="text-xs font-semibold uppercase tracking-widest text-muted">
-          Pickup details
+          {t("pickupDetailsTitle")}
         </h3>
         <dl className="mt-3 divide-y divide-border">
           {rows.map(([k, v]) => (
@@ -932,7 +933,7 @@ function PaidState({ report, onRefresh, receipt }) {
               <path d="M21 10c0 7-9 13-9 13s-9-6-9-13a9 9 0 0 1 18 0z" />
               <circle cx="12" cy="10" r="3" />
             </svg>
-            Open in Google Maps
+            {t("openInGoogleMaps")}
           </a>
         )}
       </div>
@@ -940,7 +941,7 @@ function PaidState({ report, onRefresh, receipt }) {
       {report.recovery_instructions && (
         <div className="mt-4 rounded-2xl border border-border bg-card p-5 sm:p-6">
           <h3 className="text-xs font-semibold uppercase tracking-widest text-muted">
-            English pickup instructions
+            {t("englishPickupInstructions")}
           </h3>
           <p className="mt-3 whitespace-pre-line text-sm leading-relaxed text-foreground">
             {report.recovery_instructions}
@@ -952,9 +953,7 @@ function PaidState({ report, onRefresh, receipt }) {
         <>
           {addonPaid && (
             <div className="mt-6 rounded-2xl border border-accent/30 bg-emerald-50 px-5 py-3 text-sm text-accent">
-              <strong className="font-semibold">Pickup add-on paid.</strong>{" "}
-              Complete the authorization below so we can collect and ship your
-              item.
+              {t("pickupAddonPaidNotice")}
             </div>
           )}
           <AuthorizationUpload
@@ -972,16 +971,15 @@ function PaidState({ report, onRefresh, receipt }) {
       )}
 
       <p className="mt-6 text-sm text-muted">
-        Questions?{" "}
+        {t("questionsHeading")}{" "}
         <a
           href={helpWhatsApp}
           target="_blank"
           rel="noopener noreferrer"
           className="text-accent underline"
         >
-          Chat with us on WhatsApp
+          {t("chatOnWhatsapp")}
         </a>
-        .
       </p>
     </Panel>
   );
@@ -1086,8 +1084,7 @@ function PickupUpsell({ caseNumber, onPaid }) {
           </PayPalScriptProvider>
         ) : (
           <p className="rounded-xl border border-amber-200 bg-amber-50 px-4 py-3 text-sm text-amber-800">
-            Pickup checkout is temporarily unavailable. Please contact us on
-            WhatsApp.
+            {t("pickupCheckoutUnavailable")}
           </p>
         )}
         {err && (
