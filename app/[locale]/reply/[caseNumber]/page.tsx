@@ -1,9 +1,9 @@
 "use client";
 
 import { use, useEffect, useRef, useState } from "react";
-import Link from "next/link";
 import Header from "@/components/layout/Header";
 import { WHATSAPP_URL } from "@/components/WhatsApp";
+import { Link } from "@/i18n/navigation";
 
 const MAX_TEXT = 4000;
 const MAX_BYTES = 10 * 1024 * 1024;

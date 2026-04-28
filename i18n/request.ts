@@ -1,24 +1,18 @@
-import { cookies, headers } from "next/headers";
+import { hasLocale } from "next-intl";
 import { getRequestConfig } from "next-intl/server";
-import {
-  DEFAULT_LOCALE,
-  isSupportedLocale,
-  negotiateLocale,
-  type Locale,
-} from "@/config/locales";
+import { DEFAULT_LOCALE } from "@/config/locales";
+import { routing } from "./routing";
 
-export const LOCALE_COOKIE = "lfk-locale";
+// Loads English messages as the base, then deep-merges the requested
+// locale's non-empty strings on top. Any missing key in ja.json silently
+// falls back to en.json — the same pattern used pre-prefix-routing.
 
-// Detection priority:
-//   1. lfk-locale cookie (user-set override)
-//   2. Accept-Language header (browser preference)
-//   3. DEFAULT_LOCALE
-// English messages are always loaded as the base; the chosen locale's
-// non-empty strings are deep-merged on top so any missing key falls
-// back to English without rendering blank.
+export default getRequestConfig(async ({ requestLocale }) => {
+  const requested = await requestLocale;
+  const locale = hasLocale(routing.locales, requested)
+    ? requested
+    : routing.defaultLocale;
 
-export default getRequestConfig(async () => {
-  const locale = await detectLocale();
   const englishMessages = (await import("@/locales/en.json")).default;
   let messages: typeof englishMessages = englishMessages;
   if (locale !== DEFAULT_LOCALE) {
@@ -31,24 +25,6 @@ export default getRequestConfig(async () => {
   }
   return { locale, messages };
 });
-
-async function detectLocale(): Promise<Locale> {
-  // Cookie override
-  try {
-    const store = await cookies();
-    const cookieValue = store.get(LOCALE_COOKIE)?.value;
-    if (cookieValue && isSupportedLocale(cookieValue)) return cookieValue;
-  } catch {
-    // cookies() throws outside a request scope (e.g. during build).
-  }
-  // Browser preference
-  try {
-    const h = await headers();
-    const accept = h.get("accept-language");
-    if (accept) return negotiateLocale(accept);
-  } catch {}
-  return DEFAULT_LOCALE;
-}
 
 function mergeMessages(base: any, overlay: any): any {
   if (

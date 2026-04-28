@@ -1,12 +1,12 @@
 "use client";
 
-import Link from "next/link";
 import { useEffect, useState } from "react";
 import type { ReactNode } from "react";
 import { useTranslations } from "next-intl";
 import { WHATSAPP_URL } from "@/components/WhatsApp";
 import MobileMenu, { type NavLink } from "@/components/layout/MobileMenu";
 import Logo from "@/components/ui/Logo";
+import { Link } from "@/i18n/navigation";
 
 function HamburgerIcon() {
   return (

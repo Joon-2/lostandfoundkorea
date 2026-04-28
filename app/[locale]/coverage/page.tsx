@@ -1,4 +1,3 @@
-import Link from "next/link";
 import type { Metadata } from "next";
 import { getTranslations } from "next-intl/server";
 import { supabase } from "@/lib/supabase";
@@ -6,6 +5,7 @@ import { siteConfig } from "@/config/site";
 import { CATEGORIES } from "@/config/categories";
 import Header from "@/components/layout/Header";
 import Footer from "@/components/layout/Footer";
+import { Link } from "@/i18n/navigation";
 import type { Facility, FacilityCategory } from "@/types/facility";
 
 export const revalidate = 60;

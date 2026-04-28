@@ -1,5 +1,5 @@
-import Link from "next/link";
 import type { ReactNode, MouseEventHandler } from "react";
+import { Link } from "@/i18n/navigation";
 
 type Variant = "primary" | "secondary" | "danger";
 type Size = "sm" | "md" | "lg";

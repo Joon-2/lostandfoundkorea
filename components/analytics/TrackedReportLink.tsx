@@ -1,8 +1,8 @@
 "use client";
 
-import Link from "next/link";
 import type { ReactNode } from "react";
 import { sendGAEvent } from "@next/third-parties/google";
+import { Link } from "@/i18n/navigation";
 
 // Internal Link that fires a GA4 `report_started` event with a
 // caller-supplied location label before navigating. Used for every

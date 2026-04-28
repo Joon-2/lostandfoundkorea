@@ -1,6 +1,5 @@
 "use client";
 
-import Link from "next/link";
 import { use, useCallback, useEffect, useRef, useState } from "react";
 import { PayPalScriptProvider, PayPalButtons } from "@paypal/react-paypal-js";
 import { useTranslations } from "next-intl";
@@ -9,6 +8,7 @@ import { WHATSAPP_URL } from "@/components/WhatsApp";
 import Header from "@/components/layout/Header";
 import { plans } from "@/config/plans";
 import { siteConfig } from "@/config/site";
+import { Link } from "@/i18n/navigation";
 
 const PAYPAL_CLIENT_ID = process.env.NEXT_PUBLIC_PAYPAL_CLIENT_ID || "";
 
