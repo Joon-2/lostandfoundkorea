@@ -1,0 +1,63 @@
+{
+  "slug": "incheon-airport-lost-and-found",
+  "metaTitle": "Incheon Airport Lost & Found — recovery service | LFK",
+  "metaDescription": "Lost something at Incheon Airport? We coordinate with ICN's lost-and-found office in Korean and ship your item home worldwide.",
+  "keywords": [
+    "incheon airport lost and found",
+    "lost item at icn",
+    "incheon airport lost item",
+    "icn lost and found office",
+    "incheon airport lost passport"
+  ],
+  "h1": "Incheon Airport (ICN) lost and found",
+  "heroBody": "Incheon is one of the busiest airports in Asia, and items left at security, gates, lounges, or restaurants get logged quickly into the airport's lost-and-found system. The challenge for foreign travelers is that the office operates primarily in Korean, with limited international phone support. We bridge that — calling, confirming, retrieving, and shipping.",
+  "steps": [
+    {
+      "title": "Tell us what and where",
+      "body": "Submit a free report with the date, terminal (T1 or T2), approximate area (security checkpoint, specific gate, lounge, restaurant, etc.), and a description of the item with any distinguishing marks. The more specific, the faster we can match."
+    },
+    {
+      "title": "We contact ICN's lost-and-found office",
+      "body": "Incheon Airport runs a dedicated lost-and-found office in each terminal. We call in Korean, describe your item, and check whether it's been logged. Items typically appear in the system 1–6 hours after being turned in."
+    },
+    {
+      "title": "Confirmation with photos",
+      "body": "When ICN confirms a likely match, we ask them to photograph it for verification. Once you confirm, we authorize pickup."
+    },
+    {
+      "title": "Retrieve and ship home",
+      "body": "We collect the item from the airport, package it properly, and ship via EMS or express courier to your address. Most international destinations land within 5–10 business days."
+    }
+  ],
+  "faqs": [
+    {
+      "q": "How long does ICN keep unclaimed items?",
+      "a": "Generally 30 days at the lost-and-found office, after which items move to longer-term storage or are disposed of by category. The first week is the easiest window for recovery."
+    },
+    {
+      "q": "I'm already on my flight home — is it too late?",
+      "a": "No. Most of our airport cases are travelers already back home. We act as your local hands and ship internationally."
+    },
+    {
+      "q": "What if I left it at a specific airline counter or lounge?",
+      "a": "Items at airline counters / lounges are sometimes held by the airline rather than passed to airport lost-and-found. Mention the airline name and we'll check both channels."
+    },
+    {
+      "q": "Can you handle items left in security trays?",
+      "a": "Yes — security checkpoint items are turned over to the airport lost-and-found office, usually the same day. Tell us the rough time and security lane if you remember."
+    },
+    {
+      "q": "Do you cover Incheon Terminal 2 (Korean Air, Delta, Air France, KLM)?",
+      "a": "Yes — both Terminal 1 and Terminal 2 have their own lost-and-found offices and we contact whichever applies based on which airline you flew."
+    }
+  ],
+  "ctaLabel": "Start a free report",
+  "internalLinks": [
+    { "href": "/lost-passport", "label": "Lost passport in Korea" },
+    { "href": "/lost-laptop", "label": "Lost laptop in Korea" },
+    {
+      "href": "/gimpo-airport-lost-and-found",
+      "label": "Gimpo Airport lost and found"
+    }
+  ]
+}

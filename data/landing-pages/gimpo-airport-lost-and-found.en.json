@@ -1,0 +1,61 @@
+{
+  "slug": "gimpo-airport-lost-and-found",
+  "metaTitle": "Gimpo Airport Lost & Found — recovery service | LFK",
+  "metaDescription": "Lost something at Gimpo Airport (GMP)? We work with the airport's lost-and-found office in Korean and ship items worldwide.",
+  "keywords": [
+    "gimpo airport lost and found",
+    "gmp lost item",
+    "gimpo airport lost item",
+    "gimpo lost and found office"
+  ],
+  "h1": "Gimpo Airport (GMP) lost and found",
+  "heroBody": "Gimpo is Seoul's domestic and short-haul international airport — most flights to Tokyo, Osaka, Beijing, and Shanghai go through here. It's smaller than Incheon, but the lost-and-found office is equally well-organized. The recovery process is the same: log the item with us, we coordinate with the airport in Korean, and ship it home.",
+  "steps": [
+    {
+      "title": "Submit your report",
+      "body": "Tell us the date, terminal (domestic or international), approximate area (gate, security, restaurant, parking), and a description of the item. The more specific, the easier the match."
+    },
+    {
+      "title": "We call Gimpo's lost-and-found office",
+      "body": "We confirm in Korean whether the item has been logged. Gimpo's office tends to be faster than Incheon's because the volume is smaller — items often appear in the log within a few hours of being turned in."
+    },
+    {
+      "title": "Photo confirmation",
+      "body": "Once we have a likely match, we ask the office to photograph it. You confirm before we pick up."
+    },
+    {
+      "title": "Retrieve and ship",
+      "body": "We collect, package, and ship via EMS or express courier. For domestic Korean addresses, items can arrive next day. For Japan: typically 2–3 days via EMS Premium."
+    }
+  ],
+  "faqs": [
+    {
+      "q": "Is the office open every day?",
+      "a": "Yes, Gimpo's lost-and-found is staffed during airport operating hours. We work within those windows; off-hours requests are queued for next-day handling."
+    },
+    {
+      "q": "I flew Gimpo to Haneda — is it the Tokyo end or Seoul end?",
+      "a": "Depends on where you last had it. If on the plane / Haneda side: contact JAL/ANA's lost-and-found at Haneda. If at Gimpo before boarding: we handle it. We can advise either way once you submit a report."
+    },
+    {
+      "q": "How long are items kept?",
+      "a": "Roughly 30 days at the airport before transfer to police long-term storage. Earlier is easier."
+    },
+    {
+      "q": "What about items on a Gimpo–Jeju domestic flight?",
+      "a": "Items on the aircraft itself are usually returned by the airline (Korean Air, Asiana, low-cost carriers) rather than the airport. We contact the airline directly when that's the case."
+    }
+  ],
+  "ctaLabel": "Start a free report",
+  "internalLinks": [
+    {
+      "href": "/incheon-airport-lost-and-found",
+      "label": "Incheon Airport lost and found"
+    },
+    {
+      "href": "/seoul-taxi-lost-and-found",
+      "label": "Lost something in a Seoul taxi"
+    },
+    { "href": "/lost-passport", "label": "Lost passport in Korea" }
+  ]
+}

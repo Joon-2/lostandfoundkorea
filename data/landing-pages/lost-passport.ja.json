@@ -1,0 +1,62 @@
+{
+  "slug": "lost-passport",
+  "metaTitle": "Lost passport in Korea — what to do | Lost & Found Korea",
+  "metaDescription": "Lost your passport in Korea? Contact your embassy for an emergency travel document, then let us help recover everything else you left behind.",
+  "keywords": [
+    "lost passport korea",
+    "lost passport seoul",
+    "korea passport recovery",
+    "passport lost incheon airport",
+    "passport replacement korea"
+  ],
+  "h1": "Lost your passport in Korea",
+  "heroBody": "Losing a passport abroad is stressful — but the path forward is clearer than it feels. The first call should be your country's embassy or consulate; an emergency travel document can be issued in 24–72 hours. Below we explain the right order, who to call, and what we can do for the rest of what you left behind.",
+  "steps": [
+    {
+      "title": "Contact your embassy or consulate first",
+      "body": "Replacing the passport itself is something only your country's embassy can do. Most embassies in Seoul issue emergency travel documents within 24–72 hours. Bring a photo ID, two passport-size photos, and a Korean police report if you have one."
+    },
+    {
+      "title": "File a police report (often required for the embassy)",
+      "body": "Most embassies need a Korean police report to issue a replacement. Walk into any neighborhood police box (파출소) — they'll write the report. Many will help in basic English, and the report is free."
+    },
+    {
+      "title": "Don't worry about your other items — that's our part",
+      "body": "If you also lost a wallet, phone, bag, or anything else with the passport: report it to us. We search Korean lost-and-found databases (Lost112), call the venues in Korean on your behalf, retrieve the items, and ship them once you're home."
+    },
+    {
+      "title": "Pay only when we find your items",
+      "body": "Reporting is free. You only pay our $39 recovery fee if we successfully locate something you reported."
+    }
+  ],
+  "faqs": [
+    {
+      "q": "Can LFK get my passport back?",
+      "a": "Sometimes — if a hotel, taxi driver, or police station has it. But you should always also start an emergency travel document with your embassy in parallel; that path is faster and more reliable. Use us for the wallet, phone, and other items left behind."
+    },
+    {
+      "q": "Where are the major embassies in Seoul?",
+      "a": "US Embassy: Sejong-daero, Jung-gu. UK Embassy: Sejong-daero. Australian Embassy: Yeouido. Canadian Embassy: Jeongdong-gil. Most are in central Seoul, walkable from each other."
+    },
+    {
+      "q": "Do I need to file a police report?",
+      "a": "For embassy purposes, usually yes. For our recovery service, no — but a police case number helps us cross-reference with Lost112."
+    },
+    {
+      "q": "I'm already back in my country. Can you still help?",
+      "a": "Yes. Most of our cases are travelers who've already left Korea. We coordinate with Korean venues on your behalf and ship to your address once located."
+    }
+  ],
+  "ctaLabel": "Report what else you lost — free",
+  "internalLinks": [
+    {
+      "href": "/incheon-airport-lost-and-found",
+      "label": "Lost something at Incheon Airport"
+    },
+    {
+      "href": "/seoul-taxi-lost-and-found",
+      "label": "Lost something in a Seoul taxi"
+    },
+    { "href": "/lost-wallet", "label": "Lost wallet in Korea" }
+  ]
+}

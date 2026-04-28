@@ -2,6 +2,8 @@ import type { MetadataRoute } from "next";
 import { CATEGORIES } from "@/config/categories";
 import { supabase } from "@/lib/supabase";
 import { languageAlternates, urlFor } from "@/lib/seo";
+import { LANDING_PAGES } from "@/data/landing-pages/manifest";
+import type { Locale } from "@/config/locales";
 
 export const revalidate = 3600;
 
@@ -89,5 +91,25 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
     ];
   });
 
-  return [...staticEntries, ...categoryEntries];
+  // SEO landing pages — emit one entry per (slug, locale) pair the
+  // manifest declares. Bilingual slugs get a hreflang alternates map;
+  // JA-only guides don't (no English equivalent to point at).
+  const landingEntries: MetadataRoute.Sitemap = LANDING_PAGES.flatMap(
+    (page) => {
+      const path = `/${page.slug}`;
+      const isBilingual = page.locales.length > 1;
+      const alternates = isBilingual
+        ? { languages: languageAlternates(path) }
+        : undefined;
+      return page.locales.map((locale: Locale) => ({
+        url: urlFor(locale, path),
+        lastModified: now,
+        changeFrequency: "monthly" as const,
+        priority: 0.7,
+        ...(alternates ? { alternates } : {}),
+      }));
+    }
+  );
+
+  return [...staticEntries, ...categoryEntries, ...landingEntries];
 }

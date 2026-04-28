@@ -1,0 +1,65 @@
+{
+  "slug": "lost-phone",
+  "metaTitle": "Lost phone in Korea — recovery guide | Lost & Found Korea",
+  "metaDescription": "Lost your iPhone or Android phone in Korea? Use Find My / Find My Device first, then let us recover and ship it home. English-speaking support.",
+  "keywords": [
+    "lost iphone korea",
+    "lost phone korea",
+    "lost phone seoul",
+    "lost smartphone korea",
+    "lost iphone incheon airport"
+  ],
+  "h1": "Lost your phone in Korea",
+  "heroBody": "Phones are the most common item travelers lose in Korea — usually in taxis, on the subway, or at airport security. The good news: Korea's lost-and-found system handles them well, and Find My / Find My Device often pinpoints exactly where it is. Here's the right order to work through.",
+  "steps": [
+    {
+      "title": "Lock and locate it first",
+      "body": "Sign into iCloud (Find My) or Google (Find My Device) from any browser. Mark the phone as lost — this locks the screen and shows a custom message with your contact info. Note the last known location; that often tells us which venue to contact."
+    },
+    {
+      "title": "Send us the location and circumstances",
+      "body": "Submit a free report with: where you last had it, the last known location from Find My, the make/model, and any case description. The more we know, the faster we can search the right venues in Korean."
+    },
+    {
+      "title": "We call the venue in Korean",
+      "body": "Whether it's a Seoul taxi company, a subway lost-and-found, a hotel, or Incheon Airport's office — we make the calls in Korean, follow up daily, and confirm with you in your language."
+    },
+    {
+      "title": "We pick it up and ship it home",
+      "body": "Once located, we collect the phone, package it carefully, and ship it via EMS or express courier to your address. Insurance and tracking included."
+    }
+  ],
+  "faqs": [
+    {
+      "q": "What if I disabled Find My before the trip?",
+      "a": "We can still help — it just means searching by description and location instead. Provide the make, model, color, case, and last-seen venue, and we'll work the lost-and-found channels."
+    },
+    {
+      "q": "Can the phone be turned on / unlocked by the finder?",
+      "a": "If you've enabled Find My / Find My Device's Lost Mode and screen lock, no. The phone is bricked to anyone but you. That's why locking it before reporting is the most important first step."
+    },
+    {
+      "q": "How long does recovery usually take?",
+      "a": "Most phone cases resolve in 24–72 hours once we know which venue has it. Some take longer for items in transit (e.g., a phone left on a regional bus or train)."
+    },
+    {
+      "q": "What about the eSIM and phone number?",
+      "a": "Contact your carrier immediately to suspend the line and freeze any roaming charges. The phone hardware itself can still be recovered separately."
+    }
+  ],
+  "ctaLabel": "Start a free report",
+  "internalLinks": [
+    {
+      "href": "/seoul-taxi-lost-and-found",
+      "label": "Lost something in a Seoul taxi"
+    },
+    {
+      "href": "/seoul-subway-lost-and-found",
+      "label": "Lost something on the Seoul subway"
+    },
+    {
+      "href": "/incheon-airport-lost-and-found",
+      "label": "Lost something at Incheon Airport"
+    }
+  ]
+}

@@ -1,0 +1,62 @@
+{
+  "slug": "lost-wallet",
+  "metaTitle": "Lost wallet in Korea — recovery guide | Lost & Found Korea",
+  "metaDescription": "Lost your wallet in Seoul or anywhere in Korea? Cancel your cards first, then let us track down the wallet itself and ship it home.",
+  "keywords": [
+    "lost wallet seoul",
+    "lost wallet korea",
+    "lost wallet incheon",
+    "wallet recovery korea",
+    "lost cards korea"
+  ],
+  "h1": "Lost your wallet in Korea",
+  "heroBody": "A wallet usually means three problems at once: cards to cancel, cash that's probably gone, and the wallet itself with its IDs and photos. The cards you can handle remotely in minutes. The wallet — that's where we come in. Most lost wallets in Seoul end up at a police box or transit lost-and-found within a day; they just don't get back to their owners because nobody calls.",
+  "steps": [
+    {
+      "title": "Cancel your cards immediately",
+      "body": "Call your card issuers and freeze every card. Most card issuers have 24/7 international hotlines printed on the back of a duplicate card or in their app. Skip this step at your peril — the wallet itself can wait, fraudulent charges can't."
+    },
+    {
+      "title": "Tell us where you last had it",
+      "body": "Submit a free report with the last venue (taxi, restaurant, subway car, etc.), approximate time, and a description of the wallet. The wallet often surfaces at a Korean police box (파출소) or the venue's lost-and-found within 24 hours."
+    },
+    {
+      "title": "We work the Korean channels",
+      "body": "We call the relevant venues, check the Lost112 national database in Korean, and follow up daily. Korean lost-and-found culture is honest — items turn up more often than you'd expect."
+    },
+    {
+      "title": "We retrieve and ship",
+      "body": "Once located, we collect the wallet, photograph the contents (so you can verify nothing's missing), and ship it home via EMS with tracking and insurance."
+    }
+  ],
+  "faqs": [
+    {
+      "q": "What if cash is missing from the wallet?",
+      "a": "Cash is the most commonly missing item when wallets are returned. Cards, IDs, photos, and the wallet itself almost always come back intact. We'll photograph contents on retrieval so you know exactly what's there."
+    },
+    {
+      "q": "Should I file a police report?",
+      "a": "If your ID was inside, yes — for fraud-prevention purposes back home. For our recovery service, it's optional but helps us cross-reference with Lost112."
+    },
+    {
+      "q": "How does Lost112 work?",
+      "a": "Lost112 is Korea's national lost-and-found database, run by the police. Hotels, transit, taxi companies, and police boxes log items there. The site is Korean-only — we navigate it on your behalf."
+    },
+    {
+      "q": "What's the typical recovery time for a wallet?",
+      "a": "If the wallet's at a police box: usually 1–3 days from report to confirmation. Transit lost-and-found can take longer because they batch items by line/station. We'll keep you updated."
+    }
+  ],
+  "ctaLabel": "Start a free report",
+  "internalLinks": [
+    {
+      "href": "/seoul-taxi-lost-and-found",
+      "label": "Lost something in a Seoul taxi"
+    },
+    {
+      "href": "/seoul-subway-lost-and-found",
+      "label": "Lost something on the Seoul subway"
+    },
+    { "href": "/lost-passport", "label": "Lost passport in Korea" }
+  ]
+}

@@ -1,0 +1,82 @@
+{
+  "slug": "japanese-tourist-guide",
+  "metaTitle": "Complete guide: lost items in Korea for Japanese travelers",
+  "metaDescription": "A complete guide for Japanese travelers who lost items in Korea — from immediately after the loss through recovery and shipping back to Japan.",
+  "keywords": [
+    "韓国旅行 忘れ物",
+    "korea japan lost item",
+    "lost item korea japanese tourist",
+    "ソウル 忘れ物 日本人",
+    "韓国 忘れ物 ガイド"
+  ],
+  "h1": "Lost something in Korea — a complete guide for Japanese travelers",
+  "heroBody": "If you've come back to Japan and realized you left something behind in Korea — a phone in a taxi, a wallet at a restaurant, a bag at the hotel — you're not alone. Japanese travelers are one of the largest groups we help. This guide walks you through the entire process: what to do immediately, who to contact, what to expect, and how the items get back to you in Japan.",
+  "steps": [
+    {
+      "title": "First 24 hours: lock down what's recoverable digitally",
+      "body": "If you lost a phone, sign into Find My / Find My Device and lock it remotely. If a wallet, freeze your cards via your bank's app. These steps work from anywhere — you don't have to be in Korea."
+    },
+    {
+      "title": "Identify the venue (or as close as you can)",
+      "body": "Was it a hotel? A taxi? The subway? Incheon Airport? Each venue has its own lost-and-found process. Even partial info — 'the taxi from Hongdae to my hotel around 11pm' — is enough for us to start working."
+    },
+    {
+      "title": "Submit a report (free, takes 30 seconds)",
+      "body": "Tell us what, where, and when. We respond in Japanese (eventually — currently English while we hire Japanese-speaking staff). You only pay our $39 recovery fee if we successfully find your item."
+    },
+    {
+      "title": "We work the Korean side",
+      "body": "Calls in Korean, follow-ups daily, navigation of the Lost112 national database, coordination with hotels / taxi companies / airport offices. You don't have to read Korean, call Korean numbers, or learn Korean lost-and-found culture."
+    },
+    {
+      "title": "Recovery confirmation",
+      "body": "Once we locate your item, we send you a photo for visual confirmation. Once you confirm it's yours, we authorize pickup."
+    },
+    {
+      "title": "EMS shipping to Japan: 2–3 business days",
+      "body": "Korea Post EMS Premium reaches Tokyo, Osaka, and Fukuoka in 2–3 business days. Standard EMS adds 1–2 days. Tracking is unified across Korea Post and Japan Post — you see every scan."
+    },
+    {
+      "title": "Customs handled honestly",
+      "body": "We declare the item value accurately on the customs form. Personal items under the duty-free threshold (currently ¥10,000 for most categories) usually clear without paperwork on your end."
+    }
+  ],
+  "faqs": [
+    {
+      "q": "I'm already back in Japan — can you still help?",
+      "a": "Yes. Most of our Japanese cases are travelers already back in Japan. We act as your hands in Korea and ship to your home address."
+    },
+    {
+      "q": "How fast does EMS reach Japan?",
+      "a": "EMS Premium: Seoul → Tokyo / Osaka / Fukuoka in 2–3 business days. Standard EMS: 4–5 days. Express courier (DHL/FedEx): next day, but more expensive."
+    },
+    {
+      "q": "Do I need to pay customs duty?",
+      "a": "For most personal items under the Japanese duty-free threshold, no. We'll let you know if your specific item is likely to incur duty."
+    },
+    {
+      "q": "What if I don't speak Korean and barely speak English?",
+      "a": "We support English fully and Japanese partially (currently English while we hire Japanese-speaking staff). You can communicate with us in either language; we handle the Korean side entirely."
+    },
+    {
+      "q": "What if my item isn't found?",
+      "a": "You pay nothing. The $39 recovery fee is only charged when we successfully locate something."
+    },
+    {
+      "q": "What if cash is missing from my wallet?",
+      "a": "Cash is the most commonly missing item when wallets are returned. Cards, IDs, photos, and the wallet itself almost always come back intact. We photograph contents on retrieval so you know exactly what's there."
+    }
+  ],
+  "ctaLabel": "Start a free report",
+  "internalLinks": [
+    { "href": "/return-to-japan", "label": "I'm already back in Japan" },
+    {
+      "href": "/incheon-airport-lost-and-found",
+      "label": "Lost something at Incheon Airport"
+    },
+    {
+      "href": "/seoul-taxi-lost-and-found",
+      "label": "Lost something in a Seoul taxi"
+    }
+  ]
+}

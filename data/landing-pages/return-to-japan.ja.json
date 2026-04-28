@@ -1,0 +1,68 @@
+{
+  "slug": "return-to-japan",
+  "metaTitle": "I'm back in Japan and I left something in Korea — what now?",
+  "metaDescription": "You've returned to Japan and realized you left something behind in Korea. Here's what to do — and what we can do for you from here.",
+  "keywords": [
+    "韓国 忘れ物 帰国後",
+    "japan returned korea forgot item",
+    "韓国旅行 帰国 忘れ物",
+    "lost item korea after returning japan"
+  ],
+  "h1": "Already back in Japan and missing something from Korea",
+  "heroBody": "It's a particular kind of stress: you're home, the trip is over, and you realize the wallet / phone / bag is still in Korea somewhere. The flight back made it real. The good news — we exist precisely for this moment. You don't need to fly back, you don't need to make Korean phone calls, you don't need to learn Lost112's interface. We do all of that.",
+  "steps": [
+    {
+      "title": "Take a breath",
+      "body": "Korean lost-and-found has a high return rate. Most items left at hotels, taxis, restaurants, and transit do get logged within 24 hours. The window for recovery is wider than it feels."
+    },
+    {
+      "title": "Tell us what you remember",
+      "body": "Submit a free 30-second report. Even if you only remember 'I think it was the taxi from Myeongdong to the hotel around 8pm' — that's enough for us to start. Detail helps; uncertainty doesn't disqualify you."
+    },
+    {
+      "title": "We work the Korean side from here",
+      "body": "We call the venue in Korean, check Lost112, follow up daily, and confirm with you in your language as we make progress. You can stop thinking about it; we'll email when there's news."
+    },
+    {
+      "title": "EMS to your home in Japan",
+      "body": "Once recovered, we ship via EMS to your Japanese address. Tokyo / Osaka / Fukuoka typically arrive in 2–3 business days. Tracking + insurance included."
+    }
+  ],
+  "faqs": [
+    {
+      "q": "How long do I have before it's too late?",
+      "a": "Most venues hold items for 30 days before transferring to long-term police storage. Earlier is much easier — but we've recovered items 60+ days after the loss too. Don't assume it's too late until we've checked."
+    },
+    {
+      "q": "Will I have to call Korea or fill out Korean forms?",
+      "a": "No. We handle every Korean-side communication. You only interact with us, in English (Japanese support coming as we hire)."
+    },
+    {
+      "q": "Do I pay if you don't find it?",
+      "a": "No. Reporting is free. Our $39 recovery fee is only charged when we successfully locate your item."
+    },
+    {
+      "q": "Will the cost of shipping be painful?",
+      "a": "EMS Korea → Japan is one of the cheapest international routes. Expect roughly $15–25 for most personal items (wallets, phones, small bags). Larger items (laptops, suitcases) run $30–60. We give you the exact number before shipping."
+    },
+    {
+      "q": "What if I'm not sure where I lost it?",
+      "a": "That's normal. Tell us your best guess and the rough timeline of your trip. We work with what we have — distinctive items often surface even when you're vague about location."
+    }
+  ],
+  "ctaLabel": "Start a free report",
+  "internalLinks": [
+    {
+      "href": "/japanese-tourist-guide",
+      "label": "Complete guide for Japanese travelers"
+    },
+    {
+      "href": "/incheon-airport-lost-and-found",
+      "label": "Lost something at Incheon Airport"
+    },
+    {
+      "href": "/seoul-taxi-lost-and-found",
+      "label": "Lost something in a Seoul taxi"
+    }
+  ]
+}

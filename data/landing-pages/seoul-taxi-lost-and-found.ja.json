@@ -1,0 +1,59 @@
+{
+  "slug": "seoul-taxi-lost-and-found",
+  "metaTitle": "Lost something in a Seoul taxi — recovery service | LFK",
+  "metaDescription": "Left your phone, wallet, or bag in a Seoul taxi? We track it down through Korean taxi networks and ship it home.",
+  "keywords": [
+    "lost item in seoul taxi",
+    "lost phone seoul taxi",
+    "lost wallet seoul taxi",
+    "korea taxi lost and found",
+    "seoul taxi lost item"
+  ],
+  "h1": "Lost something in a Seoul taxi",
+  "heroBody": "Phones in the back seat, bags in the trunk, jackets pinned between the seat and the door — taxis are one of the most common places travelers lose things in Seoul. The good news: Korean taxi drivers usually turn items in to a police box within a day. The hard part is identifying which taxi, and that's where the receipt or driver number matters.",
+  "steps": [
+    {
+      "title": "Find your taxi receipt or driver info",
+      "body": "Check your wallet, jacket pocket, or your card statement for a paper receipt — it has the driver's license number, taxi number, and time. If you paid by card or T-money, the transaction record helps us identify the taxi company. App-hailed rides (Kakao T, Uber) keep digital records."
+    },
+    {
+      "title": "Submit a free report with what you have",
+      "body": "Tell us: pickup and drop-off locations, approximate time, item description, and any driver/taxi info from your receipt or app. Even partial info — like 'paid by Visa around 9pm in Hongdae' — narrows the search significantly."
+    },
+    {
+      "title": "We work the taxi networks in Korean",
+      "body": "Major Seoul taxi companies, Kakao T's lost-and-found team, and the relevant police boxes — we call all of them in Korean and check the Lost112 national database. Items typically surface within 24–72 hours."
+    },
+    {
+      "title": "Retrieve and ship",
+      "body": "Once located, we collect the item from wherever it ended up (police box, taxi company office, or the driver directly), package it, and ship via EMS to your address."
+    }
+  ],
+  "faqs": [
+    {
+      "q": "I didn't keep the receipt — is it hopeless?",
+      "a": "No, just harder. We can still check Lost112 and the major taxi networks against your description. The match rate is lower but recoveries do happen, especially for distinctive items."
+    },
+    {
+      "q": "I used Kakao T / a ride-hailing app",
+      "a": "Easier — Kakao T has a structured lost-and-found process. We contact them on your behalf with your trip ID; they reach the driver. Most app-hailed cases resolve within 24 hours."
+    },
+    {
+      "q": "What if the driver kept it?",
+      "a": "Rare — Korean taxi drivers have a strong cultural and legal incentive to turn items in (they get a small finder's reward from the city, and not turning items in is a license issue). When it does happen, the receipt info gives us the driver's name and we escalate."
+    },
+    {
+      "q": "Can I get cash back if my wallet was in the cab?",
+      "a": "Cash is the most commonly missing item when wallets surface. Cards, IDs, and the wallet itself almost always come back intact."
+    }
+  ],
+  "ctaLabel": "Start a free report",
+  "internalLinks": [
+    { "href": "/lost-phone", "label": "Lost phone in Korea" },
+    { "href": "/lost-wallet", "label": "Lost wallet in Korea" },
+    {
+      "href": "/seoul-subway-lost-and-found",
+      "label": "Lost something on the Seoul subway"
+    }
+  ]
+}

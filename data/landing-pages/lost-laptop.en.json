@@ -1,0 +1,62 @@
+{
+  "slug": "lost-laptop",
+  "metaTitle": "Lost laptop in Korea — recovery guide | Lost & Found Korea",
+  "metaDescription": "Lost your laptop in Korea? Lock it remotely first, then let us coordinate Korean-language recovery and ship it home with care.",
+  "keywords": [
+    "lost laptop korea",
+    "lost macbook korea",
+    "lost laptop seoul",
+    "laptop recovery korea",
+    "lost laptop incheon airport"
+  ],
+  "h1": "Lost your laptop in Korea",
+  "heroBody": "Laptops carry the most sensitive thing of anything you can lose: your work life and personal data. The recovery itself is usually straightforward — laptops left on planes, in hotels, or in conference centers in Korea almost always end up in a logged lost-and-found within hours. The bigger immediate concern is securing the data.",
+  "steps": [
+    {
+      "title": "Secure the data first",
+      "body": "If it's a Mac: open Find My from any Apple device, lock the laptop remotely with a passcode, and optionally erase if the data is highly sensitive. If it's a Windows PC with BitLocker: contact your IT team or sign into your Microsoft account to lock it. If it's a work laptop: alert your IT/security team immediately — they may have additional remote-wipe tools."
+    },
+    {
+      "title": "File the report with us",
+      "body": "Tell us the make, model, color, any stickers or distinguishing marks, and where you last had it. The serial number (often on the bottom or in your purchase email) helps Korean venues confirm a match."
+    },
+    {
+      "title": "We coordinate retrieval in Korean",
+      "body": "Hotels, conference centers, airports, and taxis in Korea all keep logs of laptops in their lost-and-found. We call them in Korean, confirm the match against your description, and arrange pickup."
+    },
+    {
+      "title": "Careful packaging and tracked shipping",
+      "body": "Laptops ship in protective packaging with declared-value insurance and EMS tracking. We photograph the device pre-shipment so you have visual confirmation of its condition."
+    }
+  ],
+  "faqs": [
+    {
+      "q": "Will my laptop be turned on or accessed?",
+      "a": "Korean lost-and-found practice is to log items by exterior description without booting them. If you've enabled BitLocker / FileVault and a strong password, the data is protected even if someone tried."
+    },
+    {
+      "q": "What if I lost it on a flight to or from Korea?",
+      "a": "If the flight was operated by a Korean carrier (Korean Air, Asiana, low-costs), we contact their lost baggage department directly. For foreign carriers landing in Korea, items are typically held at the airport's lost-and-found office for 30–90 days before being moved to long-term storage."
+    },
+    {
+      "q": "Can you handle a work laptop with company restrictions?",
+      "a": "Yes. We can ship to a corporate address or to your employer's IT department directly. Just include the destination address details when you submit your report."
+    },
+    {
+      "q": "What if I left my laptop bag with charger and accessories?",
+      "a": "Tell us in the description. Korean lost-and-found typically keeps a bag and its contents together, so the laptop, charger, mouse, and any peripherals usually come back as one set."
+    }
+  ],
+  "ctaLabel": "Start a free report",
+  "internalLinks": [
+    {
+      "href": "/incheon-airport-lost-and-found",
+      "label": "Lost something at Incheon Airport"
+    },
+    {
+      "href": "/seoul-taxi-lost-and-found",
+      "label": "Lost something in a Seoul taxi"
+    },
+    { "href": "/lost-phone", "label": "Lost phone in Korea" }
+  ]
+}

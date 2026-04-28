@@ -1,0 +1,59 @@
+{
+  "slug": "seoul-subway-lost-and-found",
+  "metaTitle": "Seoul Subway Lost & Found — recovery service | LFK",
+  "metaDescription": "Lost an item on the Seoul subway? Each line has a lost-and-found office. We coordinate in Korean and ship items worldwide.",
+  "keywords": [
+    "lost item seoul subway",
+    "seoul metro lost and found",
+    "korea subway lost item",
+    "seoul subway lost wallet",
+    "seoul subway lost phone"
+  ],
+  "h1": "Lost something on the Seoul subway",
+  "heroBody": "Seoul's subway is one of the most extensive in the world, with nine main lines and a dedicated lost-and-found system per line. Items are collected by station staff and either held at the line's central office or routed to Lost112 (the national lost-and-found database). Each line has its own contact number and pickup hours.",
+  "steps": [
+    {
+      "title": "Tell us the line and approximate time",
+      "body": "Submit a free report with: the line number (1, 2, 3, etc.), nearest station, approximate time, and a description. Even one piece of that info helps narrow the search."
+    },
+    {
+      "title": "We contact the line's lost-and-found office",
+      "body": "Each Seoul subway line operates its own lost-and-found office (usually at a central station like Sindorim, Wangsimni, or City Hall). We call in Korean and check whether your item has been logged."
+    },
+    {
+      "title": "Cross-check Lost112",
+      "body": "If the line's office doesn't have it, we check Lost112 — the national database where transit operators upload found items. Subway items often surface there within 24–48 hours of being turned in."
+    },
+    {
+      "title": "Retrieve and ship",
+      "body": "Once located, we collect the item, package it, and ship via EMS or express courier to your address worldwide."
+    }
+  ],
+  "faqs": [
+    {
+      "q": "Which line has the item?",
+      "a": "If you remember the line color (orange = Line 3, green = Line 2, etc.), that's enough. If you remember the station, we can identify the line from there. If you remember neither, just the approximate area of Seoul, we'll cross-check the most likely lines."
+    },
+    {
+      "q": "How long do subway lost-and-founds keep items?",
+      "a": "About 7 days at the line's office, then transfer to Lost112's central police storage for up to 9 months for valuable items. Earlier is easier."
+    },
+    {
+      "q": "What's the recovery rate for subway losses?",
+      "a": "High for distinctive items (laptops, named bags) — Korean station staff are diligent about turning items in. Lower for generic items like a black wallet without ID, just because matching is harder."
+    },
+    {
+      "q": "Can you handle Airport Railroad (AREX) or KTX?",
+      "a": "Yes — AREX and KTX (Korea's high-speed rail) have their own separate lost-and-found channels. We work all of them based on which train you took."
+    }
+  ],
+  "ctaLabel": "Start a free report",
+  "internalLinks": [
+    {
+      "href": "/seoul-taxi-lost-and-found",
+      "label": "Lost something in a Seoul taxi"
+    },
+    { "href": "/lost-phone", "label": "Lost phone in Korea" },
+    { "href": "/lost-wallet", "label": "Lost wallet in Korea" }
+  ]
+}
