@@ -33,7 +33,7 @@ export function buildReceiptEmail({
   const planLineHtml = planLabel
     ? ` <span style="color:#718096;">(${escapeHtml(planLabel)})</span>`
     : "";
-  const link = `${SITE_URL}/pay/${encodeURIComponent(caseNumber)}`;
+  const link = `${SITE_URL}/ja/pay/${encodeURIComponent(caseNumber)}`;
 
   const bodyHtml = [
     paragraph("Thanks for your payment. Here&rsquo;s your receipt."),

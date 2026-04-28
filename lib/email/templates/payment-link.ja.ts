@@ -25,7 +25,7 @@ export function buildPaymentEmail({
 }): { subject: string; html: string; text: string } {
   const greeting = name ? `Hi ${name},` : "Hi there,";
   const subject = `Your item has been found (${caseNumber})`;
-  const link = `${SITE_URL}/pay/${encodeURIComponent(caseNumber)}`;
+  const link = `${SITE_URL}/ja/pay/${encodeURIComponent(caseNumber)}`;
   const planSuffix = planLabel ? ` (${planLabel})` : "";
   const planSuffixHtml = planLabel ? ` (${escapeHtml(planLabel)})` : "";
   const amountStr = String(amount);

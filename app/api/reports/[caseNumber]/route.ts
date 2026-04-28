@@ -59,6 +59,7 @@ export async function GET(
     date_lost: data.date_lost,
     status,
     plan: data.plan === "all_in_one" ? "all_in_one" : "recovery",
+    locale: data.locale === "ja" ? "ja" : "en",
   };
 
   if (status === "found" || status === "paid") {

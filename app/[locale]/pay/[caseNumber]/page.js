@@ -2,13 +2,13 @@
 
 import { use, useCallback, useEffect, useRef, useState } from "react";
 import { PayPalScriptProvider, PayPalButtons } from "@paypal/react-paypal-js";
-import { useTranslations } from "next-intl";
+import { useLocale, useTranslations } from "next-intl";
 import { formatDate } from "@/lib/format";
 import { WHATSAPP_URL } from "@/components/WhatsApp";
 import Header from "@/components/layout/Header";
 import { plans } from "@/config/plans";
 import { siteConfig } from "@/config/site";
-import { Link } from "@/i18n/navigation";
+import { Link, useRouter } from "@/i18n/navigation";
 
 const PAYPAL_CLIENT_ID = process.env.NEXT_PUBLIC_PAYPAL_CLIENT_ID || "";
 
@@ -16,12 +16,28 @@ export default function PayPage({ params }) {
   const { caseNumber } = use(params);
   const t = useTranslations("pay");
   const tn = useTranslations("nav");
+  const currentLocale = useLocale();
+  const router = useRouter();
   const [loading, setLoading] = useState(true);
   const [report, setReport] = useState(null);
   const [error, setError] = useState(null);
   const [paymentError, setPaymentError] = useState(null);
   const [paying, setPaying] = useState(false);
   const [receipt, setReceipt] = useState(null);
+
+  // If a customer was sent a payment link in their case's locale but
+  // hits a URL under a different one (e.g. an /en link forwarded to a
+  // ja-speaking friend), bounce to the correct locale so the page
+  // renders in their language. The check fires after fetchReport
+  // resolves; we don't gate the loading spinner on it because the
+  // 1-frame flash is preferable to blocking on a redirect for the
+  // common no-mismatch case.
+  useEffect(() => {
+    if (!report || !report.locale) return;
+    if (report.locale !== currentLocale) {
+      router.replace(`/pay/${caseNumber}`, { locale: report.locale });
+    }
+  }, [report, currentLocale, caseNumber, router]);
 
   const fetchReport = useCallback(async () => {
     setLoading(true);
