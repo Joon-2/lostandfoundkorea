@@ -3,13 +3,13 @@
 // constraint on facility_translations.locale to support a new language.
 // Order in SUPPORTED_LOCALES is the picker order; first item is default.
 
-export const SUPPORTED_LOCALES = ["en", "ko"] as const;
+export const SUPPORTED_LOCALES = ["en", "ja"] as const;
 export const DEFAULT_LOCALE = "en" as const;
 export type Locale = (typeof SUPPORTED_LOCALES)[number];
 
 export const LOCALE_LABELS: Record<Locale, string> = {
   en: "English",
-  ko: "한국어",
+  ja: "日本語",
 };
 
 export function isSupportedLocale(value: unknown): value is Locale {

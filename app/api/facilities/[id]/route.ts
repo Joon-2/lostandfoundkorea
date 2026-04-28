@@ -15,7 +15,7 @@ export const dynamic = "force-dynamic";
 // PUT — update row + upsert per-locale translation rows.
 // Translation rules:
 //   - If `translations.en` is supplied with a name, upsert it.
-//   - If `translations.ko` is supplied with a name, upsert it.
+//   - If `translations.ja` is supplied with a name, upsert it.
 //   - If a locale block is omitted, leave existing translation alone.
 //   - Send an empty/cleared name in a locale block to remove that
 //     translation (we currently don't expose "delete a translation"

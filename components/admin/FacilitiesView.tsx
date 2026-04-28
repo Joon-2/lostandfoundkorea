@@ -57,7 +57,7 @@ export default function FacilitiesView({
       arr = arr.filter(
         (f) =>
           (f.name || "").toLowerCase().includes(q) ||
-          (f.translations?.ko?.name || "").toLowerCase().includes(q) ||
+          (f.translations?.ja?.name || "").toLowerCase().includes(q) ||
           (f.phone || "").toLowerCase().includes(q)
       );
     }
@@ -193,18 +193,18 @@ export default function FacilitiesView({
                         <span className="font-medium text-foreground">
                           {f.name}
                         </span>
-                        {!f.translations?.ko?.name && (
+                        {!f.translations?.ja?.name && (
                           <span
-                            title="Korean translation missing"
+                            title="Japanese translation missing"
                             className="rounded-full border border-amber-200 bg-amber-50 px-1.5 py-0.5 text-[9px] font-medium uppercase tracking-widest text-amber-700"
                           >
-                            KO missing
+                            JA missing
                           </span>
                         )}
                       </div>
-                      {f.translations?.ko?.name && (
+                      {f.translations?.ja?.name && (
                         <div className="text-xs text-muted">
-                          {f.translations.ko.name}
+                          {f.translations.ja.name}
                         </div>
                       )}
                     </td>
