@@ -9,27 +9,54 @@ import AboutUs from "@/components/landing/AboutUs";
 import Pricing from "@/components/landing/Pricing";
 import BottomCTA from "@/components/landing/BottomCTA";
 import { siteConfig } from "@/config/site";
+import type { Locale } from "@/config/locales";
+import { languageAlternates, ogLocale, urlFor } from "@/lib/seo";
 
-export const metadata: Metadata = {
-  title: {
-    absolute:
-      "Lost & Found Korea | English Lost Item Recovery in Seoul, Busan, Jeju",
-  },
-  description:
-    "Lost something in Korea? We help foreigners recover lost passports, wallets, phones, and luggage. Free to start — pay only when found. Bilingual support in Seoul, Busan, Jeju.",
-  keywords: [
-    "lost and found korea",
-    "lost passport korea",
-    "lost item seoul",
-    "korea lost luggage",
-    "incheon airport lost",
-    "lost wallet korea",
-    "foreigner lost item recovery",
-  ],
-  alternates: {
-    canonical: siteConfig.url,
-  },
-};
+export async function generateMetadata({
+  params,
+}: {
+  params: Promise<{ locale: Locale }>;
+}): Promise<Metadata> {
+  const { locale } = await params;
+  return {
+    title: {
+      absolute:
+        "Lost & Found Korea | English Lost Item Recovery in Seoul, Busan, Jeju",
+    },
+    description:
+      "Lost something in Korea? We help foreigners recover lost passports, wallets, phones, and luggage. Free to start — pay only when found. Bilingual support in Seoul, Busan, Jeju.",
+    keywords: [
+      "lost and found korea",
+      "lost passport korea",
+      "lost item seoul",
+      "korea lost luggage",
+      "incheon airport lost",
+      "lost wallet korea",
+      "foreigner lost item recovery",
+    ],
+    alternates: {
+      canonical: urlFor(locale, ""),
+      languages: languageAlternates(""),
+    },
+    openGraph: {
+      title: "Lost & Found Korea — We'll find it.",
+      description:
+        "English-speaking lost item recovery service in Korea. Free to start. Pay only when found.",
+      url: urlFor(locale, ""),
+      siteName: "Lost & Found Korea",
+      images: [
+        {
+          url: "/og-image.png?v=2",
+          width: 1200,
+          height: 630,
+          alt: "Lost & Found Korea — We'll find it.",
+        },
+      ],
+      locale: ogLocale(locale),
+      type: "website",
+    },
+  };
+}
 
 export default function Home() {
   const jsonLd = {

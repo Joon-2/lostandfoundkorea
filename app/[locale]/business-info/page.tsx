@@ -3,13 +3,29 @@ import Header from "@/components/layout/Header";
 import Footer from "@/components/layout/Footer";
 import BusinessInfo from "@/components/business-info/BusinessInfo";
 import { siteConfig } from "@/config/site";
+import type { Locale } from "@/config/locales";
+import { languageAlternates, ogLocale, urlFor } from "@/lib/seo";
 
-export const metadata: Metadata = {
-  title: { absolute: `Business Info · ${siteConfig.name}` },
-  description:
-    "Operating company, business registration, and contact details for Lost & Found Korea, in accordance with the Korean Act on the Consumer Protection in Electronic Commerce.",
-  alternates: { canonical: `${siteConfig.url}/business-info` },
-};
+export async function generateMetadata({
+  params,
+}: {
+  params: Promise<{ locale: Locale }>;
+}): Promise<Metadata> {
+  const { locale } = await params;
+  return {
+    title: { absolute: `Business Info · ${siteConfig.name}` },
+    description:
+      "Operating company, business registration, and contact details for Lost & Found Korea, in accordance with the Korean Act on the Consumer Protection in Electronic Commerce.",
+    alternates: {
+      canonical: urlFor(locale, "/business-info"),
+      languages: languageAlternates("/business-info"),
+    },
+    openGraph: {
+      url: urlFor(locale, "/business-info"),
+      locale: ogLocale(locale),
+    },
+  };
+}
 
 export default function BusinessInfoPage() {
   return (

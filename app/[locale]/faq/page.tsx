@@ -2,16 +2,31 @@ import type { Metadata } from "next";
 import Header from "@/components/layout/Header";
 import Footer from "@/components/layout/Footer";
 import FaqClient from "@/components/faq/FaqClient";
-import { siteConfig } from "@/config/site";
+import type { Locale } from "@/config/locales";
+import { languageAlternates, ogLocale, urlFor } from "@/lib/seo";
 
-export const metadata: Metadata = {
-  title: {
-    absolute: "FAQ — Lost & Found Korea | How Lost Item Recovery Works",
-  },
-  description:
-    "Answers about pricing, payment, shipping, refunds, safety, and how we recover lost items in Korea for foreign travelers.",
-  alternates: { canonical: `${siteConfig.url}/faq` },
-};
+export async function generateMetadata({
+  params,
+}: {
+  params: Promise<{ locale: Locale }>;
+}): Promise<Metadata> {
+  const { locale } = await params;
+  return {
+    title: {
+      absolute: "FAQ — Lost & Found Korea | How Lost Item Recovery Works",
+    },
+    description:
+      "Answers about pricing, payment, shipping, refunds, safety, and how we recover lost items in Korea for foreign travelers.",
+    alternates: {
+      canonical: urlFor(locale, "/faq"),
+      languages: languageAlternates("/faq"),
+    },
+    openGraph: {
+      url: urlFor(locale, "/faq"),
+      locale: ogLocale(locale),
+    },
+  };
+}
 
 export default function FaqPage() {
   return (

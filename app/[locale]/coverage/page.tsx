@@ -7,22 +7,35 @@ import Header from "@/components/layout/Header";
 import Footer from "@/components/layout/Footer";
 import { Link } from "@/i18n/navigation";
 import type { Facility, FacilityCategory } from "@/types/facility";
+import type { Locale } from "@/config/locales";
+import { languageAlternates, ogLocale, urlFor } from "@/lib/seo";
 
 export const revalidate = 60;
 
-export const metadata: Metadata = {
-  title: { absolute: `Lost & Found Info Book — ${siteConfig.name}` },
-  description:
-    "A directory of phone numbers, hours, and policies for the places that handle lost items in Korea — airports, subways, taxis, hotels, police, and more.",
-  alternates: { canonical: `${siteConfig.url}/coverage` },
-  openGraph: {
-    title: `Lost & Found Info Book — ${siteConfig.name}`,
+export async function generateMetadata({
+  params,
+}: {
+  params: Promise<{ locale: Locale }>;
+}): Promise<Metadata> {
+  const { locale } = await params;
+  return {
+    title: { absolute: `Lost & Found Info Book — ${siteConfig.name}` },
     description:
-      "Phone numbers, hours, and policies for handling lost items in Korea.",
-    url: `${siteConfig.url}/coverage`,
-    type: "website",
-  },
-};
+      "A directory of phone numbers, hours, and policies for the places that handle lost items in Korea — airports, subways, taxis, hotels, police, and more.",
+    alternates: {
+      canonical: urlFor(locale, "/coverage"),
+      languages: languageAlternates("/coverage"),
+    },
+    openGraph: {
+      title: `Lost & Found Info Book — ${siteConfig.name}`,
+      description:
+        "Phone numbers, hours, and policies for handling lost items in Korea.",
+      url: urlFor(locale, "/coverage"),
+      locale: ogLocale(locale),
+      type: "website",
+    },
+  };
+}
 
 async function getCounts(): Promise<Record<FacilityCategory, number>> {
   const empty = CATEGORIES.reduce((acc, c) => {
