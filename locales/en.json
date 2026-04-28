@@ -34,7 +34,49 @@
     "notes": "Notes",
     "ctaTitle": "Lost something? Let us handle it.",
     "ctaBody": "Working through Korean lost & found systems is what we do. Submit a free report and our team takes it from there.",
-    "ctaButton": "Start a report"
+    "ctaButton": "Start a report",
+    "categories": {
+      "airports": {
+        "label": "Airports",
+        "description": "Lost & found desks at Incheon, Gimpo, and other Korean airports."
+      },
+      "subway": {
+        "label": "Subway",
+        "description": "Seoul Metro, Busan Metro, and other urban rail lost & found centers."
+      },
+      "trains": {
+        "label": "Trains",
+        "description": "KTX, Korail, and intercity train lost item services."
+      },
+      "buses": {
+        "label": "Buses",
+        "description": "City and intercity bus operators handling lost belongings."
+      },
+      "taxis": {
+        "label": "Taxis",
+        "description": "Kakao T, T-money, and Seoul taxi dispatch lines for lost items."
+      },
+      "hotels": {
+        "label": "Hotels",
+        "description": "Major hotel chains with English-speaking lost & found support."
+      },
+      "shopping": {
+        "label": "Shopping",
+        "description": "Department stores, malls, and markets across Korea."
+      },
+      "attractions": {
+        "label": "Attractions",
+        "description": "Palaces, museums, and tourist sites with information desks."
+      },
+      "police": {
+        "label": "Police",
+        "description": "Lost112 and local police stations that accept turn-ins."
+      },
+      "restaurants": {
+        "label": "Restaurants",
+        "description": "Restaurant chains and cafes with consistent lost & found policies."
+      }
+    }
   },
   "hero": {
     "badge": "English-speaking support, based in Seoul",

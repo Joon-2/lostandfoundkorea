@@ -34,7 +34,49 @@
     "notes": "備考",
     "ctaTitle": "忘れ物のことは、私たちにお任せください。",
     "ctaBody": "韓国語での問い合わせも、施設との交渉も、私たちが代わりに行います。ご依頼は無料です。",
-    "ctaButton": "依頼を始める"
+    "ctaButton": "依頼を始める",
+    "categories": {
+      "airports": {
+        "label": "空港",
+        "description": "仁川空港・金浦空港など、韓国の空港にある遺失物センターの連絡先。"
+      },
+      "subway": {
+        "label": "地下鉄",
+        "description": "ソウルメトロ、釜山交通公社など、韓国主要都市の地下鉄遺失物センター。"
+      },
+      "trains": {
+        "label": "鉄道(KTX等)",
+        "description": "KTX・コレール(韓国鉄道公社)・都市間鉄道の遺失物窓口。"
+      },
+      "buses": {
+        "label": "バス",
+        "description": "市内バス・高速バス・空港リムジン会社の遺失物窓口。"
+      },
+      "taxis": {
+        "label": "タクシー",
+        "description": "カカオT・T-money・ソウル個人タクシーなどの忘れ物窓口。"
+      },
+      "hotels": {
+        "label": "ホテル",
+        "description": "英語対応可能な韓国主要ホテルチェーンの遺失物窓口。"
+      },
+      "shopping": {
+        "label": "ショッピング・百貨店",
+        "description": "韓国の百貨店・ショッピングモール・市場の遺失物窓口。"
+      },
+      "attractions": {
+        "label": "観光地・博物館",
+        "description": "宮殿、博物館、観光地の案内デスク連絡先。"
+      },
+      "police": {
+        "label": "警察(Lost112)",
+        "description": "韓国警察庁の遺失物統合システムLost112と地方警察署の連絡先。"
+      },
+      "restaurants": {
+        "label": "飲食店・カフェ",
+        "description": "一定の遺失物対応方針を持つ韓国の飲食店チェーンとカフェ。"
+      }
+    }
   },
   "hero": {
     "badge": "日本語対応・ソウル拠点・PayPal/カード決済可",

@@ -39,13 +39,18 @@ export async function generateMetadata({
     locale,
     namespace: "meta.coverageCategory",
   });
+  const tCat = await getTranslations({
+    locale,
+    namespace: "coverage.categories",
+  });
+  const categoryLabel = tCat(`${def.key}.label`);
   const path = `/coverage/${def.key}`;
-  const title = `${def.label} ${t("titleSuffix")}`;
-  const description = `${t("descriptionPrefix")} ${def.label.toLowerCase()} ${t(
+  const title = `${categoryLabel} ${t("titleSuffix")}`;
+  const description = `${t("descriptionPrefix")} ${categoryLabel.toLowerCase()} ${t(
     "descriptionSuffix"
   )}`;
   const keywords = t("keywordsTemplate")
-    .replace(/\{category\}/g, def.label.toLowerCase())
+    .replace(/\{category\}/g, categoryLabel.toLowerCase())
     .split(",")
     .map((k) => k.trim())
     .filter(Boolean);
@@ -125,6 +130,7 @@ export default async function CategoryPage({ params }: RouteParams) {
   if (!def) notFound();
 
   const t = await getTranslations("coverage");
+  const tCat = await getTranslations("coverage.categories");
   const localeRaw = await getLocale();
   const locale: Locale = isSupportedLocale(localeRaw)
     ? localeRaw
@@ -147,9 +153,11 @@ export default async function CategoryPage({ params }: RouteParams) {
           </span>
           <div>
             <h1 className="font-serif text-4xl tracking-tight sm:text-5xl">
-              {def.label}
+              {tCat(`${def.key}.label`)}
             </h1>
-            <p className="mt-2 max-w-2xl text-body">{def.description}</p>
+            <p className="mt-2 max-w-2xl text-body">
+              {tCat(`${def.key}.description`)}
+            </p>
           </div>
         </div>
 

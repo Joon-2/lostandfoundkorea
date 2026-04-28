@@ -49,6 +49,7 @@ async function getCounts(): Promise<Record<FacilityCategory, number>> {
 
 export default async function CoveragePage() {
   const t = await getTranslations("coverage");
+  const tCat = await getTranslations("coverage.categories");
   const counts = await getCounts();
   const populated = CATEGORIES.filter((c) => counts[c.key] > 0);
 
@@ -87,7 +88,7 @@ export default async function CoveragePage() {
                   </span>
                   <div className="flex-1">
                     <h3 className="font-serif text-xl tracking-tight text-foreground">
-                      {c.label}
+                      {tCat(`${c.key}.label`)}
                     </h3>
                     <p className="mt-1 text-xs text-muted">
                       {count === 1
@@ -95,7 +96,7 @@ export default async function CoveragePage() {
                         : t("entryCount", { count })}
                     </p>
                     <p className="mt-2 text-sm leading-relaxed text-body">
-                      {c.description}
+                      {tCat(`${c.key}.description`)}
                     </p>
                   </div>
                   <span
