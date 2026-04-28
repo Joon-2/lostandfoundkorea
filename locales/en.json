@@ -603,7 +603,15 @@
           }
         ]
       }
-    ]
+    ],
+    "h1": "Frequently asked questions",
+    "subtitle": "Everything we get asked about how Lost & Found Korea works. Search or browse by category.",
+    "categoriesSidebarLabel": "Categories",
+    "searchPlaceholder": "Search questions",
+    "resultCountSingular": "{count} result",
+    "resultCountPlural": "{count} results",
+    "noResultsTitle": "No results found",
+    "noResultsBody": "No questions match your search. Try different keywords."
   },
   "common": {
     "submit": "Submit",

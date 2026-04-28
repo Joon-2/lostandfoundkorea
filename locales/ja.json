@@ -620,7 +620,15 @@
           }
         ]
       }
-    ]
+    ],
+    "h1": "よくあるご質問",
+    "subtitle": "Lost & Found Koreaのサービスについて、お客様からよくお寄せいただくご質問にお答えします。",
+    "categoriesSidebarLabel": "カテゴリー",
+    "searchPlaceholder": "質問を検索",
+    "resultCountSingular": "{count}件",
+    "resultCountPlural": "{count}件",
+    "noResultsTitle": "該当する質問が見つかりませんでした",
+    "noResultsBody": "検索条件に一致する質問はありませんでした。別のキーワードでお試しください。"
   },
   "common": {
     "submit": "送信",

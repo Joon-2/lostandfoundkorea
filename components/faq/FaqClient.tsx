@@ -2,6 +2,7 @@
 
 import { useEffect, useMemo, useRef, useState } from "react";
 import type { ReactNode } from "react";
+import { useTranslations } from "next-intl";
 import { useFaqCategories } from "./FaqContent";
 
 // Two-column FAQ. Left rail is a sticky category nav with active-section
@@ -19,6 +20,7 @@ const HEADER_OFFSET = 88; // sticky site header (60px) + breathing room
 
 export default function FaqClient() {
   const FAQ_CATEGORIES = useFaqCategories();
+  const t = useTranslations("faq");
   const [query, setQuery] = useState("");
   const [open, setOpen] = useState<Record<string, boolean>>({});
   const [activeCategory, setActiveCategory] = useState<string>(
@@ -131,7 +133,7 @@ export default function FaqClient() {
           className="sticky top-[88px] flex flex-col gap-1"
         >
           <p className="mb-3 text-xs font-semibold uppercase tracking-widest text-muted">
-            Categories
+            {t("categoriesSidebarLabel")}
           </p>
           {FAQ_CATEGORIES.map((cat) => {
             const isActive = cat.id === activeCategory;
@@ -156,7 +158,11 @@ export default function FaqClient() {
       <div className="min-w-0">
         {/* Search */}
         <div className="mb-2 max-w-md">
-          <SearchBox value={query} onChange={setQuery} />
+          <SearchBox
+            value={query}
+            onChange={setQuery}
+            placeholder={t("searchPlaceholder")}
+          />
         </div>
         <p
           className="mb-8 text-xs text-muted"
@@ -165,14 +171,16 @@ export default function FaqClient() {
         >
           {isSearching
             ? totalShown === 0
-              ? "No results found"
-              : `${totalShown} ${totalShown === 1 ? "result" : "results"}`
+              ? t("noResultsTitle")
+              : totalShown === 1
+              ? t("resultCountSingular", { count: totalShown })
+              : t("resultCountPlural", { count: totalShown })
             : " "}
         </p>
 
         {totalShown === 0 ? (
           <div className="rounded-xl border border-border bg-alt px-5 py-8 text-center text-sm text-muted">
-            No questions match "{query}". Try a different search.
+            {t("noResultsBody")}
           </div>
         ) : (
           <div className="divide-y divide-border">
@@ -309,19 +317,21 @@ function CategoryHeader({
 function SearchBox({
   value,
   onChange,
+  placeholder,
 }: {
   value: string;
   onChange: (v: string) => void;
+  placeholder: string;
 }) {
   return (
     <label className="relative block">
-      <span className="sr-only">Search questions</span>
+      <span className="sr-only">{placeholder}</span>
       <SearchIcon />
       <input
         type="search"
         value={value}
         onChange={(e) => onChange(e.target.value)}
-        placeholder="Search questions"
+        placeholder={placeholder}
         className="w-full rounded-lg border border-border bg-card py-2 pl-9 pr-3 text-sm text-foreground placeholder:text-muted focus:border-accent focus:outline-none focus:ring-2 focus:ring-accent/30"
       />
     </label>
