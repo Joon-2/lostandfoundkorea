@@ -1,18 +1,32 @@
 "use client";
 
 import { useLocale } from "next-intl";
-import { useRouter, usePathname } from "@/i18n/navigation";
+import { useRouter } from "next/navigation";
+import { usePathname } from "@/i18n/navigation";
 import {
+  DEFAULT_LOCALE,
   LOCALE_LABELS,
   SUPPORTED_LOCALES,
   type Locale,
 } from "@/config/locales";
 
-// Simple "EN | 日本語" toggle. The active locale is bold + accent;
-// the inactive one is muted and clickable. Clicking navigates to the
-// same path in the other locale and updates the NEXT_LOCALE cookie
-// (next-intl's localized router handles both — replace with the
-// `locale` option re-routes via the matching prefix).
+// "EN | 日本語" toggle. Clicking the inactive locale persists the
+// choice via NEXT_LOCALE cookie and navigates to the same page in
+// the other locale.
+//
+// Why we don't use router.replace(pathname, { locale }) from
+// @/i18n/navigation: that combination produced /ja/ja in production
+// under next-intl 4.9.1 + localePrefix "as-needed", at least on the
+// /ja homepage. We construct the URL explicitly here and hand it to
+// the native Next.js router so the path is unambiguous.
+//
+// usePathname() is still imported from @/i18n/navigation because it
+// returns the locale-stripped path (e.g. "/our-story" on either
+// /our-story or /ja/our-story). The defensive regex strips the
+// prefix again as belt-and-suspenders against the possibility that
+// next-intl returns the prefixed path in some edge case.
+
+const LOCALE_PREFIX_RE = /^\/(en|ja)(?=\/|$)/;
 
 export default function LanguageSwitcher() {
   const current = useLocale() as Locale;
@@ -21,7 +35,13 @@ export default function LanguageSwitcher() {
 
   const switchTo = (next: Locale) => {
     if (next === current) return;
-    router.replace(pathname, { locale: next });
+    document.cookie = `NEXT_LOCALE=${next}; path=/; max-age=31536000; SameSite=Lax`;
+    const stripped = (pathname || "/").replace(LOCALE_PREFIX_RE, "") || "/";
+    const newUrl =
+      next === DEFAULT_LOCALE
+        ? stripped
+        : `/${next}${stripped === "/" ? "" : stripped}`;
+    router.replace(newUrl);
   };
 
   return (

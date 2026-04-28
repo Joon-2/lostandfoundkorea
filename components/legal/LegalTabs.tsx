@@ -1,7 +1,8 @@
 "use client";
 
 import { Suspense, useEffect, useState } from "react";
-import { useRouter, useSearchParams } from "next/navigation";
+import { useSearchParams } from "next/navigation";
+import { useRouter } from "@/i18n/navigation";
 import Terms from "@/components/legal/Terms";
 import Privacy from "@/components/legal/Privacy";
 import Refund from "@/components/legal/Refund";
