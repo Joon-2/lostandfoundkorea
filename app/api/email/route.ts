@@ -2,6 +2,8 @@ import type { NextRequest } from "next/server";
 import { checkAdminAuth } from "@/lib/admin-auth";
 import { sendEmail } from "@/lib/email";
 import { logToCaseByCaseNumber } from "@/lib/activity-log";
+import { supabaseAdmin } from "@/lib/supabase-admin";
+import { isSupportedLocale, type Locale } from "@/config/locales";
 import type { EmailPayload } from "@/types/email";
 
 export const runtime = "nodejs";
@@ -42,6 +44,26 @@ export async function POST(request: NextRequest) {
     if (denied) return denied;
   }
 
+  // Locale resolution order:
+  //   1. Explicit body.locale (admin actions know it from the loaded case)
+  //   2. Look up reports.locale by caseNumber (single source of truth)
+  //   3. Fall back to 'en' if nothing else works
+  let locale: Locale | undefined = isSupportedLocale(body?.locale)
+    ? (body.locale as Locale)
+    : undefined;
+  if (!locale && supabaseAdmin) {
+    try {
+      const { data } = await supabaseAdmin
+        .from("reports")
+        .select("locale")
+        .eq("case_number", caseNumber)
+        .maybeSingle();
+      if (data && isSupportedLocale(data.locale)) locale = data.locale;
+    } catch (err) {
+      console.error("[email] locale lookup failed:", err);
+    }
+  }
+
   try {
     await sendEmail({
       to,
@@ -49,6 +71,7 @@ export async function POST(request: NextRequest) {
       type,
       caseNumber,
       data: body.data || {},
+      locale,
     });
     // Log only for admin-authed calls. Public callers aren't allowed to
     // write to a case's activity_log.
