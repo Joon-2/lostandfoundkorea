@@ -275,7 +275,45 @@
     "submittedNoItemFoundLine2": "You pay nothing.",
     "submittedCaseRef": "Case reference",
     "submittedSaveHint": "Save this number to track your case.",
-    "submittedBackHome": "Back to Home"
+    "submittedBackHome": "Back to Home",
+    "options": {
+      "categories": {
+        "phone-electronics": "Phone / Electronics",
+        "bag-wallet": "Bag / Wallet",
+        "passport-id": "Passport / ID",
+        "keys": "Keys",
+        "clothing-accessories": "Clothing / Accessories",
+        "other": "Other"
+      },
+      "locations": {
+        "subway-train": "Subway / Train",
+        "bus": "Bus",
+        "taxi": "Taxi",
+        "restaurant-cafe": "Restaurant / Cafe",
+        "hotel": "Hotel",
+        "airport": "Airport",
+        "shopping-mall-store": "Shopping Mall / Store",
+        "street-park": "Street / Park",
+        "tourist-attraction": "Tourist Attraction",
+        "other": "Other"
+      },
+      "timeOfDay": {
+        "morning-6-9": "Morning (6-9 AM)",
+        "late-morning-9-12": "Late Morning (9-12 PM)",
+        "afternoon-12-3": "Afternoon (12-3 PM)",
+        "late-afternoon-3-6": "Late Afternoon (3-6 PM)",
+        "evening-6-9": "Evening (6-9 PM)",
+        "night-9-12": "Night (9 PM-12 AM)",
+        "late-night-12-6": "Late Night (12-6 AM)",
+        "not-sure": "Not sure"
+      },
+      "dateConfidence": {
+        "exact": "Exact date",
+        "plus-minus-1": "± 1 day",
+        "plus-minus-2-3": "± 2-3 days",
+        "around-this-date": "Not sure, around this date"
+      }
+    }
   },
   "checkout": {
     "header": "Checkout",

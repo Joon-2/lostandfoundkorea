@@ -17,8 +17,13 @@ import { plans } from "@/config/plans";
 
 const TOTAL_STEPS = 2;
 
-const ITEM_CATEGORIES = CATEGORIES.map((c) => c.value);
-const LOCATION_TYPES = LOCATIONS;
+// Helper: given an option list ({ value, labelKey }) and a stored
+// canonical value, return the localized label. Falls back to the raw
+// value if no entry matches (defensive — shouldn't happen in practice).
+function labelFor(list, value, t) {
+  const found = list.find((o) => o.value === value);
+  return found ? t(found.labelKey) : value;
+}
 
 const initialData = {
   plan: "recovery",
@@ -32,7 +37,7 @@ const initialData = {
   locationType: "",
   locationDetails: "",
   date: "",
-  dateConfidence: DATE_CONFIDENCE[0],
+  dateConfidence: DATE_CONFIDENCE[0].value,
   time: "Not sure",
   notes: "",
 };
@@ -388,9 +393,9 @@ function Step1({ data, update, errors, setPlan, t, planOptions }) {
           onChange={update("itemCategory")}
         >
           <option value="">{t("categoryPlaceholder")}</option>
-          {ITEM_CATEGORIES.map((c) => (
-            <option key={c} value={c}>
-              {c}
+          {CATEGORIES.map((cat) => (
+            <option key={cat.value} value={cat.value}>
+              {t(cat.labelKey)}
             </option>
           ))}
         </select>
@@ -453,9 +458,9 @@ function Step2({ data, update, errors, t }) {
           onChange={update("locationType")}
         >
           <option value="">{t("locationTypePlaceholder")}</option>
-          {LOCATION_TYPES.map((l) => (
-            <option key={l} value={l}>
-              {l}
+          {LOCATIONS.map((l) => (
+            <option key={l.value} value={l.value}>
+              {t(l.labelKey)}
             </option>
           ))}
         </select>
@@ -484,8 +489,8 @@ function Step2({ data, update, errors, t }) {
           onChange={update("dateConfidence")}
         >
           {DATE_CONFIDENCE.map((opt) => (
-            <option key={opt} value={opt}>
-              {opt}
+            <option key={opt.value} value={opt.value}>
+              {t(opt.labelKey)}
             </option>
           ))}
         </select>
@@ -497,8 +502,8 @@ function Step2({ data, update, errors, t }) {
           onChange={update("time")}
         >
           {TIME_OPTIONS.map((opt) => (
-            <option key={opt} value={opt}>
-              {opt}
+            <option key={opt.value} value={opt.value}>
+              {t(opt.labelKey)}
             </option>
           ))}
         </select>
@@ -519,16 +524,16 @@ function Summary({ data, t }) {
   const rows = [
     [t("summaryName"), data.fullName],
     [t("summaryEmail"), data.email],
-    [t("summaryCategory"), data.itemCategory],
+    [t("summaryCategory"), labelFor(CATEGORIES, data.itemCategory, t)],
     [t("summaryBrandModel"), data.brandModel],
     [t("summaryColor"), data.color],
     [t("summaryDescription"), data.itemDescription],
     [t("summaryDistinguishingFeatures"), data.distinguishingFeatures],
-    [t("summaryLocationType"), data.locationType],
+    [t("summaryLocationType"), labelFor(LOCATIONS, data.locationType, t)],
     [t("summarySpecificLocation"), data.locationDetails],
     [t("summaryDateLost"), formatDate(data.date)],
-    [t("summaryDateConfidence"), data.dateConfidence],
-    [t("summaryTimeOfDay"), data.time],
+    [t("summaryDateConfidence"), labelFor(DATE_CONFIDENCE, data.dateConfidence, t)],
+    [t("summaryTimeOfDay"), labelFor(TIME_OPTIONS, data.time, t)],
     [t("summaryAdditionalInfo"), data.notes],
   ];
   return (

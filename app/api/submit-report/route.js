@@ -79,7 +79,7 @@ export async function POST(request) {
     const location = body.locationType;
     const dateLost = body.date;
     const timeLost = body.time || null;
-    const dateConfidence = body.dateConfidence || DATE_CONFIDENCE[0];
+    const dateConfidence = body.dateConfidence || DATE_CONFIDENCE[0].value;
     const plan = body.plan === "all_in_one" ? "all_in_one" : "recovery";
     const locale = body.locale === "ja" ? "ja" : "en";
 

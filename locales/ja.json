@@ -275,7 +275,45 @@
     "submittedNoItemFoundLine2": "一切お支払いいただきません。",
     "submittedCaseRef": "受付番号",
     "submittedSaveHint": "進捗確認の際にお使いいただきますので、必ず保存してください。",
-    "submittedBackHome": "ホームに戻る"
+    "submittedBackHome": "ホームに戻る",
+    "options": {
+      "categories": {
+        "phone-electronics": "スマートフォン・電子機器",
+        "bag-wallet": "バッグ・財布",
+        "passport-id": "パスポート・身分証",
+        "keys": "鍵",
+        "clothing-accessories": "衣類・アクセサリー",
+        "other": "その他"
+      },
+      "locations": {
+        "subway-train": "地下鉄・鉄道",
+        "bus": "バス",
+        "taxi": "タクシー",
+        "restaurant-cafe": "飲食店・カフェ",
+        "hotel": "ホテル",
+        "airport": "空港",
+        "shopping-mall-store": "ショッピングモール・店舗",
+        "street-park": "街路・公園",
+        "tourist-attraction": "観光地",
+        "other": "その他"
+      },
+      "timeOfDay": {
+        "morning-6-9": "朝(6時〜9時)",
+        "late-morning-9-12": "午前(9時〜12時)",
+        "afternoon-12-3": "昼(12時〜15時)",
+        "late-afternoon-3-6": "夕方(15時〜18時)",
+        "evening-6-9": "夜(18時〜21時)",
+        "night-9-12": "夜遅く(21時〜24時)",
+        "late-night-12-6": "深夜(0時〜6時)",
+        "not-sure": "覚えていない"
+      },
+      "dateConfidence": {
+        "exact": "正確な日付",
+        "plus-minus-1": "前後1日以内",
+        "plus-minus-2-3": "前後2〜3日以内",
+        "around-this-date": "おおよそこの日付の前後"
+      }
+    }
   },
   "checkout": {
     "header": "お支払い",
