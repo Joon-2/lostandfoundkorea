@@ -342,6 +342,25 @@
     "whatsappPrefillPickupQuestion": "お忘れ物の受け取りについてお伺いしたいことがあります。受付番号: {caseNumber}",
     "pickupCheckoutUnavailable": "現在、受け取り代行の決済システムが一時的にご利用いただけません。WhatsAppよりお問い合わせください。"
   },
+  "businessInfo": {
+    "h1": "事業者情報",
+    "serviceOperatorH2": "サービス運営者",
+    "serviceOperatorBody": "{businessName}は{operatingCompany}が運営するサービスです。",
+    "companyDetailsH2": "会社情報",
+    "fields": {
+      "operatingCompany": "運営会社",
+      "ceo": "代表者",
+      "businessRegistrationNumber": "事業者登録番号",
+      "address": "所在地",
+      "email": "メールアドレス",
+      "ecommerceRegistration": "通信販売業申告",
+      "ecommerceRegistrationValue": "申告予定",
+      "customerSupport": "お問い合わせ",
+      "customerSupportValue": "チャットウィジェットまたは上記メールアドレスをご利用ください"
+    },
+    "noticeH2": "ご案内",
+    "noticeBody": "本情報は、韓国の電子商取引等における消費者保護に関する法律(電子商取引法)に基づき表示しております。"
+  },
   "common": {
     "submit": "送信",
     "cancel": "キャンセル",

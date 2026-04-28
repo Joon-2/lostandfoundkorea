@@ -342,6 +342,25 @@
     "whatsappPrefillPickupQuestion": "Hi, I have a question about picking up my item. Case {caseNumber}.",
     "pickupCheckoutUnavailable": "Pickup checkout is temporarily unavailable. Please contact us on WhatsApp."
   },
+  "businessInfo": {
+    "h1": "Business Information",
+    "serviceOperatorH2": "Service Operator",
+    "serviceOperatorBody": "{businessName} is a service operated by {operatingCompany}.",
+    "companyDetailsH2": "Company Details",
+    "fields": {
+      "operatingCompany": "Operating Company",
+      "ceo": "CEO",
+      "businessRegistrationNumber": "Business Registration Number",
+      "address": "Address",
+      "email": "Email",
+      "ecommerceRegistration": "E-Commerce Registration",
+      "ecommerceRegistrationValue": "To be issued",
+      "customerSupport": "Customer Support",
+      "customerSupportValue": "Use the chat widget or email above"
+    },
+    "noticeH2": "Notice",
+    "noticeBody": "This information is provided in accordance with the Korean Act on the Consumer Protection in Electronic Commerce."
+  },
   "common": {
     "submit": "Submit",
     "cancel": "Cancel",
