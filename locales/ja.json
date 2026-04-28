@@ -119,7 +119,16 @@
     "cta": "Start a report →"
   },
   "footer": {
-    "englishSupport": "English-speaking support"
+    "englishSupport": "English-speaking support",
+    "tagline": "We help international travelers recover items lost in Korea — bilingual support, transparent pricing, worldwide shipping.",
+    "legalHeading": "Legal",
+    "links": {
+      "ourStory": "Our Story",
+      "terms": "Terms",
+      "privacy": "Privacy",
+      "refund": "Refund",
+      "businessInfo": "Business Info"
+    }
   },
   "whatsapp": {
     "ariaLabel": "Chat with us on WhatsApp",
