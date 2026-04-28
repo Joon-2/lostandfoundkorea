@@ -445,161 +445,178 @@
     "categories": [
       {
         "id": "about",
-        "title": "About the Service",
-        "description": "What we do and how we work",
+        "title": "サービスについて",
+        "description": "私たちが行っていること、対応の仕組み",
         "questions": [
           {
             "id": "what-does-lfk-do",
-            "q": "What does Lost & Found Korea actually do?",
-            "a": "We help international travelers recover items they've left behind in Korea — bags, wallets, passports, electronics, anything you might have lost at an airport, hotel, locker, public transit station, or other Korean facility. We coordinate the search in Korean on your behalf, retrieve the item once located, package it carefully, and ship it to wherever you are in the world."
+            "q": "Lost & Found Koreaは具体的に何をしてくれるサービスですか?",
+            "a": "韓国旅行中にお忘れになったお品物 — バッグ、財布、パスポート、電子機器など、空港・ホテル・ロッカー・公共交通機関などで紛失されたものを、私たちが日本の旅行者の代わりに回収するサービスです。\n\n韓国語での問い合わせ・交渉、お品物の受け取り、丁寧な梱包、そして世界中どこへでも配送 — これら全てを一括して代行いたします。"
           },
           {
             "id": "why-need-this-service",
-            "q": "Why do I need a service like this?",
-            "a": "Korean facilities are excellent at storing lost items, but they generally aren't equipped to handle international shipping, English correspondence, or follow-ups across time zones. Once you've left the country, the practical path back to your item often closes. We bridge that gap."
+            "q": "このようなサービスがなぜ必要なのですか?",
+            "a": "韓国の施設はお忘れ物の保管自体は非常に丁寧に行ってくれます。しかし、国際配送、英語・日本語での連絡、時差をまたいだ追跡対応までは、施設の業務範囲外であることがほとんどです。\n\n日本に帰国された後では、現実的に取り戻す方法が閉ざされてしまうのが実情です。私たちは、その「最後の一歩」を埋めるために存在しています。"
           },
           {
             "id": "where-in-korea",
-            "q": "Where in Korea do you operate?",
-            "a": "We work nationwide. We coordinate with airports, hotels, train and subway systems, taxi companies, and various other facilities across Korea. Some locations outside Seoul/Gyeonggi may carry a small surcharge."
+            "q": "韓国のどの地域に対応していますか?",
+            "a": "韓国全土に対応しております。空港、ホテル、鉄道・地下鉄、タクシー会社、その他様々な施設と連携しています。\n\nソウル・京畿道(キョンギド)以外の一部地域では、追加料金(+$20)が発生する場合がございます。"
           },
           {
             "id": "are-you-government-affiliated",
-            "q": "Are you affiliated with the Korean government or any airport?",
-            "a": "No. We're an independent, registered business in Korea. We work as your authorized agent — communicating with facilities and authorities on your behalf — but we are not part of any government agency or facility."
+            "q": "韓国政府や空港の公式機関ですか?",
+            "a": "いいえ。私たちは韓国で正式に登録された独立系の事業者です。お客様の代理人として施設や関係機関とやり取りいたしますが、政府機関や特定の施設の一部ではございません。"
           }
         ]
       },
       {
         "id": "pricing",
-        "title": "Pricing & Payment",
-        "description": "Fees, currencies, and how to pay",
+        "title": "料金・お支払いについて",
+        "description": "料金、通貨、お支払い方法",
         "questions": [
           {
             "id": "how-much-does-it-cost",
-            "q": "How much does it cost?",
-            "a": "We offer three service tiers:\n\n• **Recovery** — FREE to start, $39 if found. We search for free. You only pay $39 if we successfully locate your item and you wish to receive its location and pickup details.\n• **All-in-One** — $79. A single-price service combining search, pickup coordination, and shipping.\n• **Delivery Only** — $49. For when you already know where the item is being held; we handle pickup and shipping.\n\nSurcharges may apply for locations outside the Seoul/Gyeonggi region (+$20)."
+            "q": "料金はいくらですか?",
+            "a": "3つのプランをご用意しております:\n\n• **Recovery** — ご依頼は無料、発見時のみ$39。捜索は無料です。お品物が無事に発見され、回収場所と詳細をご希望の場合のみ$39をお支払いいただきます。\n• **All-in-One** — $79。捜索・受け取り代行・配送までが一括で含まれた定額プランです。\n• **Delivery Only** — $49。お品物の保管場所が既にお分かりの場合のサービスです。受け取りと配送のみ承ります。\n\nソウル・京畿道(キョンギド)以外の地域では、追加料金(+$20)が発生する場合があります。"
           },
           {
             "id": "other-costs",
-            "q": "Are there other costs beyond the service fee?",
-            "a": "Yes. Service fees do not include third-party costs such as locker storage fees, international shipping, packaging materials, optional insurance, or customs duties. We provide an itemized estimate before you commit, so you'll know the full total in advance."
+            "q": "サービス料金以外にかかる費用はありますか?",
+            "a": "はい。サービス料金には、以下のような第三者費用は含まれておりません:ロッカー保管料、国際配送料、梱包資材、保険(任意)、関税。\n\n発生し得る費用は事前に明細でお見積もりいたしますので、お支払い前に総額をご確認いただけます。"
           },
           {
             "id": "how-do-i-pay",
-            "q": "How do I pay?",
-            "a": "We currently accept payment via PayPal (which also supports major credit cards). For custom invoices that include third-party costs (storage, shipping, etc.), we send you an itemized invoice that you can pay directly through PayPal."
+            "q": "どのようにお支払いできますか?",
+            "a": "現在、PayPalでのお支払いに対応しております(PayPal経由で主要なクレジットカードもご利用いただけます)。\n\n第三者費用(保管料・配送料等)を含む請求書は、明細書としてお送りし、PayPalから直接お支払いいただけます。"
           },
           {
             "id": "currencies",
-            "q": "What currencies do you accept?",
-            "a": "Our fees are quoted in USD. Payment is processed in USD via PayPal, which automatically handles currency conversion at PayPal's exchange rate if you pay from a different currency."
+            "q": "対応している通貨は?",
+            "a": "料金は全て米ドル(USD)で表示しております。お支払いはPayPalを通じて米ドルで処理されます。日本円でお支払いの場合は、PayPalが自動的に当日のレートで通貨換算いたします。"
           },
           {
             "id": "why-pay-before-shipping",
-            "q": "Why do I have to pay before you ship?",
-            "a": "Once we begin pickup, packaging, and shipping coordination, work and third-party costs are immediately incurred on your behalf — locker fees, packaging materials, postage. Prepayment is what allows us to handle those costs and ship without delay."
+            "q": "発送前にお支払いが必要なのはなぜですか?",
+            "a": "受け取り・梱包・配送手配を開始した時点で、ロッカー料金・梱包資材・郵送料などの実費が即座に発生いたします。前払いをお願いしているのは、これらの実費を私たちが立て替えてお支払いし、遅延なく発送を進めるためです。"
           }
         ]
       },
       {
         "id": "process",
-        "title": "Recovery & Shipping Process",
-        "description": "From report to delivery",
+        "title": "回収・配送の流れ",
+        "description": "ご依頼から日本へのお届けまで",
         "questions": [
           {
             "id": "how-to-report",
-            "q": "How do I report a lost item?",
-            "a": "Submit a brief report through our website. Include:\n\n• A description of the item\n• Where you think you lost it (or last saw it)\n• Approximate date and time of loss\n• Your contact information and current location\n\nThe initial report is free. You only commit to a service fee once we either locate your item (Recovery tier) or you confirm a service (All-in-One / Delivery Only)."
+            "q": "お忘れ物のご依頼はどのように行いますか?",
+            "a": "当サイトの依頼フォームから簡単にお申し込みいただけます。以下の情報をご記入ください:\n\n• お品物の特徴\n• 紛失したと思われる場所(または最後に確認された場所)\n• 紛失日時(おおよそで構いません)\n• ご連絡先と現在いらっしゃる場所\n\n初回のご依頼は無料です。料金が発生するのは、Recoveryプランでお品物が発見された時、またはAll-in-One・Delivery Onlyのサービスを正式にご利用いただく時のみです。"
           },
           {
             "id": "recovery-time",
-            "q": "How long does recovery typically take?",
-            "a": "It varies depending on where the item is held and how quickly the facility responds. Most cases are located within 24–72 hours. Some take longer, particularly with smaller facilities or items lost in transit. We'll keep you updated throughout."
+            "q": "回収にはどのくらい時間がかかりますか?",
+            "a": "保管されている施設や、その施設の対応速度によって異なります。多くの場合、24〜72時間以内にお品物の所在を確認できます。小規模な施設や移動中に紛失された場合は、もう少しお時間をいただくこともございます。\n\n進捗状況は随時メールでご報告いたしますので、ご安心ください。"
           },
           {
             "id": "if-not-found",
-            "q": "What if you can't find my item?",
-            "a": "For the Recovery tier, there's no charge if we can't locate your item. For All-in-One service, if we cannot locate the item before pickup begins, we will refund the LFK service fee."
+            "q": "お品物が見つからなかった場合はどうなりますか?",
+            "a": "Recoveryプランの場合、お品物が見つからなければ料金は一切いただきません。\n\nAll-in-Oneプランの場合、受け取り作業を開始する前にお品物が確認できなかった場合は、サービス料金を全額返金いたします。"
           },
           {
             "id": "will-you-open-bag",
-            "q": "Will you open my bag?",
-            "a": "Only if you ask us to, or if a facility/customs requires it. If you prefer the bag stay sealed, we honor that completely — we'll repackage it in a protective outer box without opening the original. Just let us know your preference."
+            "q": "鞄(かばん)の中身を確認することはありますか?",
+            "a": "お客様のご指示があった場合、または施設・税関から要請があった場合のみ開封いたします。\n\n「開封しないでほしい」とのご希望があれば、その通りに対応いたします。元の状態のまま、保護用の外箱に梱包して発送いたします。ご希望をお知らせください。"
           },
           {
             "id": "how-shipped",
-            "q": "How will my item be shipped?",
-            "a": "We typically use EMS (Korea Post's international express service) or EMS Premium, which are reliable, trackable, and well-suited for international delivery. Express options (DHL, FedEx, UPS) are available if you need faster delivery, though they cost significantly more. We'll recommend an option based on your item's size, weight, and urgency."
+            "q": "どのような方法で配送されますか?",
+            "a": "通常はEMS(韓国郵政の国際スピード郵便)またはEMSプレミアムを使用します。追跡可能で、国際配送に適した信頼性の高いサービスです。\n\nお急ぎの場合は、EMSプレミアム、DHL・FedEx・UPSなどの速達便もご利用いただけます(料金は高くなります)。お品物のサイズ・重量・ご希望の到着時期に応じて、最適な方法をご提案いたします。"
           },
           {
             "id": "tracking",
-            "q": "Do you offer tracking?",
-            "a": "Yes. Every shipment includes a tracking number that you can use on Korea Post's site, USPS (for U.S. shipments), or unified tracking sites like 17track.net."
+            "q": "追跡番号は提供されますか?",
+            "a": "はい、全ての配送に追跡番号が付きます。韓国郵政のサイト、日本郵便のサイト、または17track.netのような統合追跡サイトでご確認いただけます。"
           },
           {
             "id": "shipping-time",
-            "q": "How long does shipping take?",
-            "a": "• **EMS Standard:** typically 7–14 days\n• **EMS Premium:** typically 5–7 days\n• **Express (DHL/FedEx/UPS):** typically 3–5 days\n\nTimes vary by destination country and customs processing."
+            "q": "配送にはどのくらいかかりますか?",
+            "a": "• **EMS標準**:通常7〜14日\n• **EMSプレミアム**:通常5〜7日(日本宛は最短2〜3営業日)\n• **速達便(DHL/FedEx/UPS)**:通常3〜5日\n\n配送先の国や税関処理状況によって変動します。日本へのEMSは特に早く到着する傾向があります。"
           }
         ]
       },
       {
         "id": "safety",
-        "title": "Safety, Insurance & Refunds",
-        "description": "Protection and policies",
+        "title": "安全・保険・返金",
+        "description": "保護とポリシー",
         "questions": [
           {
             "id": "insurance",
-            "q": "Is shipping insured?",
-            "a": "Yes. EMS includes basic insurance, and we add declared-value insurance up to your stated item value at no extra cost to you, for protection during international transit. For high-value items, additional carrier insurance is available."
+            "q": "配送中の保険はありますか?",
+            "a": "はい。EMSには基本保険が付帯しております。さらに、お客様が申告された価格までの申告価格保険を、追加料金なしでお付けいたします。\n\n高額品の場合は、追加の運送業者保険もご利用いただけます。"
           },
           {
             "id": "lost-or-damaged",
-            "q": "What if my item is lost or damaged in shipping?",
-            "a": "Once handed off to the carrier, the package is in their custody and shipping risk transfers to them. If something goes wrong in transit, the carrier or insurance provider handles the claim. We provide all documentation needed to support your claim and assist throughout the process."
+            "q": "配送中に紛失・破損した場合は?",
+            "a": "配送業者にお預けした時点で、お品物は配送業者の管理下に入り、輸送中のリスクは配送業者に移ります。万が一のトラブル時は、配送業者または保険会社が補償手続きを行います。\n\n私たちは、補償申請に必要な全ての書類をご提供し、手続きの最後までサポートいたします。"
           },
           {
             "id": "refund",
-            "q": "Can I get a refund?",
-            "a": "Our services are prepay-and-go. Once payment is made, we begin coordination and incur third-party costs immediately on your behalf, so payments are generally non-refundable. The exception is if we cancel a service ourselves (e.g. the item cannot legally be shipped) — in which case we refund LFK service fees minus any third-party costs already incurred. See our Refund Policy for full details."
+            "q": "返金は可能ですか?",
+            "a": "私たちのサービスは前払い制です。お支払い後、即座にコーディネート業務と第三者費用の立て替えが発生するため、原則として返金は承れません。\n\n例外として、当社側でサービスを中止せざるを得ない場合(例:法律上、発送できないお品物だった等)は、既に発生した第三者費用を差し引いた上で、サービス料金を返金いたします。詳細は返金ポリシーをご確認ください。"
           },
           {
             "id": "customs-duties",
-            "q": "What about customs and duties?",
-            "a": "You're responsible for any customs duties or import taxes imposed by your country. We declare item values honestly on customs forms based on the value you provide. For shipments under most countries' de minimis thresholds (e.g. $800 for the U.S.), no duties typically apply."
+            "q": "関税や税金についてはどうなりますか?",
+            "a": "日本での関税・輸入税はお客様のご負担となります。税関申告書には、お客様からお伺いした価格を正直に申告いたします。\n\n日本の場合、個人使用品の総額が16,666円以下(課税価格)であれば、原則として関税はかかりません。化粧品・革製品など一部品目は別途規制がございます。"
           },
           {
             "id": "restricted-items",
-            "q": "Can you ship items I'm not sure are legal to mail?",
-            "a": "We don't ship anything illegal, hazardous, or restricted under Korean export law or your country's import law. This includes weapons, certain medications, ivory, and other regulated items. If we're unsure about a specific item, we'll consult with the post office before proceeding."
+            "q": "発送できない物品はありますか?",
+            "a": "韓国の輸出法、または日本の輸入法に違反する物品(危険物、特定の医薬品、象牙、武器など)は発送いたしません。\n\nご依頼のお品物が該当するか不明な場合は、事前に郵便局と相談の上、判断いたします。"
           },
           {
             "id": "personal-info",
-            "q": "How is my personal information handled?",
-            "a": "We only collect what we need to coordinate the recovery and shipping. We never sell your data, and we share information only with the facilities and carriers necessary to complete your service. See our Privacy Policy for details."
+            "q": "個人情報の取り扱いはどうなっていますか?",
+            "a": "回収・配送に必要な情報のみを収集いたします。お客様のデータを第三者に販売することは決してございません。情報の共有は、サービス完了に必要な施設・配送業者のみに限定しております。\n\n詳細はプライバシーポリシーをご確認ください。"
           }
         ]
       },
       {
         "id": "trust",
-        "title": "Trust & Verification",
-        "description": "Why you can rely on us",
+        "title": "信頼性・安心について",
+        "description": "なぜ私たちにお任せいただけるか",
         "questions": [
           {
             "id": "not-scam",
-            "q": "How do I know this isn't a scam?",
-            "a": "Fair question. We're a registered business in Korea (registration number visible in our footer and legal pages). We provide tracking numbers, photographs of the packaging process, official post office receipts, and continuous updates. Payment is processed through PayPal, which provides its own buyer protection. We're happy to answer any questions before you commit."
+            "q": "詐欺ではないと、どうやって確認できますか?",
+            "a": "ごもっともなご質問です。私たちは韓国で正式に登録された事業者です(事業者登録番号はフッターおよび法的情報ページに記載しております)。\n\n追跡番号、梱包過程の写真、郵便局の正式な領収書、随時の進捗報告をご提供いたします。お支払いはPayPal経由で処理され、PayPalの購入者保護も適用されます。\n\nご依頼前のご質問にはいつでも丁寧にお答えいたしますので、ご安心ください。"
           },
           {
             "id": "receipts",
-            "q": "Will I get receipts and documentation?",
-            "a": "Yes. We provide:\n\n• A clear estimate before payment\n• A PayPal payment receipt\n• Photographs of the packaging process\n• The official shipping receipt and tracking number\n• Customs declaration documentation"
+            "q": "領収書や書類はもらえますか?",
+            "a": "はい、以下の書類を全てご提供いたします:\n\n• お支払い前の明細見積もり\n• PayPal決済領収書\n• 梱包過程の写真\n• 郵便局の正式な配送領収書および追跡番号\n• 税関申告書類"
           },
           {
             "id": "problem-during-process",
-            "q": "What if I have a problem during the process?",
-            "a": "Email us at [support@lostandfoundkorea.com](mailto:support@lostandfoundkorea.com). We respond promptly. If something goes wrong, we'll work with you to resolve it transparently."
+            "q": "サービス中に問題が発生した場合は?",
+            "a": "[support@lostandfoundkorea.com](mailto:support@lostandfoundkorea.com)までメールでお知らせください。すぐにご対応いたします。\n\n万が一何か問題が発生した場合も、お客様と協力して透明性のある形で解決いたします。"
+          }
+        ]
+      },
+      {
+        "id": "japan-specific",
+        "title": "日本のお客様向けによくあるご質問",
+        "description": "日本の皆様からよくお寄せいただくご質問",
+        "questions": [
+          {
+            "id": "ems-to-japan-timeline",
+            "q": "日本まで何日で届きますか?",
+            "a": "EMSプレミアムをご利用の場合、ソウルから東京・大阪・福岡へは通常2〜3営業日でお届けいたします。標準EMSの場合は5〜7日が目安です。\n\n地方都市の場合は、+1〜2日の余裕を見ていただくと安心です。土日祝日は配送業務がない場合がございます。"
+          },
+          {
+            "id": "customs-clearance-japan",
+            "q": "日本の通関手続きは大丈夫ですか?",
+            "a": "ご安心ください。私たちが税関申告書を正確に記入し、お客様にご負担をおかけしないよう手配いたします。\n\n個人使用品で課税価格が16,666円以下の場合、原則として関税はかかりません。それ以上の場合や課税対象品目の場合は、配達時にお客様が日本郵便に直接関税をお支払いいただく形となります。\n\nもし通関で問題が発生した場合も、必要な書類は全てこちらからご提供いたしますので、最後までサポートいたします。"
           }
         ]
       }
