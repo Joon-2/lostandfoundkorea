@@ -9,6 +9,11 @@ import Testimonials from "@/components/landing/Testimonials";
 import AboutUs from "@/components/landing/AboutUs";
 import Pricing from "@/components/landing/Pricing";
 import BottomCTA from "@/components/landing/BottomCTA";
+import JapanShippingGuide from "@/components/locale-specific/JapanShippingGuide";
+import KoreanLostFoundExplainer from "@/components/locale-specific/KoreanLostFoundExplainer";
+import JapaneseTrustBadges from "@/components/locale-specific/JapaneseTrustBadges";
+import WorldwideShippingMap from "@/components/locale-specific/WorldwideShippingMap";
+import EnglishSupportTrust from "@/components/locale-specific/EnglishSupportTrust";
 import { siteConfig } from "@/config/site";
 import type { Locale } from "@/config/locales";
 import { pageMetadata, urlFor } from "@/lib/seo";
@@ -114,7 +119,15 @@ export default async function Home({
       <main className="flex-1">
         <Hero />
         <HowItWorks />
+        {/* Locale-specific sections. Server components — the unused
+            locale's components aren't rendered, aren't sent to the
+            client, and don't ship any JS at all. */}
+        {locale === "ja" && <JapaneseTrustBadges />}
         <Testimonials />
+        {locale === "ja" && <KoreanLostFoundExplainer />}
+        {locale === "ja" && <JapanShippingGuide />}
+        {locale === "en" && <EnglishSupportTrust />}
+        {locale === "en" && <WorldwideShippingMap />}
         <AboutUs />
         <Pricing />
         <BottomCTA />

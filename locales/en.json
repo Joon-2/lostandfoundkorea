@@ -358,5 +358,59 @@
       "ogTitle": "Delivery-only — we pick up and ship",
       "ogDescription": "Already located? We pick it up and ship it to you."
     }
+  },
+  "japanLocale": {
+    "shippingGuide": {
+      "eyebrow": "Korea → Japan",
+      "title": "Fast EMS shipping to Japan",
+      "subtitle": "Korea Post EMS reaches most of Japan in 2–3 business days, with full tracking and a clear customs trail. Here's what to expect.",
+      "point1Title": "2–3 day delivery",
+      "point1Body": "EMS Premium from Seoul to Tokyo / Osaka / Fukuoka typically lands in 2–3 business days. Standard EMS adds 1–2 days.",
+      "point2Title": "Tracked end-to-end",
+      "point2Body": "Korea Post → Japan Post tracking is unified. You see every scan from pickup to your door.",
+      "point3Title": "Customs handled",
+      "point3Body": "We declare the item value honestly on the customs form. Personal items under the duty-free threshold usually clear without paperwork on your end.",
+      "point4Title": "Insured by default",
+      "point4Body": "EMS includes basic loss/damage coverage. We can add declared-value insurance on request — no extra charge from us."
+    },
+    "lostFoundExplainer": {
+      "eyebrow": "Why a service exists",
+      "title": "How Korean lost & found actually works",
+      "paragraph1": "Korea's lost-and-found system is excellent at the storage step. Police, transit, and hotels log items diligently, and the national Lost112 database is genuinely comprehensive — but it's all in Korean, and the procedures vary by venue.",
+      "paragraph2": "For a Japanese traveler back home, that means: phone calls in Korean, no English (let alone Japanese) staff at smaller venues, and shipping logistics nobody at the venue is responsible for handling.",
+      "paragraph3": "We close that gap. We make the calls in Korean, confirm with you in your language, retrieve the item, package it, and put it on EMS to your address. Each case stays with the same handler from start to finish."
+    },
+    "trustBadges": {
+      "eyebrow": "Payment & shipping",
+      "paypal": "PayPal accepted",
+      "creditCard": "Credit cards OK",
+      "emsTracking": "EMS tracking",
+      "insurance": "Declared-value insurance"
+    }
+  },
+  "englishLocale": {
+    "shippingMap": {
+      "eyebrow": "Worldwide shipping",
+      "title": "We ship to wherever home is",
+      "subtitle": "Items recovered in Korea, delivered to over 30 countries. EMS, EMS Premium, and express options (DHL/FedEx/UPS) available based on your speed and budget.",
+      "region1Name": "North America",
+      "region1Example": "USA, Canada — typically 5–7 business days via EMS",
+      "region2Name": "Europe",
+      "region2Example": "UK, Germany, France — typically 6–10 business days",
+      "region3Name": "Oceania",
+      "region3Example": "Australia, New Zealand — typically 5–8 business days",
+      "region4Name": "Asia-Pacific",
+      "region4Example": "Japan, Singapore, Taiwan — typically 2–4 business days"
+    },
+    "supportTrust": {
+      "eyebrow": "Why English-speaking travelers choose us",
+      "title": "No translation barrier. No surprise fees.",
+      "point1Title": "Native English communication",
+      "point1Body": "Every email, every status update, every customs question — answered in clear English by the same handler your case is assigned to.",
+      "point2Title": "Korean is our problem, not yours",
+      "point2Body": "We make the calls, send the polite Korean follow-ups, and translate the venue's instructions for you. You never need to learn Lost112's interface.",
+      "point3Title": "PayPal in USD",
+      "point3Body": "Pay directly in USD via PayPal. No FX guesswork, no hidden conversion fees, full PayPal buyer protection."
+    }
   }
 }
