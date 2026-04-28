@@ -125,15 +125,15 @@ export default async function Pricing() {
           <PricingCard
             tone="free"
             badge={t("recoveryBadge")}
-            name={plans.recovery.name}
+            name={t("recoveryName")}
             price={plans.recovery.displayPrice}
             priceSubtext={t("recoveryPriceSubtext", {
               amount: plans.recovery.paymentPrice,
             })}
             priceNote={t("recoveryPriceNote")}
-            features={plans.recovery.features}
+            features={t.raw("recoveryFeatures") as string[]}
             bottomNote={t("recoveryBottomNote", {
-              footnote: plans.recovery.footnote,
+              footnote: t("recoveryFootnote"),
               surcharge: plans.all_in_one.surcharge,
             })}
             cta={{
@@ -145,13 +145,13 @@ export default async function Pricing() {
           <PricingCard
             tone="popular"
             badge={t("allInOneBadge")}
-            name={plans.all_in_one.name}
+            name={t("allInOneName")}
             price={`$${plans.all_in_one.priceSeoul}`}
             priceNote={t("allInOnePriceNote")}
-            features={plans.all_in_one.features}
-            bottomNote={plans.all_in_one.footnote}
+            features={t.raw("allInOneFeatures") as string[]}
+            bottomNote={t("allInOneFootnote")}
             cta={{
-              label: t("allInOneCta", { planName: plans.all_in_one.name }),
+              label: t("allInOneCta", { planName: t("allInOneName") }),
               href: "/report?plan=all_in_one",
               trackingLocation: "pricing_all_in_one",
             }}
@@ -159,11 +159,11 @@ export default async function Pricing() {
           <PricingCard
             tone="muted"
             badge={t("deliveryBadge")}
-            name={plans.delivery_only.name}
+            name={t("deliveryName")}
             price={`$${plans.delivery_only.priceSeoul}`}
-            priceNote={plans.delivery_only.description}
-            features={plans.delivery_only.features}
-            bottomNote={plans.delivery_only.footnote}
+            priceNote={t("deliveryDescription")}
+            features={t.raw("deliveryFeatures") as string[]}
+            bottomNote={t("deliveryFootnote")}
             cta={{
               label: t("deliveryCta"),
               href: "/pay/delivery-only",

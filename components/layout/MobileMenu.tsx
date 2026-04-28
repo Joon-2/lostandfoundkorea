@@ -84,7 +84,7 @@ export default function MobileMenu({
         </Link>
         <div className="mt-6 border-t border-[#e5e7eb] pt-4">
           <p className="mb-2 px-2 text-xs font-semibold uppercase tracking-widest text-muted">
-            Language
+            {t("language")}
           </p>
           <div className="px-2">
             <LanguageSwitcher />

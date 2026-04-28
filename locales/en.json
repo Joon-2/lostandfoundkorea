@@ -10,7 +10,8 @@
     "infoBook": "Info Book",
     "ourStory": "Our Story",
     "needHelp": "Need help?",
-    "report": "Report"
+    "report": "Report",
+    "language": "Language"
   },
   "coverage": {
     "title": "Lost & Found Info Book",
@@ -111,7 +112,32 @@
     "paymentMethodsTitle": "We accept PayPal, Visa, Mastercard, and Apple Pay",
     "paymentMethodVisa": "💳 Visa / Mastercard",
     "paymentMethodPaypal": "🅿️ PayPal",
-    "paymentMethodApplePay": "🍎 Apple Pay"
+    "paymentMethodApplePay": "🍎 Apple Pay",
+    "recoveryName": "Recovery",
+    "recoveryFootnote": "Pickup add-on from +$59",
+    "recoveryFeatures": [
+      "Submit a 30-second report",
+      "Our team searches in Korean on your behalf",
+      "Email update within 24-48 hours",
+      "Pay $39 to unlock pickup details — only if found"
+    ],
+    "allInOneName": "All-in-One",
+    "allInOneFootnote": "Outside Seoul/Gyeonggi +$20",
+    "allInOneFeatures": [
+      "Everything in Recovery",
+      "We coordinate pickup with the venue / authorities",
+      "Domestic or international shipping included",
+      "Single price upfront — no add-on fees"
+    ],
+    "deliveryName": "Delivery Only",
+    "deliveryDescription": "When you already know where the item is",
+    "deliveryFootnote": "Outside Seoul/Gyeonggi +$20",
+    "deliveryFeatures": [
+      "You tell us where the item is being held",
+      "We pick it up and ship it to your address",
+      "Korean-language coordination on your behalf",
+      "Tracking number emailed once it ships"
+    ]
   },
   "bottomCTA": {
     "title": "Ready to get your item back?",
