@@ -39,8 +39,6 @@ export default function Header({ variant = "marketing", action = null }: HeaderP
   const [open, setOpen] = useState(false);
 
   const NAV_LINKS: NavLink[] = [
-    { href: "/#how-it-works", label: t("howItWorks") },
-    { href: "/#pricing", label: t("pricing") },
     { href: "/coverage", label: t("infoBook") },
     { href: "/our-story", label: t("ourStory") },
     { href: "/faq", label: t("faq") },
