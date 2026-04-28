@@ -20,6 +20,25 @@ const STATUS_BADGE: Record<string, string> = {
   closed: "bg-slate-100 text-slate-700 border-slate-200",
 };
 
+// Per-locale badge tone. EN gets a calm blue, JA gets a soft pink so
+// the two languages are easy to skim apart in a long table.
+const LANG_BADGE: Record<string, string> = {
+  en: "bg-sky-50 text-sky-700 border-sky-200",
+  ja: "bg-pink-50 text-pink-700 border-pink-200",
+};
+
+function LangBadge({ locale }: { locale?: string }) {
+  const value = locale === "ja" ? "ja" : "en";
+  const cls = LANG_BADGE[value];
+  return (
+    <span
+      className={`inline-flex rounded-full border px-2 py-0.5 text-[10px] font-semibold uppercase tracking-widest ${cls}`}
+    >
+      {value}
+    </span>
+  );
+}
+
 const PRICE = plans.recovery.paymentPrice;
 const DEFAULT_PAGE_SIZE = 5;
 const PAGE_SIZE_OPTIONS = [5, 10, 25];
@@ -319,6 +338,7 @@ export default function CaseList({
                   Email
                 </th>
                 <th className="px-4 py-3 text-left font-semibold">Status</th>
+                <th className="px-4 py-3 text-left font-semibold">Lang</th>
                 <th className="hidden px-4 py-3 text-left font-semibold md:table-cell">
                   Date
                 </th>
@@ -328,7 +348,7 @@ export default function CaseList({
               {loading && reports.length === 0 && (
                 <tr>
                   <td
-                    colSpan={5}
+                    colSpan={6}
                     className="px-4 py-12 text-center text-sm text-muted"
                   >
                     Loading cases…
@@ -338,7 +358,7 @@ export default function CaseList({
               {!loading && filtered.length === 0 && reports.length > 0 && (
                 <tr>
                   <td
-                    colSpan={5}
+                    colSpan={6}
                     className="px-4 py-12 text-center text-sm text-muted"
                   >
                     No cases match the current filter.
@@ -348,7 +368,7 @@ export default function CaseList({
               {!loading && reports.length === 0 && (
                 <tr>
                   <td
-                    colSpan={5}
+                    colSpan={6}
                     className="px-4 py-12 text-center text-sm text-muted"
                   >
                     No reports yet.
@@ -436,13 +456,16 @@ function Row({
             {STATUS_LABELS[status]}
           </span>
         </td>
+        <td className="px-4 py-3">
+          <LangBadge locale={report.locale} />
+        </td>
         <td className="hidden px-4 py-3 text-xs text-muted md:table-cell">
           {formatDate(report.date_lost) || "—"}
         </td>
       </tr>
       {expanded && (
         <tr className="border-b border-border bg-card">
-          <td colSpan={5} className="p-0">
+          <td colSpan={6} className="p-0">
             <CaseDetail
               report={report}
               password={password}

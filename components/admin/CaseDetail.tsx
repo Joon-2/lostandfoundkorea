@@ -276,8 +276,42 @@ export default function CaseDetail({
     setRecoveryInstructions,
   };
 
+  const caseLocale = report.locale === "ja" ? "ja" : "en";
+  const langClass =
+    caseLocale === "ja"
+      ? "bg-pink-50 text-pink-700 border-pink-200"
+      : "bg-sky-50 text-sky-700 border-sky-200";
+  // DeepL's pre-filled translate URL — opens in a new tab so admins
+  // can quickly read Japanese item descriptions without leaving the
+  // dashboard. Source language auto-detect; target is English.
+  const translateUrl = (text: string) =>
+    `https://www.deepl.com/translator#ja/en/${encodeURIComponent(
+      text || ""
+    )}`;
+
   return (
     <div className="border-t border-border px-5 py-5 sm:px-6 sm:py-6">
+      <div className="mb-4 flex flex-wrap items-center gap-2 text-xs">
+        <span
+          className={`inline-flex rounded-full border px-2 py-0.5 font-semibold uppercase tracking-widest ${langClass}`}
+        >
+          {caseLocale}
+        </span>
+        <span className="text-muted">
+          Customer submitted in{" "}
+          {caseLocale === "ja" ? "Japanese" : "English"}.
+        </span>
+        {caseLocale === "ja" && report.item_description && (
+          <a
+            href={translateUrl(report.item_description)}
+            target="_blank"
+            rel="noopener noreferrer"
+            className="text-accent underline-offset-2 hover:underline"
+          >
+            Translate description →
+          </a>
+        )}
+      </div>
       <ProcessTracker
         report={report}
         password={password}
