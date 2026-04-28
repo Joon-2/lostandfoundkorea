@@ -27,6 +27,17 @@ export default getRequestConfig(async ({ requestLocale }) => {
 });
 
 function mergeMessages(base: any, overlay: any): any {
+  // Arrays are leaf values for translation purposes. Spreading an array
+  // into an object literal (`{...arr}`) silently produces a numeric-keyed
+  // plain object, which then breaks consumers that call `.slice()` etc.
+  // on `t.raw()` results — the cause of the /ja 500 we saw on the
+  // homepage's Pricing section.
+  if (Array.isArray(overlay)) {
+    return overlay.length > 0 ? overlay : base;
+  }
+  if (Array.isArray(base)) {
+    return base;
+  }
   if (
     typeof base !== "object" ||
     base === null ||
