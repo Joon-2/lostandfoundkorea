@@ -81,6 +81,7 @@ export async function POST(request) {
     const timeLost = body.time || null;
     const dateConfidence = body.dateConfidence || DATE_CONFIDENCE[0];
     const plan = body.plan === "all_in_one" ? "all_in_one" : "recovery";
+    const locale = body.locale === "ja" ? "ja" : "en";
 
     if (
       !name ||
@@ -119,6 +120,7 @@ export async function POST(request) {
       additional_info: additionalInfo,
       date_confidence: dateConfidence,
       plan,
+      locale,
       case_number: caseNumber,
     };
 

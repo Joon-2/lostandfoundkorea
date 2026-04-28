@@ -2,7 +2,7 @@
 
 import { Suspense, useState } from "react";
 import { useSearchParams } from "next/navigation";
-import { useTranslations } from "next-intl";
+import { useLocale, useTranslations } from "next-intl";
 import { WHATSAPP_URL } from "@/components/WhatsApp";
 import Header from "@/components/layout/Header";
 import { Link } from "@/i18n/navigation";
@@ -82,6 +82,7 @@ export default function ReportPage() {
 
 function ReportPageInner() {
   const t = useTranslations("form");
+  const locale = useLocale();
   const searchParams = useSearchParams();
   const initialPlan =
     searchParams.get("plan") === "all_in_one" ? "all_in_one" : "recovery";
@@ -151,7 +152,7 @@ function ReportPageInner() {
       res = await fetch("/api/submit-report", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
-        body: JSON.stringify(data),
+        body: JSON.stringify({ ...data, locale }),
       });
     } catch (err) {
       console.error("Submit fetch failed:", err);

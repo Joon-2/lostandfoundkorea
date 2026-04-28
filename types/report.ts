@@ -15,6 +15,7 @@ export interface Report {
   time_lost: string | null
   additional_info: string | null
   plan: 'recovery' | 'all_in_one' | 'delivery_only'
+  locale: 'en' | 'ja'
   status: 'pending' | 'found' | 'paid' | 'closed'
   process_stage: string
   phase2_stage: string | null
