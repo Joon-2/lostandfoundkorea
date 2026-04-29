@@ -1,4 +1,3 @@
-// TODO: Replace with Japanese translation. Currently English placeholder.
 import { LEGAL_INFO } from "@/config/legal";
 import {
   H1,
@@ -12,243 +11,190 @@ import {
   Strong,
 } from "@/components/legal/prose";
 
+// NOTE on JSX text whitespace: Japanese has no inter-word spaces, so
+// any source-level newline inside a text node renders as a visible
+// half-width space between native characters. Each <P> / <li>
+// body is therefore kept on a single source line. Do not "reflow"
+// the content in your editor — the long lines are intentional.
+
 export default function RefundJa() {
   const L = LEGAL_INFO;
   return (
     <article>
-      <H1>Refund Policy</H1>
+      <H1>返金ポリシー</H1>
       <Meta>
-        <Strong>Effective Date:</Strong> {L.effectiveDate}
+        <Strong>施行日:</Strong> {L.effectiveDate}
         <br />
-        <Strong>Last Updated:</Strong> {L.lastUpdated}
+        <Strong>最終更新日:</Strong> {L.lastUpdated}
       </Meta>
 
       <P>
-        This Refund Policy explains LFK's refund and cancellation terms. By
-        using our services, you agree to this policy.
+        本返金ポリシー(以下「本ポリシー」といいます)は、Lost &amp; Found Korea(以下「LFK」「当社」といいます)の返金およびキャンセルに関する条件を定めるものです。当社のサービスをご利用いただくことで、お客様は本ポリシーに同意されたものとみなされます。
       </P>
 
       <HR />
 
-      <H2>1. Our Refund Approach</H2>
+      <H2>1. 当社の返金方針</H2>
       <P>
-        Our services are structured as prepay-and-go: you pay only when you've
-        decided to proceed, and once payment is made, the service is initiated
-        immediately. Because each stage involves real-time coordination,
-        third-party costs, and physical handling, payments are non-refundable
-        once made.
+        当社のサービスは「前払い・即時開始」の仕組みを採用しております。お客様がサービスのご利用を決定された時点でお支払いをいただき、お支払い完了後は直ちにサービスを開始いたします。各段階において当社が実時間でのコーディネート、第三者費用の立て替え、お品物の物理的な取り扱いを行うため、お支払い後の金額は原則として返金不可となります。
+      </P>
+      {/* TRANSLATION REVIEW: "Article 17, Paragraph 2 of Korea's Act on the Consumer Protection in Electronic Commerce" — rendered as 「韓国電子商取引等における消費者保護に関する法律第17条第2項」 (standard Japanese rendering of the Korean statute). The precise legal characterization of the withdrawal-right limitation may warrant a Japanese consumer-law counsel sanity-check. */}
+      <P>
+        本ポリシーは、韓国電子商取引等における消費者保護に関する法律第17条第2項に基づき定められております。同条項は、その性質上、提供開始後に取り消すことができないサービスについて、契約撤回権の制限を認めるものです。
       </P>
       <P>
-        This policy is provided in accordance with Article 17, Paragraph 2 of
-        Korea's Act on the Consumer Protection in Electronic Commerce, which
-        permits limitations on the right to withdraw for services that, by
-        their nature, cannot be reversed once provided.
-      </P>
-      <P>
-        We strongly encourage you to review the service details and cost
-        estimate carefully before committing to payment.
+        お支払いの前に、サービス内容およびお見積もりを十分にご確認いただきますよう、お願い申し上げます。
       </P>
 
       <HR />
 
-      <H2>2. Recovery (FREE → $39 if found)</H2>
+      <H2>2. Recoveryプラン(無料 → 発見時のみ$39)</H2>
 
-      <H3>2.1 Search is Free</H3>
+      <H3>2.1 捜索は無料です</H3>
       <P>
-        There is no charge for the initial search. If we cannot locate your
-        item, no payment is required and no refund applies.
+        初回の捜索について料金は一切いただきません。お品物を発見できなかった場合、お支払いは発生せず、返金の対象にもなりません。
       </P>
 
-      <H3>2.2 $39 Information Fee — Non-Refundable</H3>
+      <H3>2.2 $39の情報提供料 — 返金不可</H3>
       <P>
-        If we successfully locate your item, you may choose to pay $39 to
-        unlock the pickup details. The $39 is an information access fee. Once
-        paid and the information has been delivered, the service is complete
-        and the fee is non-refundable.
+        お品物を無事に発見した場合、お客様は$39をお支払いいただくことで、受け取りの詳細情報をご確認いただけます。本$39は情報提供料です。お支払いいただき情報をご提供した時点でサービスは完了とみなされ、当該料金は返金の対象となりません。
       </P>
       <P>
-        If you choose not to pay, no information is shared and nothing is
-        owed.
+        お支払いをご選択にならない場合、情報の共有は行われず、お客様にご負担いただく金額もございません。
       </P>
 
       <HR />
 
-      <H2>3. All-in-One ($79)</H2>
+      <H2>3. All-in-Oneプラン($79)</H2>
 
-      <H3>3.1 Prepayment Required</H3>
-      <P>The All-in-One service requires upfront payment of:</P>
+      <H3>3.1 前払い制</H3>
+      <P>All-in-Oneプランをご利用いただくにあたり、以下の金額を事前にお支払いいただきます:</P>
       <UL>
-        <li>LFK service fee: $79</li>
-        <li>
-          All third-party costs: storage fees, locker charges, packaging
-          materials, shipping fees
-        </li>
-        <li>Any applicable surcharges</li>
-      </UL>
-      <P>You will receive an itemized cost estimate before payment.</P>
-
-      <H3>3.2 Non-Refundable</H3>
-      <P>
-        Once payment is made, all amounts are non-refundable. This includes
-        both the LFK service fee and third-party costs, because:
-      </P>
-      <UL>
-        <li>
-          LFK begins coordination, pickup, and shipping arrangement immediately
-          upon payment.
-        </li>
-        <li>
-          Third-party costs are paid out to facilities and carriers on your
-          behalf and cannot be recovered.
-        </li>
+        <li>LFKサービス料金:$79</li>
+        <li>第三者費用すべて:保管料、ロッカー料、梱包資材、配送料</li>
+        <li>該当する場合の追加料金</li>
       </UL>
       <P>
-        Please review the cost estimate carefully and confirm you are ready to
-        proceed before paying.
+        お支払いの前に、明細つきのお見積もりをご提示いたします。
       </P>
 
-      <HR />
-
-      <H2>4. Delivery Only ($49)</H2>
-
-      <H3>4.1 Prepayment Required</H3>
+      <H3>3.2 返金不可</H3>
       <P>
-        Includes the $49 LFK service fee plus all shipping and related
-        third-party costs.
+        お支払い後、全金額が返金不可となります。これにはLFKサービス料金と第三者費用の双方が含まれます。理由は以下のとおりです:
       </P>
-
-      <H3>4.2 Non-Refundable</H3>
-      <P>
-        Once payment is made, all amounts are non-refundable, as pickup and
-        shipping coordination begin immediately.
-      </P>
-
-      <HR />
-
-      <H2>5. Third-Party Costs</H2>
-      <P>
-        Third-party costs (storage fees, shipping fees, packaging, insurance,
-        customs duties) are forwarded to the relevant third party. LFK does
-        not retain these amounts.
-      </P>
-      <P>
-        These costs are non-refundable by LFK in all cases. If you have a
-        dispute with a third party, claims must be filed directly with that
-        party.
-      </P>
-
-      <HR />
-
-      <H2>6. Shipping Risk</H2>
-      <P>Once your item is handed over to a shipping carrier:</P>
       <UL>
-        <li>Risk transfers entirely to the carrier and recipient.</li>
-        <li>
-          LFK is not liable for items lost, damaged, delayed, or seized during
-          shipping.
-        </li>
-        <li>
-          All paid amounts (LFK fees and third-party costs) are non-refundable
-          for issues occurring after handover.
-        </li>
-        <li>
-          Claims for lost or damaged shipments must be filed directly with the
-          carrier or the shipping insurance provider.
-        </li>
-        <li>
-          We will provide reasonable assistance with documentation for your
-          claim.
-        </li>
+        <li>お支払いと同時に、LFKがコーディネート、受け取り、および配送手配を直ちに開始するため。</li>
+        <li>第三者費用は、お客様に代わって施設や配送業者に支払われるため、回収することができないため。</li>
       </UL>
       <P>
-        We strongly recommend purchasing shipping insurance for items of
-        significant value before shipment.
+        お支払いの前に、お見積もりを十分にご確認いただき、ご利用の意思を最終的にご判断くださいますようお願い申し上げます。
       </P>
 
       <HR />
 
-      <H2>7. Cancellation by LFK</H2>
-      <P>In rare cases, we may cancel a service if:</P>
+      <H2>4. 配送のみプラン($49)</H2>
+
+      <H3>4.1 前払い制</H3>
+      <P>
+        $49のLFKサービス料金、ならびに配送料および関連する第三者費用すべてが含まれます。
+      </P>
+
+      <H3>4.2 返金不可</H3>
+      <P>
+        お支払いと同時に受け取りおよび配送のコーディネートが開始されるため、お支払い後の金額はすべて返金不可となります。
+      </P>
+
+      <HR />
+
+      <H2>5. 第三者費用について</H2>
+      <P>
+        第三者費用(保管料、配送料、梱包、保険、関税)は、該当する第三者に支払われるものであり、LFKがこれらの金額を保持することはございません。
+      </P>
+      <P>
+        これらの費用について、LFKがいかなる場合も返金することはできません。第三者との間で紛争が発生した場合は、当該第三者に対して直接ご請求いただきますようお願いいたします。
+      </P>
+
+      <HR />
+
+      <H2>6. 配送中のリスクについて</H2>
+      <P>お品物を配送業者に引き渡した時点で、以下のとおりとなります:</P>
       <UL>
-        <li>The item cannot be legally recovered or shipped</li>
-        <li>The facility holding the item refuses cooperation</li>
-        <li>
-          Information you provided is materially incorrect or fraudulent
-        </li>
-        <li>Continued service would violate applicable laws</li>
+        <li>リスクは完全に配送業者およびお受け取り人に移転します。</li>
+        <li>配送中の紛失、破損、遅延、または押収について、LFKは責任を負いません。</li>
+        <li>引き渡し後に発生した事象について、お支払い済みの金額(LFK料金および第三者費用)は返金不可となります。</li>
+        <li>紛失または破損した荷物に関する保険金請求は、配送業者または配送保険提供者に対して直接お手続きいただく必要があります。</li>
+        <li>当社は、お客様の請求手続きに必要な書類について、合理的な範囲でご協力いたします。</li>
       </UL>
       <P>
-        In such cases, we will refund LFK service fees paid, minus any
-        third-party costs already incurred on your behalf (documented and
-        itemized).
-      </P>
-      <P>
-        This is the only scenario in which a refund of LFK service fees is
-        issued.
+        高額品については、発送前に配送保険にご加入いただくことを強く推奨いたします。
       </P>
 
       <HR />
 
-      <H2>8. Currency and Exchange Rate</H2>
+      <H2>7. LFKによるキャンセル</H2>
+      <P>稀ではありますが、以下のような場合に、当社がサービスをキャンセルする場合があります:</P>
+      <UL>
+        <li>お品物の回収または発送が法律上できない場合</li>
+        <li>お品物を保管している施設が協力を拒否した場合</li>
+        <li>お客様からご提供いただいた情報に重大な誤りまたは虚偽が含まれていた場合</li>
+        <li>サービスを継続することが適用法令に違反する場合</li>
+      </UL>
       <P>
-        All payments and refunds (where applicable under Section 7) are
-        processed in the original payment currency. LFK is not responsible for
-        currency conversion losses or exchange rate fluctuations.
+        上記の場合、すでにお客様のために発生した第三者費用(明細つきで記録されたもの)を差し引いたうえで、お支払いいただいたLFKサービス料金を返金いたします。
+      </P>
+      <P>
+        LFKサービス料金が返金されるのは、本項目に記載された場合に限ります。
       </P>
 
       <HR />
 
-      <H2>9. Disputes</H2>
-      <P>If you have concerns about a charge:</P>
+      <H2>8. 通貨および為替レート</H2>
+      <P>
+        お支払いおよび返金(第7条に該当する場合)は、すべてお支払い時の元の通貨で処理されます。通貨換算による差損や為替レートの変動について、LFKは責任を負いません。
+      </P>
+
+      <HR />
+
+      <H2>9. 異議申立ておよび紛争</H2>
+      <P>料金についてご懸念がある場合は、以下の手順でお願いいたします:</P>
       <OL>
         <li>
-          Contact us first at{" "}
+          まず
           <a
             href={`mailto:${L.supportEmail}`}
             className="text-accent hover:underline"
           >
             {L.supportEmail}
-          </a>{" "}
-          for informal resolution.
+          </a>
+          まで当社にご連絡いただき、非公式の話し合いによる解決をお試しください。
         </li>
-        <li>
-          If unresolved, you may pursue formal dispute resolution per Section
-          14 of our Terms of Service.
-        </li>
-        <li>
-          PayPal transactions may also be disputed through PayPal's resolution
-          center.
-        </li>
+        <li>解決に至らない場合、利用規約第14条に基づき、正式な紛争解決手続にお進みいただけます。</li>
+        <li>PayPalでのお取引については、PayPalの紛争解決センターを通じて異議を申し立てることも可能です。</li>
       </OL>
 
       <HR />
 
-      <H2>10. Korean Consumer Protection</H2>
+      <H2>10. 韓国消費者保護法について</H2>
       <P>
-        For users covered by Korean consumer protection laws, the rights
-        provided under those laws apply in addition to this policy. Where this
-        policy conflicts with mandatory consumer protection law, the law
-        prevails.
+        韓国の消費者保護法の対象となるお客様については、本ポリシーに加えて、当該法令上の権利が適用されます。本ポリシーが強行法規である消費者保護法と抵触する場合、法令が優先されます。
       </P>
 
       <HR />
 
-      <H2>11. Changes to This Policy</H2>
+      <H2>11. 本ポリシーの変更</H2>
       <P>
-        We may update this Refund Policy from time to time. Changes apply only
-        to services purchased after the update.
+        当社は、本返金ポリシーを随時更新する場合があります。変更内容は、更新後にお申し込みいただいたサービスにのみ適用されます。
       </P>
 
       <HR />
 
-      <H2>12. Contact</H2>
+      <H2>12. お問い合わせ</H2>
       <P>
-        <Strong>{L.businessName}</Strong> ("LFK") is a service operated by{" "}
-        {L.operatingCompany}.
+        <Strong>{L.businessName}</Strong>(以下「LFK」)は、{L.operatingCompany}が運営するサービスです。
       </P>
       <UL>
         <li>
-          Email:{" "}
+          メールアドレス:{" "}
           <a
             href={`mailto:${L.supportEmail}`}
             className="text-accent hover:underline"
@@ -256,20 +202,25 @@ export default function RefundJa() {
             {L.supportEmail}
           </a>
         </li>
-        <li>Service Name: {L.businessName}</li>
-        <li>Operating Company: {L.operatingCompany}</li>
-        <li>CEO: {L.ceo}</li>
-        <li>Business Registration Number: {L.businessRegistrationNumber}</li>
-        <li>E-Commerce Registration: {L.ecommerceRegistration}</li>
-        <li>Address: {L.address}</li>
+        <li>サービス名:{L.businessName}</li>
+        <li>運営会社:{L.operatingCompany}</li>
+        <li>代表者:{L.ceo}</li>
+        <li>事業者登録番号:{L.businessRegistrationNumber}</li>
+        <li>通信販売業申告:{L.ecommerceRegistration}</li>
+        <li>所在地:{L.address}</li>
       </UL>
 
       <HR />
 
+      <H2>13. 言語について</H2>
       <P>
-        By using LFK's services, you acknowledge you have read and understood
-        this Refund Policy, including the prepayment requirement and the
-        non-refundable nature of all payments.
+        本ポリシーは、お客様の便宜のために日本語に翻訳されています。本ポリシーの英語版と日本語版の間に解釈上の相違がある場合は、英語版が優先されます。
+      </P>
+
+      <HR />
+
+      <P>
+        LFKのサービスをご利用いただくことで、お客様は前払い制度およびお支払い後の金額が返金不可であることを含め、本返金ポリシーをお読みになり、内容をご理解いただいたものとみなされます。
       </P>
     </article>
   );
