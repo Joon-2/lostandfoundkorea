@@ -18,32 +18,32 @@ export default async function Footer() {
   const tBrand = await getTranslations("brand");
 
   return (
-    <footer className="bg-navy text-slate-300" id="footer">
-      <div className="mx-auto w-full max-w-6xl px-5 py-10 sm:px-8 sm:py-12">
-        <div className="grid gap-8 sm:grid-cols-[2fr_1fr]">
-          <div>
+    <footer
+      className="border-t border-[#e5e7eb] bg-background"
+      id="footer"
+    >
+      <div className="mx-auto w-full max-w-6xl px-5 py-12 sm:px-8 sm:py-16">
+        <div className="grid gap-8 md:grid-cols-3 md:gap-12">
+          <div className="md:col-span-2">
             <Logo
               name={tBrand("nameAmpersand")}
-              className="!text-white"
               iconClassName="h-[20px] w-[20px]"
             />
-            <p className="mt-3 max-w-md text-sm text-slate-400">
-              {t("tagline")}
-            </p>
+            <p className="mt-3 max-w-md text-sm text-muted">{t("tagline")}</p>
           </div>
           <div>
-            <p className="text-xs font-semibold uppercase tracking-widest text-slate-400">
+            <p className="text-xs font-semibold uppercase tracking-widest text-muted">
               {t("legalHeading")}
             </p>
             <nav
               aria-label={t("legalHeading")}
-              className="mt-3 flex flex-col gap-2"
+              className="mt-3 flex flex-col gap-3"
             >
               {LEGAL_LINKS.map((l) => (
                 <Link
                   key={l.href}
                   href={l.href}
-                  className="text-sm text-slate-300 transition-colors hover:text-white"
+                  className="text-sm text-body transition-colors duration-150 hover:text-accent"
                 >
                   {t(`links.${l.key}`)}
                 </Link>
@@ -51,7 +51,7 @@ export default async function Footer() {
             </nav>
           </div>
         </div>
-        <div className="mt-10 flex flex-col gap-2 border-t border-slate-700 pt-6 text-xs text-slate-400 sm:flex-row sm:items-center sm:justify-between">
+        <div className="mt-12 flex flex-col gap-3 border-t border-[#e5e7eb] pt-6 text-xs text-muted sm:flex-row sm:items-center sm:justify-between">
           <span>
             &copy; {new Date().getFullYear()} {siteConfig.name}
           </span>
