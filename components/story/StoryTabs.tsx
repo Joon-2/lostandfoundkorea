@@ -114,7 +114,7 @@ export default function StoryTabs() {
           className="sticky top-[88px] flex flex-col gap-1"
         >
           <p className="mb-3 text-xs font-semibold uppercase tracking-widest text-muted">
-            Our Story
+            {t("tabsNavLabel")}
           </p>
           {TABS.map((tab) => {
             const isActive = tab.key === active;

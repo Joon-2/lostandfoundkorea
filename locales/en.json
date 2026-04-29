@@ -677,7 +677,8 @@
           "If you're reading this, having lost something in Korea while being somewhere else in the world, we just want you to know: there's a way to get it home. The system has a gap. We're here to close it."
         ]
       }
-    ]
+    ],
+    "tabsNavLabel": "Our Story"
   },
   "common": {
     "submit": "Submit",
