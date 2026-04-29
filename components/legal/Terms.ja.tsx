@@ -1,4 +1,3 @@
-// TODO: Replace with Japanese translation. Currently English placeholder.
 import { LEGAL_INFO } from "@/config/legal";
 import { H1, H2, H3, P, UL, HR, Meta, Strong } from "@/components/legal/prose";
 
@@ -6,330 +5,347 @@ export default function TermsJa() {
   const L = LEGAL_INFO;
   return (
     <article>
-      <H1>Terms of Service</H1>
+      <H1>利用規約</H1>
       <Meta>
-        <Strong>Effective Date:</Strong> {L.effectiveDate}
+        <Strong>施行日:</Strong> {L.effectiveDate}
         <br />
-        <Strong>Last Updated:</Strong> {L.lastUpdated}
+        <Strong>最終更新日:</Strong> {L.lastUpdated}
       </Meta>
 
       <P>
-        Welcome to Lost &amp; Found Korea ("LFK," "we," "us," or "our"). These
-        Terms of Service ("Terms") govern your use of our website and services.
-        By using our services, you agree to these Terms.
+        Lost &amp; Found Korea(以下「LFK」「当社」「私たち」といいます)へ
+        ようこそ。本利用規約(以下「本規約」といいます)は、お客様による当社
+        のウェブサイトおよびサービスのご利用に適用されるものです。当社のサー
+        ビスをご利用いただくことで、お客様は本規約に同意されたものとみなさ
+        れます。
       </P>
 
       <HR />
 
-      <H2>1. About Our Service</H2>
+      <H2>1. 当社のサービスについて</H2>
       <P>
-        LFK provides lost item recovery and delivery services in Korea for
-        users worldwide. We act as your authorized agent to locate, retrieve,
-        and deliver lost items from Korean facilities (airports, lockers,
-        public transportation, hotels, etc.).
+        LFKは、世界各国のお客様に対し、韓国における忘れ物の回収および配送
+        サービスをご提供しています。当社は、お客様の正式な代理人として、韓国
+        の施設(空港、ロッカー、公共交通機関、ホテルなど)から忘れ物を捜索・
+        受け取り・配送いたします。
       </P>
       <P>
-        This service is a commercial service contract (a paid agency service
-        under the Korean Civil Code), separate from any statutory finder's
-        reward system under Korea's Lost Articles Act.
+        {/* TRANSLATION REVIEW: paid agency service under the Korean Civil Code — standard rendering used; verify "agency" framing matches local counsel's preferred terminology */}
+        本サービスは、商業サービス契約(韓国民法上の有償委任契約)であり、
+        韓国遺失物法に基づく法定の遺失物拾得者報酬制度とは別個のものです。
       </P>
 
       <HR />
 
-      <H2>2. Service Options</H2>
+      <H2>2. サービスプラン</H2>
       <P>
-        LFK offers three service tiers. All fees are quoted in USD. Equivalent
-        amounts in other currencies (KRW, JPY, etc.) may be available based on
-        your payment method, calculated at the prevailing exchange rate at the
-        time of payment.
+        LFKでは3種類のサービスプランをご用意しております。すべての料金は米
+        ドル(USD)で表示されています。お支払い方法によっては、他通貨(韓国
+        ウォン、日本円など)での同等額でのお支払いも可能で、その場合はお支
+        払い時点の為替レートで換算されます。
       </P>
 
-      <H3>2.1 Recovery — FREE to start, $39 if found</H3>
-      <P>A pay-if-found search service.</P>
+      <H3>2.1 Recoveryプラン — ご依頼は無料、発見時のみ$39</H3>
+      <P>発見時のみお支払いいただく捜索サービスです。</P>
       <UL>
-        <li>Free to start. No payment information required upfront.</li>
-        <li>Submit a brief report describing your lost item.</li>
-        <li>Our team conducts the search in Korean on your behalf.</li>
-        <li>You receive an email update within 24–48 hours.</li>
+        <li>ご依頼は無料です。事前のお支払い情報のご登録は不要です。</li>
+        <li>紛失されたお品物の概要をフォームにご記入ください。</li>
+        <li>当社のチームが、お客様に代わって韓国語で捜索を行います。</li>
+        <li>24〜48時間以内に経過状況をメールでお知らせいたします。</li>
         <li>
-          If we successfully locate your item: you may pay $39 to unlock the
-          pickup details (location, contact, and retrieval instructions).
+          お品物が無事に発見された場合:$39をお支払いいただくことで、受け
+          取り情報(場所、連絡先、受け取り手順)をご確認いただけます。
         </li>
-        <li>If we do not locate your item: no charge.</li>
+        <li>お品物が発見されなかった場合:料金は一切いただきません。</li>
         <li>
-          After paying $39, you may handle pickup yourself, or add our Pickup
-          service starting at +$59.
+          $39のお支払い後、お客様ご自身で受け取られるか、+$59〜の受け取り
+          代行サービスを追加でご利用いただくことも可能です。
         </li>
       </UL>
 
-      <H3>2.2 All-in-One — $79 (Recommended)</H3>
+      <H3>2.2 All-in-Oneプラン — $79(おすすめ)</H3>
       <P>
-        A single-price, end-to-end service combining search, coordination, and
-        shipping.
+        捜索、受け取り代行、配送までを一括で含む定額制のサービスです。
       </P>
       <UL>
-        <li>Includes everything in the Recovery tier.</li>
+        <li>Recoveryプランのすべての内容を含みます。</li>
         <li>
-          We coordinate pickup with the venue, facility, or authorities holding
-          the item.
+          お品物を保管している施設・関係機関との受け取り調整を当社が行い
+          ます。
         </li>
-        <li>Domestic or international shipping included in the price.</li>
+        <li>国内・国際配送料金を価格に含みます。</li>
         <li>
-          Single price upfront — no hidden add-on fees (subject to surcharges
-          in Section 2.4).
+          最初に一括でお支払いいただく定額制で、隠れた追加料金はありません
+          (第2.4条の追加料金を除く)。
         </li>
       </UL>
 
-      <H3>2.3 Delivery Only — $49</H3>
+      <H3>2.3 配送のみプラン — $49</H3>
       <P>
-        For users who already know exactly where their lost item is being held.
+        お品物の保管場所が既にお分かりのお客様向けのプランです。
       </P>
       <UL>
-        <li>You provide us the location and any reference numbers.</li>
-        <li>We pick up the item and ship it to your address.</li>
-        <li>Korean-language coordination handled on your behalf.</li>
-        <li>Tracking number emailed once the item ships.</li>
+        <li>お客様から保管場所と参照番号などをお知らせいただきます。</li>
+        <li>当社がお品物を受け取り、お客様のご住所に配送いたします。</li>
+        <li>韓国語での施設対応はすべて当社が代行いたします。</li>
+        <li>発送後、追跡番号をメールでお送りいたします。</li>
       </UL>
 
-      <H3>2.4 Surcharges</H3>
+      <H3>2.4 追加料金</H3>
       <P>
-        The following surcharges apply where applicable, in addition to the
-        base service fee:
+        該当する場合、基本サービス料金に加えて以下の追加料金が発生いたし
+        ます:
       </P>
       <UL>
-        <li>Outside Seoul/Gyeonggi region: +$20</li>
-        <li>Pickup add-on (Recovery tier only): from +$59</li>
+        <li>ソウル・京畿道(キョンギド)以外の地域:+$20</li>
+        <li>受け取り代行追加(Recoveryプランのみ):+$59〜</li>
       </UL>
 
-      <H3>2.5 Costs Charged Separately</H3>
-      <P>Service fees do not include:</P>
+      <H3>2.5 別途請求される費用</H3>
+      <P>サービス料金には以下の費用は含まれません:</P>
       <UL>
-        <li>Storage fees charged by lockers, airports, or facilities</li>
+        <li>ロッカー、空港、または施設が請求する保管料</li>
         <li>
-          International shipping fees beyond what's included in the All-in-One
-          tier
+          All-in-Oneプランに含まれる範囲を超える国際配送料
         </li>
-        <li>Optional shipping insurance</li>
-        <li>Customs duties and import taxes</li>
-        <li>Special packaging materials beyond standard</li>
+        <li>任意の配送保険</li>
+        <li>関税および輸入税</li>
+        <li>標準を超える特別な梱包資材</li>
       </UL>
       <P>
-        We will provide an itemized cost estimate before you commit to any
-        chargeable service.
+        有料サービスをお引き受けいただく前に、明細つきのお見積もりをご提示
+        いたします。
       </P>
 
       <HR />
 
-      <H2>3. User Responsibilities</H2>
-      <P>By using our services, you agree to:</P>
+      <H2>3. お客様の責任</H2>
+      <P>
+        当社のサービスをご利用いただくにあたり、お客様は以下に同意するもの
+        とします:
+      </P>
       <UL>
         <li>
-          Provide accurate information about the lost item, the approximate
-          location and time of loss, and your delivery address.
+          紛失されたお品物、紛失したおおよその場所と時刻、配送先住所につい
+          て正確な情報を提供すること。
         </li>
         <li>
-          Authorize LFK to act as your agent in retrieving the item from
-          third-party facilities.
+          第三者の施設からのお品物の受け取りについて、LFKを代理人として認
+          めること。
         </li>
         <li>
-          Confirm that you are the rightful owner of the item or have the legal
-          authority to recover it.
+          お客様がお品物の正当な所有者である、または受け取りを行う法的権限
+          を有していることを確認すること。
         </li>
         <li>
-          Pay all applicable fees in a timely manner once you have agreed to a
-          service.
-        </li>
-      </UL>
-      <P>You may not use our services to recover items that:</P>
-      <UL>
-        <li>Do not belong to you</li>
-        <li>Are illegal, prohibited, or restricted by law</li>
-        <li>Are subject to ongoing legal disputes</li>
-        <li>Cannot be legally transported across borders</li>
-      </UL>
-
-      <HR />
-
-      <H2>4. Authorization to Act on Your Behalf</H2>
-      <P>When you engage our service, you authorize LFK to:</P>
-      <UL>
-        <li>Communicate with facility operators on your behalf</li>
-        <li>Receive and take physical possession of your item</li>
-        <li>Pay third-party fees on your behalf, to be reimbursed by you</li>
-        <li>Package and arrange shipment of the item</li>
-      </UL>
-      <P>
-        This authorization is limited to the specific item and purpose stated
-        in your service request.
-      </P>
-
-      <HR />
-
-      <H2>5. Inspection of Contents</H2>
-      <P>
-        We do not routinely inspect the contents of recovered items beyond what
-        is necessary for safe packaging. If you specifically request that we
-        not inspect the contents, we will honor that request and our records
-        will reflect that the item was sealed and intact upon receipt.
-      </P>
-      <P>
-        We are not responsible for verifying the contents of any sealed bag,
-        box, or container.
-      </P>
-
-      <HR />
-
-      <H2>6. Shipping and Delivery</H2>
-      <H3>6.1 Carrier Options</H3>
-      <P>
-        We offer multiple shipping options (EMS, EMS Premium, DHL, FedEx, UPS,
-        etc.). You select the carrier and service level. We are not responsible
-        for the operations or service quality of third-party carriers.
-      </P>
-      <H3>6.2 Shipping Risk</H3>
-      <P>
-        You assume all risk of loss or damage during shipping, including but
-        not limited to items lost in transit, items damaged by carriers, items
-        delayed or seized by customs, and items returned or refused.
-      </P>
-      <P>
-        LFK is not liable for any loss, damage, or delay occurring after the
-        item leaves our possession and is handed over to the carrier.
-      </P>
-      <H3>6.3 Insurance (Recommended)</H3>
-      <P>
-        We strongly recommend purchasing shipping insurance for items of
-        significant value. Insurance is provided by the carrier, not LFK;
-        claims are handled directly between you and the carrier.
-      </P>
-      <H3>6.4 Customs and Duties</H3>
-      <P>
-        You are responsible for any customs duties, import taxes, or fees
-        imposed by your country.
-      </P>
-
-      <HR />
-
-      <H2>7. Fees, Payments, and Refunds</H2>
-      <H3>7.1 Payment Methods</H3>
-      <P>
-        We accept payment via PayPal and other electronic methods indicated at
-        checkout.
-      </P>
-      <H3>7.2 Prepayment Required</H3>
-      <P>
-        For All-in-One and Delivery Only services, full payment (LFK service
-        fee + all third-party costs) is required before service begins.
-      </P>
-      <H3>7.3 Refund Policy</H3>
-      <P>See our Refund Policy for full details.</P>
-
-      <HR />
-
-      <H2>8. Service Limitations</H2>
-      <P>We do not guarantee:</P>
-      <UL>
-        <li>That any specific item can be located</li>
-        <li>The condition of recovered items</li>
-        <li>Specific delivery timelines (carrier-dependent)</li>
-        <li>Recovery from facilities that decline to cooperate</li>
-      </UL>
-      <P>
-        If we are unable to locate or recover an item, no fees are charged for
-        the search component.
-      </P>
-
-      <HR />
-
-      <H2>9. Limitation of Liability</H2>
-      <P>To the maximum extent permitted by law:</P>
-      <UL>
-        <li>
-          LFK's total liability for any claim related to our services shall not
-          exceed the amount of LFK service fees paid by you for that specific
-          service request.
-        </li>
-        <li>
-          We are not liable for indirect, incidental, consequential, or
-          punitive damages.
-        </li>
-        <li>
-          We are not liable for actions of third parties (carriers, facilities,
-          customs authorities, etc.).
-        </li>
-        <li>
-          We are not liable for items lost or damaged during shipping (see
-          Section 6.2).
+          サービスに同意された後、適用されるすべての料金を期限内にお支払い
+          いただくこと。
         </li>
       </UL>
       <P>
-        This limitation does not apply where prohibited by mandatory consumer
-        protection laws.
+        お客様は、以下に該当するお品物の受け取りに当社のサービスをご利用い
+        ただくことはできません:
+      </P>
+      <UL>
+        <li>お客様の所有でない物</li>
+        <li>違法、禁止、または法律により制限されている物</li>
+        <li>進行中の法的紛争の対象となっている物</li>
+        <li>法律により国際輸送ができない物</li>
+      </UL>
+
+      <HR />
+
+      <H2>4. 代理権の付与</H2>
+      <P>
+        当社のサービスをご利用いただく時点で、お客様はLFKに対し以下の代理
+        権を付与されたものとみなします:
+      </P>
+      <UL>
+        <li>お客様に代わって施設の運営者と連絡を取ること</li>
+        <li>お品物を物理的に受け取り、占有すること</li>
+        <li>
+          お客様に代わって第三者費用を立て替え払いし、後日お客様から精算を
+          受けること
+        </li>
+        <li>お品物を梱包し、発送手続きを行うこと</li>
+      </UL>
+      <P>
+        本代理権は、お客様のサービスご依頼に記載された特定のお品物および目
+        的に限定されます。
       </P>
 
       <HR />
 
-      <H2>10. Privacy</H2>
+      <H2>5. お品物の中身の確認</H2>
       <P>
-        Your privacy is important to us. Please review our Privacy Policy for
-        details on how we collect, use, and protect your information.
+        当社は、安全な梱包に必要な範囲を超えて、回収したお品物の中身を日常
+        的に確認することはいたしません。お客様から「中身を確認しないでほし
+        い」とのご要望があった場合、当社はそのご要望をお守りし、受け取り時
+        点でお品物が封印され完全な状態であった旨を記録に残します。
+      </P>
+      <P>
+        封印されたバッグ、箱、または容器の中身の確認について、当社は責任を
+        負いません。
       </P>
 
       <HR />
 
-      <H2>11. Intellectual Property</H2>
+      <H2>6. 発送および配送</H2>
+      <H3>6.1 配送業者の選択</H3>
       <P>
-        All content on the LFK website is the property of LFK or its licensors
-        and is protected by copyright and trademark laws. You may not
-        reproduce, distribute, or create derivative works without our written
-        permission.
+        当社では複数の配送オプション(EMS、EMSプレミアム、DHL、FedEx、UPS
+        など)をご用意しております。配送業者およびサービスレベルはお客様に
+        お選びいただきます。第三者である配送業者の運営状況やサービス品質に
+        ついて、当社は責任を負いません。
+      </P>
+      <H3>6.2 配送中のリスク</H3>
+      <P>
+        お客様は、配送中の紛失または破損のすべてのリスクを負担されるもの
+        とします。これには、配送中の紛失、配送業者による破損、税関による
+        遅延または押収、および返送または受取拒否を含みますが、これらに限
+        定されません。
+      </P>
+      <P>
+        お品物が当社の占有を離れて配送業者に引き渡された後に発生した紛失、
+        破損、または遅延について、LFKは責任を負いません。
+      </P>
+      <H3>6.3 保険(推奨)</H3>
+      <P>
+        高額品については、配送保険のご加入を強く推奨いたします。保険は配送
+        業者によって提供されるものであり、LFKによるものではありません。保
+        険金請求は、お客様と配送業者との間で直接お手続きいただきます。
+      </P>
+      <H3>6.4 関税および税金</H3>
+      <P>
+        お客様の国により課される関税、輸入税、または各種費用は、すべてお客
+        様のご負担となります。
       </P>
 
       <HR />
 
-      <H2>12. Modifications</H2>
+      <H2>7. 料金、お支払い、および返金</H2>
+      <H3>7.1 お支払い方法</H3>
       <P>
-        We may update these Terms from time to time. Material changes will be
-        communicated via email or website notice. Continued use of our services
-        after changes constitutes acceptance.
+        お支払いは、PayPalおよびチェックアウト画面でご案内するその他の電子
+        決済方法にてお受けしております。
+      </P>
+      <H3>7.2 前払い制</H3>
+      <P>
+        All-in-Oneプランおよび配送のみプランについては、サービス開始前に全
+        額(LFKサービス料金+第三者費用すべて)のお支払いが必要となります。
+      </P>
+      <H3>7.3 返金ポリシー</H3>
+      <P>詳細につきましては、返金ポリシーをご確認ください。</P>
+
+      <HR />
+
+      <H2>8. サービスの制限</H2>
+      <P>当社は以下を保証するものではありません:</P>
+      <UL>
+        <li>特定のお品物が必ず発見できること</li>
+        <li>回収されたお品物の状態</li>
+        <li>具体的な配送日時(配送業者次第となります)</li>
+        <li>協力を拒否する施設からの受け取り</li>
+      </UL>
+      <P>
+        お品物の発見または受け取りができなかった場合、捜索部分の料金は一切
+        いただきません。
       </P>
 
       <HR />
 
-      <H2>13. Termination</H2>
+      <H2>9. 責任の制限</H2>
+      <P>法律で認められる最大限の範囲において:</P>
+      <UL>
+        <li>
+          当社のサービスに関連する請求について、LFKの賠償責任の総額は、当該
+          サービスのご依頼につきお客様がお支払いいただいたLFKサービス料金の
+          額を超えないものとします。
+        </li>
+        <li>
+          当社は、間接損害、付随的損害、結果的損害、および懲罰的損害につい
+          て責任を負いません。
+        </li>
+        <li>
+          第三者(配送業者、施設、税関当局など)の行為について、当社は責任
+          を負いません。
+        </li>
+        <li>
+          配送中に紛失または破損したお品物について、当社は責任を負いません
+          (第6.2条参照)。
+        </li>
+      </UL>
       <P>
-        We reserve the right to refuse, suspend, or terminate service to any
-        user who violates these Terms or engages in fraudulent or abusive
-        behavior.
+        強行法規である消費者保護法により制限が禁じられている場合、本制限は
+        適用されません。
       </P>
 
       <HR />
 
-      <H2>14. Dispute Resolution</H2>
-      <H3>14.1 Governing Law</H3>
-      <P>These Terms are governed by the laws of the Republic of Korea.</P>
-      <H3>14.2 Jurisdiction</H3>
+      <H2>10. プライバシー</H2>
       <P>
-        Any dispute arising from these Terms or our services shall be subject
-        to the exclusive jurisdiction of the Seoul Central District Court,
-        Republic of Korea.
-      </P>
-      <H3>14.3 Informal Resolution</H3>
-      <P>
-        We encourage you to contact us first to resolve any concerns informally
-        before pursuing formal action.
+        お客様のプライバシーは当社にとって重要です。当社による情報の収集・
+        利用・保護方法の詳細につきましては、プライバシーポリシーをご確認く
+        ださい。
       </P>
 
       <HR />
 
-      <H2>15. Contact</H2>
+      <H2>11. 知的財産</H2>
       <P>
-        <Strong>{L.businessName}</Strong> ("LFK") is a service operated by{" "}
-        {L.operatingCompany}.
+        LFKのウェブサイト上のすべてのコンテンツは、LFKまたはそのライセン
+        サーに帰属するものであり、著作権法および商標法によって保護されて
+        います。当社の書面による許可なく、複製、配布、または二次的著作物
+        の作成をしてはなりません。
+      </P>
+
+      <HR />
+
+      <H2>12. 規約の変更</H2>
+      <P>
+        当社は、本規約を随時更新する場合があります。重要な変更については、
+        メールまたはウェブサイト上の通知を通じてお知らせいたします。変更後
+        も継続して当社のサービスをご利用いただくことは、変更への同意とみな
+        されます。
+      </P>
+
+      <HR />
+
+      <H2>13. 解除</H2>
+      <P>
+        当社は、本規約に違反するか、不正または濫用的な行為を行ったユーザー
+        に対し、サービスのご提供を拒否、停止、または解除する権利を留保し
+        ます。
+      </P>
+
+      <HR />
+
+      <H2>14. 紛争解決</H2>
+      <H3>14.1 準拠法</H3>
+      <P>本規約は、大韓民国の法律に準拠します。</P>
+      <H3>14.2 管轄裁判所</H3>
+      <P>
+        {/* TRANSLATION REVIEW: "Seoul Central District Court" rendered as ソウル中央地方法院 (preserves Korean 法院 naming) with English court name in parens. Alternative: ソウル中央地方裁判所 (Japanizes). Confirm with local counsel which form is preferred for the Japanese-facing version. */}
+        本規約または当社のサービスに起因するすべての紛争は、大韓民国ソウル
+        中央地方法院(Seoul Central District Court)を専属的合意管轄裁判所
+        とします。
+      </P>
+      <H3>14.3 非公式の解決</H3>
+      <P>
+        正式な手続きにお進みになる前に、まずは当社までご連絡いただき、非公
+        式の話し合いによる解決をお試しいただくことをお勧めいたします。
+      </P>
+
+      <HR />
+
+      <H2>15. お問い合わせ</H2>
+      <P>
+        <Strong>{L.businessName}</Strong>(以下「LFK」)は、{L.operatingCompany}
+        が運営するサービスです。
       </P>
       <UL>
         <li>
-          Email:{" "}
+          メールアドレス:{" "}
           <a
             href={`mailto:${L.supportEmail}`}
             className="text-accent hover:underline"
@@ -337,19 +353,28 @@ export default function TermsJa() {
             {L.supportEmail}
           </a>
         </li>
-        <li>Service Name: {L.businessName}</li>
-        <li>Operating Company: {L.operatingCompany}</li>
-        <li>CEO: {L.ceo}</li>
-        <li>Business Registration Number: {L.businessRegistrationNumber}</li>
-        <li>E-Commerce Registration: {L.ecommerceRegistration}</li>
-        <li>Address: {L.address}</li>
+        <li>サービス名:{L.businessName}</li>
+        <li>運営会社:{L.operatingCompany}</li>
+        <li>代表者:{L.ceo}</li>
+        <li>事業者登録番号:{L.businessRegistrationNumber}</li>
+        <li>通信販売業申告:{L.ecommerceRegistration}</li>
+        <li>所在地:{L.address}</li>
       </UL>
 
       <HR />
 
+      <H2>16. 言語について</H2>
       <P>
-        By using LFK's services, you acknowledge that you have read,
-        understood, and agree to be bound by these Terms of Service.
+        本規約は、お客様の便宜のために日本語に翻訳されています。本規約の英
+        語版と日本語版の間に解釈上の相違がある場合は、英語版が優先されます。
+      </P>
+
+      <HR />
+
+      <P>
+        LFKのサービスをご利用いただくことで、お客様は本利用規約をお読みに
+        なり、内容をご理解いただいた上で、本規約に拘束されることに同意した
+        ものとみなされます。
       </P>
     </article>
   );
