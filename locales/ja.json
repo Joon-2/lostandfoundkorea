@@ -634,64 +634,64 @@
     "tabs": [
       {
         "id": "what-we-saw",
-        "label": "What we saw",
+        "label": "私たちが見てきたもの",
         "paragraphs": [
-          "Anyone who spends time around hotels or airports eventually notices a quiet scene that repeats itself: someone's suitcase, someone's wallet, someone's passport sitting in a corner behind the counter, waiting for days, weeks, sometimes months.",
-          "For a long time, I walked past these things without thinking much about them. But over time, those objects started to look different to me.",
-          "Some of the bags were clearly expensive — items someone had hesitated over for a long time before finally purchasing, things they had taken care of carefully. Some of the wallets contained credit cards alongside a small photograph of a child. Some of the laptops likely held the entirety of someone's work and personal life.",
-          "But what weighed on me most were the items whose value couldn't be measured in money. Old journals. Small boxes holding handwritten letters. Cameras filled with photos from an entire trip. Wristwatches that looked as though they'd been passed down from a parent or grandparent. Things that couldn't be replaced. Things that held time that couldn't be remade.",
-          "Every time I noticed those items still sitting in the same spot weeks or months later, something in me felt heavy. Someone, somewhere, was probably still looking for that thing. Or had already given up and was learning to live with the empty space where it used to be.",
-          "That's where the question started. Why are these items not making it back to their owners? The facilities are clearly storing them well — so what is missing?"
+          "ホテルや空港の周辺で時間を過ごす人なら、誰もが一度は気づく光景があります。誰かのスーツケース、誰かの財布、誰かのパスポートが、カウンターの片隅に何日も、何週間も、時には何ヶ月も置かれたままになっている光景です。",
+          "長い間、私もそういったお品物の前を、何も考えずに通り過ぎていました。けれど時間が経つにつれ、それらが少しずつ、違って見えるようになってきました。",
+          "中には、明らかに高価なバッグもありました。きっと長く悩んだ末に手に入れた、丁寧に使ってきた品物だったのでしょう。クレジットカードと一緒に、子どもの小さな写真が入った財布もありました。誰かの仕事と人生の全てが詰まっているであろうノートパソコンもありました。",
+          "けれど何より心に重く残ったのは、お金では測れない価値を持つ品々でした。古い手帳。手書きの手紙が入った小さな箱。旅の思い出が詰まったカメラ。親や祖父母から受け継がれてきたであろう腕時計。代わりが効かないもの。失われた時間そのもののようなもの。",
+          "数週間、数ヶ月経っても同じ場所に残されているそれらを目にするたび、何かが心に重くのしかかりました。きっとどこかで誰かが、まだそれを探しているはずです。あるいは、もう諦めて、その空白とともに生きることを覚えてしまっているのかもしれません。",
+          "問いはそこから始まりました。なぜこれらの品物は、持ち主のもとに帰っていないのか。施設はきちんと保管しているのに、何が足りないのか。"
         ]
       },
       {
         "id": "why-items-dont-make-it-home",
-        "label": "Why items don't make it home",
+        "label": "なぜ品物は持ち主のもとへ帰らないのか",
         "paragraphs": [
-          "Following the question led to an answer, and the answer turned out to be no one's fault.",
-          "Hotels, airports, airlines, transit systems — these institutions take their responsibility for lost items seriously. In Korea especially, they take it remarkably seriously. Items are stored well. Records are kept carefully. Up to that point, the system is excellent.",
-          "The problem begins at the next step: actually returning the item to its owner.",
-          "That part of the work is, by its nature, almost entirely human. Someone has to call the facility in Korean. Someone has to communicate with a customer in another time zone, in their language. Someone has to confirm exactly how the customer wants the item handled — opened or sealed, packaged how, insured for what value. Someone has to coordinate international shipping. Someone has to prepare customs paperwork. Someone has to follow up after the item is sent. Each case is its own small project.",
-          "Here is where the structural problem becomes visible: the more actively a facility tries to do this work, the deeper the loss they take on. Storage space is occupied. Staff time is consumed. Multilingual support is needed. Resources have to be invested in international shipping and customs work that has nothing to do with their core business. All of it costs money.",
-          "And who covers that cost? No one. There is no revenue in this work. Facilities don't have a way to make money from returning lost items. The harder they try, the more they lose, with no way to recover any of it.",
-          "If this work could generate revenue, airlines and hotels and government agencies would have built better systems for it long ago. But it can't. It's a cost center, not a business line. So every facility, very rationally, stops halfway. They store the item. They keep the record. But the final step — getting the item back to its owner — is no one's job.",
-          "This isn't a Korea-specific problem. The same is true in Japan, in Germany, in the United States. Lost-and-found has always been a \"cost to be tolerated\" rather than \"an investment to be made.\" The economics never worked anywhere."
+          "問いを追いかけて辿り着いた答えは、誰のせいでもない、というものでした。",
+          "ホテル、空港、航空会社、交通機関 — これらの施設は、お忘れ物に対する責任を真摯に受け止めています。特に韓国では、その姿勢が際立っています。お品物は丁寧に保管され、記録もきちんと残されています。ここまでの仕組みは、本当に優秀なのです。",
+          "問題が始まるのは、その次の段階 — 実際にお品物を持ち主のもとへ届けるところ、です。",
+          "この作業は、その性質上、ほぼ全てが「人の手」を必要とします。誰かが韓国語で施設に電話をかけなければなりません。誰かが時差をまたいで、お客様の言語で連絡を取り合う必要があります。誰かが、開封するか封のままか、どう梱包するか、保険はいくら掛けるかを、お客様と細かく確認しなければなりません。誰かが国際配送を手配し、税関書類を準備し、発送後のフォローアップを担当する必要があります。一件一件が、それぞれ独立した小さなプロジェクトなのです。",
+          "ここで構造的な問題が見えてきます。施設がこの作業を真剣にやろうとすればするほど、施設側の損失が深くなっていくのです。保管スペースが占有され、スタッフの時間が消費され、多言語対応が必要になり、本業とは関係のない国際配送や税関業務にリソースを割かなければなりません。全てがコストです。",
+          "では、そのコストを誰が負担するのか。誰もしません。この業務に売上はありません。施設には、お忘れ物の返却から収益を生む仕組みがないのです。頑張れば頑張るほど、損失は深まり、それを取り戻す方法もありません。",
+          "もしこの業務で利益が出るのであれば、航空会社もホテルも政府機関も、もっと前から優れた仕組みを作っていたはずです。けれど、そうはなりませんでした。これは収益部門ではなく、コスト部門だからです。だからどの施設も、極めて合理的な判断として、途中で手を止めます。保管はする。記録は残す。けれど最後の一歩 — 持ち主のもとへ届ける作業 — は、誰の仕事でもないのです。",
+          "これは韓国に限った問題ではありません。日本でも、ドイツでも、アメリカでも同じです。お忘れ物の返却は、世界中どこでも長い間「我慢すべきコスト」とされてきました。「投資すべき価値あるもの」と見なされてきませんでした。経済的に成り立たなかったのです。"
         ]
       },
       {
         "id": "what-changed",
-        "label": "What changed",
+        "label": "何が変わったのか",
         "paragraphs": [
-          "The work of returning a lost item to its owner is, in its core, almost entirely human work — work of language and judgment.",
-          "Politely persuading a hotel staffer to check the lost-and-found bin one more time. Translating a customer's anxious description into Korean polite enough that a Korean staff member will actually pull the records. The endless back-and-forth with a customer in another time zone about whether to open the bag, how to package it, which insurance to add. Knowing when to push a facility for a faster response. Knowing when to back off.",
-          "Each case is its own negotiation, its own piece of correspondence, its own chain of small decisions. None of it can be automated.",
-          "To run this as a business meant hiring multilingual staff, training them in Korean institutional culture, paying their salaries, and somehow making the math work on small service fees. The labor costs eat the margin alive. That's why no one had built it. Not because the gap was invisible. Because the unit economics didn't work.",
-          "The leap in AI tools over the last year or two changed that math.",
-          "We don't want to be misunderstood. AI is not replacing human judgment here. The careful work of deciding whether to open a customer's bag, how to phrase a difficult conversation, when to push a facility, when to hold back — that remains entirely human. It has to be.",
-          "But the work surrounding that judgment — accurate translation between two languages, drafting bilingual correspondence, organizing customs paperwork, building and maintaining the technical systems that hold this all together, organizing and searching case histories — all of that is now within reach for a small team with the right tools. Work that would have required five or six people five years ago can now be handled by a far smaller group.",
-          "That changed the unit economics. Labor stopped eating the entire margin. Suddenly this work could exist as a real business and not just as goodwill or a side project."
+          "お忘れ物を持ち主のもとへ届ける作業は、その本質において、ほぼ全てが「言葉と判断」の人間の仕事です。",
+          "ホテルのスタッフに、もう一度だけ忘れ物入れを確認してもらえないかと丁寧にお願いすること。お客様の不安に満ちた説明を、韓国の担当者が実際に記録を引っ張り出してくれるくらい礼儀正しい韓国語に翻訳すること。バッグを開けるかどうか、どう梱包するか、どの保険を付けるか — 時差を超えてお客様と何度もやり取りすること。施設に対していつ強く押せばよく、いつ引けばよいかを判断すること。",
+          "一件一件が、それぞれ独自の交渉であり、独自の文書のやり取りであり、独自の小さな判断の連続です。どれも自動化できる作業ではありません。",
+          "これを事業として運営するということは、多言語対応のスタッフを雇い、韓国の制度文化を教育し、その給与を支払い、わずかなサービス料金で採算を合わせる、ということを意味していました。人件費だけでマージンが消えてしまう。だから誰も作らなかったのです。問題が見えなかったからではありません。単位経済が成り立たなかったからです。",
+          "ここ1〜2年のAI技術の飛躍が、この計算を変えました。",
+          "誤解されたくないので、はっきり申し上げます。AIが人間の判断を代替しているわけではありません。お客様のバッグを開けるかどうか、難しい場面でどう言葉を選ぶか、施設にいつ強く出ていつ引くか — そういった慎重な判断は、依然として完全に人間の領域です。それは、そうでなければなりません。",
+          "けれど、その判断を取り囲む作業 — 二言語間の正確な翻訳、二言語の文書作成、税関書類の整理、これら全てを支える技術システムの構築と維持、過去の事例の整理と検索 — そうした業務は今、適切なツールを持つ小さなチームで対応できる範囲に入ってきました。5年前なら5〜6人必要だった作業が、今ははるかに少ない人数で扱える時代になったのです。",
+          "それが単位経済を変えました。人件費がマージンを食い尽くす状態が、終わりました。突如として、この仕事は善意やサイドプロジェクトではなく、本物のビジネスとして存在できるようになったのです。"
         ]
       },
       {
         "id": "how-lfk-started",
-        "label": "How LFK started",
+        "label": "Lost & Found Koreaの始まり",
         "paragraphs": [
-          "So we started.",
-          "Lost & Found Korea focuses on one thing: returning items lost in Korea to their owners abroad. We don't try to do everything. We don't try to replace the careful work the facility staff already do. We simply handle the part the facility was never resourced to handle — the final mile.",
-          "We contact the facility in Korean. We retrieve the item ourselves. We package it carefully. We follow the customer's wishes exactly — if they ask us not to open the bag, we don't. If they want insurance, we add it. We ship it to wherever they are in the world. We update them in their language at every step.",
-          "We charge a clear, transparent fee. Third-party costs are disclosed in advance. There are no hidden charges. Because we're a registered business in Korea, we can offer something that informal helpers cannot: accountability. Insurance, tracking, a clear refund policy, the kind of standing-behind-the-work that gives a stranger in another country a reason to trust us with something they care about.",
-          "We're a small operation. We keep it small on purpose. Our focus is deep, not wide: international travelers who have lost something in Korea, and the careful work of getting that something home."
+          "そうして、私たちは始めました。",
+          "Lost & Found Koreaは、たった一つのことに集中しています。韓国で失われたお品物を、海外の持ち主のもとへ帰すこと。あれもこれもやろうとはしません。施設のスタッフが既に丁寧に行っている作業を、置き換えようともしません。私たちはただ、施設にとって元々リソース外だった部分 — 「最後の一歩」 — を引き受けるだけです。",
+          "韓国語で施設に連絡を取ります。お品物を直接受け取りに伺います。丁寧に梱包します。お客様のご希望通りに対応します — 「開封しないでほしい」と言われれば、開けません。保険のご希望があれば、お付けします。世界中どこへでもお届けします。各段階で、お客様の言語で進捗をご報告いたします。",
+          "料金は明確で透明です。第三者費用は事前にお見積もりでお伝えします。隠れた費用は一切ありません。私たちは韓国で正式に登録された事業者ですので、非公式な仲介者では提供できないものをご提供できます — 説明責任です。保険、追跡、明確な返金ポリシー、業務の背後に立つ姿勢。海の向こうの見知らぬ相手に、大切なお品物を託していただくに値する理由です。",
+          "私たちは小さな組織です。意図的に小さく保っています。広く浅くではなく、深く狭く。海外の旅行者が韓国で失くしたお品物を、丁寧に持ち主のもとへ帰す — その一点に集中しています。"
         ]
       },
       {
         "id": "our-vision",
-        "label": "Our vision",
+        "label": "私たちのビジョン",
         "paragraphs": [
-          "There is a gap in the world. A gap that isn't anyone's fault — a gap that exists for structural reasons. Facilities handle storage. Governments fulfill their share of responsibility. But the final step — returning the item to its owner — has always been left empty.",
-          "Lost & Found Korea exists to close that gap.",
-          "Our vision goes beyond Korea. We believe that meaningful belongings — the ones carrying memories, history, and parts of someone's life — should not be wasted, forgotten, or thrown away simply because the system wasn't built to send them home. They deserve to find their way back to the people they belong to.",
-          "We're starting in Korea, but the same structural gap exists almost everywhere. Facilities store. Governments oversee. But returning items to their owners has been no one's job, anywhere. Someday, we hope to close that gap far beyond Korea — so that no matter where in the world an item is lost, there is a trustworthy way home for it.",
-          "If you're reading this, having lost something in Korea while being somewhere else in the world, we just want you to know: there's a way to get it home. The system has a gap. We're here to close it."
+          "世界には一つの空白があります。誰のせいでもない、構造的な理由から存在する空白です。施設は保管します。政府はそれぞれの責任を果たします。けれど最後の一歩 — お品物を持ち主のもとへ帰すこと — は、ずっと埋められないままでした。",
+          "Lost & Found Koreaは、その空白を埋めるために存在しています。",
+          "私たちのビジョンは、韓国だけにとどまりません。意味のある持ち物 — 思い出と歴史と、誰かの人生の一部を運んでいる品々 — が、システムが用意されていないという理由だけで、捨てられたり忘れられたりすべきではないと、私たちは信じています。それらは、本来あるべき場所へ帰る権利があります。",
+          "私たちは韓国から始めますが、同じ構造的な空白は、世界中ほぼどこにでも存在しています。施設は保管する。政府は監督する。けれどお品物を持ち主に帰す作業は、どこでも誰の仕事でもなかった。いつか、私たちはこの空白を、韓国を遥かに超えて埋めていきたい — 世界のどこで物を失くしても、それを家へ帰す信頼できる方法がある世界を、目指しています。",
+          "もしあなたが今、世界のどこかで、韓国で失くしたお品物を思い浮かべながらこれを読まれているのなら、お伝えしたいことがあります — 帰る道は、あります。システムには空白がある。私たちは、その空白を埋めるためにいます。"
         ]
       }
     ]
