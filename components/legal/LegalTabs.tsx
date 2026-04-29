@@ -2,15 +2,16 @@
 
 import { Suspense, useEffect, useState } from "react";
 import { useSearchParams } from "next/navigation";
+import { useTranslations } from "next-intl";
 import { useRouter } from "@/i18n/navigation";
 import Terms from "@/components/legal/Terms";
 import Privacy from "@/components/legal/Privacy";
 import Refund from "@/components/legal/Refund";
 
 const TABS = [
-  { key: "terms", label: "Terms of Service", Component: Terms },
-  { key: "privacy", label: "Privacy Policy", Component: Privacy },
-  { key: "refund", label: "Refund Policy", Component: Refund },
+  { key: "terms", Component: Terms },
+  { key: "privacy", Component: Privacy },
+  { key: "refund", Component: Refund },
 ] as const;
 
 type TabKey = (typeof TABS)[number]["key"];
@@ -29,14 +30,16 @@ export default function LegalTabs() {
 }
 
 function TabsFallback() {
+  const t = useTranslations("legal");
   return (
     <div className="animate-pulse rounded-xl border border-border bg-alt px-4 py-6 text-sm text-muted">
-      Loading…
+      {t("loading")}
     </div>
   );
 }
 
 function Inner() {
+  const t = useTranslations("legal");
   const router = useRouter();
   const params = useSearchParams();
   const fromUrl = params.get("tab");
@@ -63,7 +66,7 @@ function Inner() {
     <>
       <div
         role="tablist"
-        aria-label="Legal documents"
+        aria-label={t("tabsNavLabel")}
         className="-mx-5 mb-8 flex gap-1 overflow-x-auto border-b border-border px-5 sm:mx-0 sm:px-0"
       >
         {TABS.map((tab) => {
@@ -81,7 +84,7 @@ function Inner() {
                   : "border-transparent text-muted hover:text-foreground"
               }`}
             >
-              {tab.label}
+              {t(`tabs.${tab.key}`)}
             </button>
           );
         })}

@@ -680,6 +680,15 @@
     ],
     "tabsNavLabel": "Our Story"
   },
+  "legal": {
+    "tabs": {
+      "terms": "Terms of Service",
+      "privacy": "Privacy Policy",
+      "refund": "Refund Policy"
+    },
+    "tabsNavLabel": "Legal documents",
+    "loading": "Loading…"
+  },
   "common": {
     "submit": "Submit",
     "cancel": "Cancel",
